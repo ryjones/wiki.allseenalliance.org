@@ -84,7 +84,7 @@ Projects within the Core WG that wish to hold separate triage meetings focused o
 **CONTRIBUTIONS TO THE CODE BASE**
 Placeholder for the high-level process for contributing code and including it in a major release.
 
-{{:core:overview:jirahighlevelprocess.jpg|}} 
+![jira high level](../../../media/core/overview/jirahighlevelprocess.jpg)
 
 Submit JIRA ticket -> Request a branch* -> Contribute code -> Test the code -> File JIRA tickets for each issue found during testing -> Fix the identified issues -> Obtain agreement from Core WG that the right amount of testing was completed -> Merge the branch with master -> Release branch is made for a specific release (i.e., 15.10).
 

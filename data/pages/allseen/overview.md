@@ -10,7 +10,7 @@
 
 The AllSeen Alliance organization is open and inclusive. The structure is focused on delivering great open source software. Our [organizational bylaws](https///allseenalliance.org/about/governance) and [ TSC Charter](https///allseenalliance.org/about/governance/tsc/charter ) explain how we work. Find more details [about us here](https///allseenalliance.org/about).
  
-{{ :allseen:allseen_organizational_overview.jpg?200 |}}
+![allseen overview](../../media/allseen/allseen_organizational_overview.jpg)
 
 
 *  Learn more here: [https://allseenalliance.org/about/get-involved](https///allseenalliance.org/about/get-involved)

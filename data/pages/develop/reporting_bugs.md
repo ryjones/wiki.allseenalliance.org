@@ -38,11 +38,11 @@ Here are a few general rules to keep in mind when submitting tickets:
 In this example, we will use the Base Services Project.  Submitting tickets to other projects is very similar.
 
 Step 1: After logging into Jira, select the Create Issue from the top banner of the Jira screen.
-{{ :develop:createissue1.jpg?nolink |}}
+![create issue 1](../../media/develop/createissue1.jpg)
 
 Step 2: The Create issue screen will be displayed as shown below:  
 
-{{ :develop:createissue2.jpg?nolink |}}
+![create issue 2](../../media/develop/createissue2.jpg)
 
 a) Select the **Project** that you are submitting the ticket against.  
 
@@ -91,7 +91,7 @@ f) **Description** -
 
 *  Specific versions/location of tested SW.
  
-{{ :develop:createissue3.jpg?nolink |}}
+![create issue 3](../../media/develop/createissue3.jpg)
 
 g) **Release Version Found In** - From the pull down menu, select the release version.
 

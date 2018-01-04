@@ -27,7 +27,7 @@ QA Lead: David McBride
 
 The following table outlines the regression test efforts for this release. The items marked with an X were tested in the last release but are not tested for this release.  The item with a plus sign is testing that was added since the last release
 
-{{:baseservices:testtargets15.04.jpg?800|}}
+![baseservice](../../media/baseservices/testtargets15.04.jpg)
 ## Expected Work Group Dependencies
 
 None

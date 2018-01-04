@@ -28,7 +28,7 @@ The AllSeen Alliance will use the following severity settings:  Blocking, Critic
 
 Unlike the priority setting, severity should be fixed for the lifetime of the ticket, unless a mistake was made in determining the severity level.  The reason for this is that, unlike priority, severity is based on characterisitics of the issue, rather than current business or technical interests.  
 
-{{:core:overview:severitysettingstable.jpg|}} 
+![severitytable](../../../media/core/overview/severitysettingstable.jpg)
 ### Frequency and Probability
 
 Frequency and probability is a somewhat subjective assessment of the likelihood that an issue will occur in the “real world” and how often.  An issue that is readily reproducible by stress testing may still be considered low probability if the means by which the issue was generated is unlikely to occur outside of the stress test.
@@ -71,7 +71,7 @@ Figure 2 illustrates the process for determining impact.
     *  Or, there is a workaround
 
 *  Affects tertiary functionality
-{{:core:overview:jiraflowchart.jpg|}} 
+![jira flowchart](../../../media/core/overview/jiraflowchart.jpg)
 
 ## Setting severity for tasks and features
 
