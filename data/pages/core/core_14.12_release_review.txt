@@ -1,0 +1,79 @@
+====== Core 14.12 Release Review ======
+
+===== Updates =====
+Two patch releases were made for the Standard Core project after the initial 14.12 release: 14.12a, and 14.12b.  The changes in those release are listed in the Change History section of the [[https://git.allseenalliance.org/cgit/core/alljoyn.git/plain/alljoyn_core/docs/ReleaseNotes.txt?h=RB14.12|release notes]].
+
+===== Features =====
+
+Please see the [[https://git.allseenalliance.org/cgit/core/alljoyn.git/plain/alljoyn_core/docs/ReleaseNotes.txt?h=RB14.12|Standard Core release notes]] and [[https://git.allseenalliance.org/cgit/core/ajtcl.git/tree/ReleaseNotes.txt?h=RB14.12|Thin Core release notes]].
+
+===== Non-Code Aspects =====
+
+  * [[https://allseenalliance.org/developer-resources/alljoyn/docsdownloads|Documents]]
+  * [[develop:building_and_running|Building and Running]]
+  * [[:training|Training]]
+
+===== Architectural Issues =====
+
+There were no major architectural changes to the AllJoyn Core software.
+
+===== Security Issues =====
+
+There were no particular security related issues addressed.
+
+===== Quality Assurance =====
+
+==== Feature Test ====
+
+Feature test plans were completed for all of the major new features cited above.
+
+==== Regression Test ====
+
+AllJoyn Standard Library was tested successfully on the following:
+
+  * Linux Ubuntu 14.04 LTS (64 bit)
+  * Android Ice Cream Sandwich 4.0 (ARM)
+  * Android JellyBean 4.1 (ARM)
+  * Android Kit Kat 4.4 (ARM)
+  * Windows 7/8/8.1 (64 bit)
+  * Windows 10 Technical Preview (64 bit)
+  * iOS 7.1 (32-bit)
+  * OSX 10.9 Lion
+  * OpenWRT BB and CC branches
+
+AllJoyn Thin Library was tested successfully on the following:
+
+  * Linux Ubuntu 14.04 LTS (64 bit)
+  * Windows 7/8/8.1 (64 bit)
+  * ARM-based embedded platform
+
+We have a layered approach to testing that starts with verifying core functionality, such as messaging and security. Then, we execute platform-specific tests for each of the platforms listed above. This includes testing of transports, bindings, sample applications, as well as stress testing. We also conduct interoperability testing to ensure that, for example, AllJoyn applications running on a Windows laptop can interact with applications running on an Android phone. Finally, we do backward compatibility testing to ensure, for example, that a new routing node will communicate with an older routing node. 
+
+Issues identified during testing are documented in our bug tracking system. A triage process assigns the bugs a priority and a release target. Naturally, the highest priority bugs are targeted for the next release. Once a bug has been resolved-fixed, then the bug fix is verified, and the bug is closed. 
+
+===== Issues Addressed in 14.12 =====
+Please see the [[https://git.allseenalliance.org/cgit/core/alljoyn.git/plain/alljoyn_core/docs/ReleaseNotes.txt?h=RB14.12|Standard Core release notes]] and [[https://git.allseenalliance.org/cgit/core/ajtcl.git/tree/ReleaseNotes.txt?h=RB14.12|Thin Core release notes]] for the subset believed most relevant.
+
+For a complete list of closed issues check this [[https://jira.allseenalliance.org/issues/?jql=project%20%3D%20ASACORE%20AND%20resolution%20in%28done%2C%20fixed%29%20AND%20TYPE%20in%20%28Bug%29%20and%20fixVersion%20in%20%28%2214.12%22%2C%20%2214.12a%22%2C%20%2214.12b%22%29%20ORDER%20BY%20priority%20DESC%2C%20key%20ASC|Core Jira query]]. //Note//: this includes all bugs filed including issues filed as a result of changes between the last release and this one.
+
+ 
+
+===== Known Issues =====
+Please see the [[https://git.allseenalliance.org/cgit/core/alljoyn.git/plain/alljoyn_core/docs/ReleaseNotes.txt?h=RB14.12|Standard Core release notes]] and [[https://git.allseenalliance.org/cgit/core/ajtcl.git/tree/ReleaseNotes.txt?h=RB14.12|Thin Core release notes]] for the subset believed most relevant.
+
+For a complete list of open issues check this [[https://jira.allseenalliance.org/issues/?jql=project%20%3D%20ASACORE%20AND%20resolution%3DUnresolved%20AND%20TYPE%20in%20%28Bug%2C%20Task%29%20ORDER%20BY%20priority%20DESC%2C%20key%20ASC|Core Jira query]].
+
+===== Compatibility =====
+Please see the [[https://git.allseenalliance.org/cgit/core/alljoyn.git/plain/alljoyn_core/docs/ReleaseNotes.txt?h=RB14.12|Standard Core release notes]] and [[https://git.allseenalliance.org/cgit/core/ajtcl.git/tree/ReleaseNotes.txt?h=RB14.12|Thin Core release notes]].
+
+===== End-of-life =====
+
+The Services/About APIs are deprecated.
+
+===== Standards Compliance =====
+
+Nothing new was added that is standards related.
+
+===== Post-Mortem =====
+
+Was held January 13, 2015: {{:core:allseen-corewg_14-12_post_mortem-1-13-15.pdf|Meeting Slides}}  [[https://meetings.webex.com/collabs/url/4lEdMa0Gsy5-6xqKtUgsLzqWg6TXX1RMmy1UY8DVMgu00000|WebEx Recording]]  

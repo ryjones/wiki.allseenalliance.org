@@ -1,0 +1,40 @@
+====== Interface Review Board Overview ======
+The Interface Review Board is a subcommittee of the Technical Steering Committee. It operates under the provisions of the {{::interface_review_board_charter.pdf|IRB Charter}}. It acts in an advisory role: all binding decisions are taken by the TSC, not the IRB.
+
+===== Purpose =====
+Over time, the various work groups within the AllSeen Alliance will produce a great amount of standardized Interface definitions that model different entities and services found within the Internet of Things. The purpose of the Interface Review Board is to act as an oversight committee for the definition and standardization of all these Interfaces, ensuring a minimal quality, stylistic homogeneity and well-defined taxonomy for the defined Interfaces.
+
+===== Scope =====
+The Interface Review Board has the following main tasks:
+  * **Define the guidelines for standardized Interface design.** The guidelines in question range from the cosmetic (spelling, language, capitalization, …) to the semantic (when to use properties versus methods, when to use the different types of signals, …). These guidelines will be used as an objective yardstick for the review of Interfaces. The guidelines (pending approval by the TSC) will be published as part of the overall AllSeen documentation, and developers will be encouraged to follow them, even if they do not have the intention to have their interfaces standardized by the Alliance.
+  * **Provide practical guidance to Interface designers.** To define a good AllSeen Interface, the input of both data model experts and domain experts is needed. The Interface Review Board can offer, on request, the data model expertise part of this equation. It is important for the various Work Groups to involve the Interface Review Board early on in the design process, to avoid situations where man weeks or man years of reference code implementation effort is wasted because it is based on an Interface definition that is ultimately deemed unsatisfactory by the Interface Review Board.
+  * **Review Interface definitions** and advise the TSC on whether to approve them for standardization before they move into the Certification & Compliance review process. This step (Interface Review Board review and TSC approval) needs to be taken for each new version of a standardized interface.
+  * **Manage the overall Interface taxonomy.** It is important to maintain a clear taxonomy in the standardized Interfaces. Functional or semantic overlap between different Interfaces should be avoided as much as possible. The Interface Review Board must identify common functionality and propose for it to be factored out into a separate Interface definition. In addition, evolutions of existing Interfaces must be reviewed for scope creep: it is often better to split new functionality off into a separate Interface rather than pile more and more features onto an existing Interface.
+
+===== Contacting the IRB =====
+The Interface Review Board hosts a public mailing list: [[allseen-irb@lists.allseenalliance.org]].
+  * [[https://lists.allseenalliance.org/mailman/listinfo/allseen-irb|Subscribe]]
+  * [[https://lists.allseenalliance.org/pipermail/allseen-irb/|Archives]]
+
+Please direct all your review requests, questions, remarks and feedback to the mailing list.
+
+===== Members =====
+Chairman: Dominique Chanet (Qeo LLC, Data-driven API WG chairperson, TSC member)
+
+Other members:
+  * Zhao Ru (Haier, SmartHome WG contributor)
+  * Inhwan Choi (LG Electronics, HAE Project contributor)
+  * Josh Spain (Affinegy, Gateway Agent WG committer)
+  * Marcello Lioy (Qualcomm Connected Experiences, Core WG contributor)
+  * Steve Kinneberg (Qualcomm Connected Experiences, Core WG committer)
+  * Dave Thaler (Microsoft, Core WG contributor)
+
+===== Documents =====
+  * {{::interface_review_board_charter.pdf|IRB Charter}} (approved by TSC vote on 2014-12-15) 
+  * original Interface Review Board {{:tsc:technical_steering_committee:proposals:interface_review_board_proposal_2014-11-18_edit_2_.pdf|proposal}}
+  * [[irb:interface_design_guidelines_1.1|Interface Design Guidelines]] (v1.1 **final**) :!:**CURRENT APPROVED VERSION**
+  * [[irb:interface_design_guidelines_draft_1.2|Interface Design Guidelines]] (v1.2 **draft**) :!:**CURRENT WORK IN PROGRESS VERSION**
+  * [[irb:interface_design_guidelines_1.0|Interface Design Guidelines]] (v1.0 **final**) :!:**PREVIOUSLY APPROVED VERSION**
+  * [[irb:interface_design_guidelines|Interface Design Guidelines]] (v1.0 **draft**) :!:**OBSOLETE**
+  * [[irb:interface_design_guidelines_draft_1.1|Interface Design Guidelines]] (v1.1 **draft**) :!:**OBSOLETE**
+  * [[irb:xmlv2|AllJoyn Unified Introspection XML]]

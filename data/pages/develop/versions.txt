@@ -1,0 +1,17 @@
+====== Versioning in AllJoyn ======
+Every release of AllJoyn code is made under a version number. The Release Version of AllJoyn code is structured to provide detailed information for implementers.
+
+  * YY.MM is the Major Version of a release. It is named for the year and month of the release. Major Versions include significant new functionality.
+  * YY.MM.ff is the Feature Version of a release. A Feature Version enabled new functionality in in interim release.
+  * YY.MM.ff.p or YY.MM.p (when the feature version is 00) is the Patch Release. Patch Releases fix critical issues, or addresses security vulnerabilities within a version but contains no new functionality
+
+----
+
+The initial Major Version of a release has the implicit Feature Version of .00 (YY.MM.00) but this can be (and usually is) omitted when referring to that release version. Any time a version of AllJoyn is given as YY.MM or YY.MM.p, the feature version is .00 implied.
+
+Implementers are strongly encouraged to always use the latest version of the AllJoyn code at the Major Version, Feature Version and Patch Release level. 
+
+Details of which specific release Versions of a Base Implementation may be submitted for certification are outlined on the [[https://allseenalliance.org/compliance|Compliance page]].
+
+If a critical security vulnerability is discovered is a specific release version, it may be  identified as invalid for certification. Should this happen it will be clearly identified on the [[https://allseenalliance.org/compliance|Compliance page]].
+----

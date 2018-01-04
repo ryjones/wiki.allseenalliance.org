@@ -1,0 +1,56 @@
+====== Gateway Agent 14.12 Release Plan ======
+
+===== Introduction =====
+
+Dev Lead: Josh Spain
+
+QA Lead: TBD
+
+===== Themes and Priorities =====
+
+The 14.12 release of the Gateway Agent is the first official release of the Gateway Agent. It is designed to be compatible with AllJoyn Core and Base Services 14.12. The following features will be available:
+
+   * Gateway Management App
+   * Gateway Controller API + Android sample
+   * Gateway Connector API + Linux sample
+   * Gateway Controller Android SDK
+   * OpenWrt feed
+   * Developer Documentation
+
+The following are components that were incomplete or were not in the unofficial 14.06 release (new work to be done):
+   * Gateway Connector API documentation
+    * Doxygen generated API docs
+   * Gateway Controller Android SDK (zip file)
+    * SDK jar
+    * API reference (Javadoc)
+    * Sample App code
+    * Sample App apk
+   * Gateway Controller iOS SDK (zip file)
+    * SDK header files/lib
+    * API reference
+    * Sample App code
+   * OpenWRT feed
+    * Includes gateway agent and connector sample packages
+
+===== Deliverables =====
+
+Gateway Agent
+
+===== Milestones =====
+
+^ Milestone               ^ Date        ^ Details         ^
+| API Freeze              | 2015/03/06  | General freeze  |
+| Feature Freeze          | 2015/03/06  |                 |
+| Documentation Complete  | 2015/04/03  |                 |
+| QA Complete             | 2015/04/20  |                 |
+
+
+
+===== Expected Work Group Dependencies =====
+
+  * Core 14.12
+  * Base Services 14.12
+
+===== Compatibility with Previous Releases =====
+
+N/A

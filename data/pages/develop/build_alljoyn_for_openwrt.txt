@@ -1,0 +1,75 @@
+FIXME Under construction...
+
+====== Building AllJoyn for OpenWrt ======
+
+===== AllJoyn Feed Organization =====
+The OpenWrt feed for AllJoyn is contained this git repository: https://git.allseenalliance.org/cgit/core/openwrt_feed.git/
+
+The openwrt_feed git repository uses several branches described in the table below:
+
+^ Branch ^ Description ^
+| master | This is where development occurs. Must be buildable with the development version of OpenWrt. |
+| test   | This contains beta/test version of packages prior to official releases                       |
+| 12.09  | This branch contains only official releases that build against OpenWrt 12.09                 |
+| 14.07  | This branch contains only official releases that build against OpenWrt 14.07 //(Will be created with AllJoyn 14.12 release.)// |
+| attitude_adjustment | This branch contains only official releases that build against HEAD of the Attitude Adjustment branch of OpenWrt |
+| barrier_breaker | This branch contains only official releases that build against HEAD of the Barrier Breaker branch of OpenWrt |
+| chaos_calmer | This branch contains only official releases that build against HEAD of the Chaos Calmer branch of OpenWrt //(Will be created with AllJoyn 14.12 release.)// |
+
+===== OpenWrt Setup =====
+
+==== Download via Subversion ====
+FIXME To be added
+
+==== Download via Git ====
+FIXME To be added
+
+==== Adding the AllJoyn Feed ====
+
+If you do not have a ''feeds.conf'' file, create one by copying ''feeds.conf.default'' to ''feeds.conf''.  Add the following line to your ''feeds.conf'' file:\\
+''src-git alljoyn %%https://git.allseenalliance.org/gerrit/core/openwrt_feed;%%//<branch name>//''
+
+Replace ''//<branch name>//'' with the appropriate branch name listed that corresponds to the version of OpenWrt you are using.
+
+If you are using/building a derivative of OpenWrt, you will need to determine which version of OpenWrt it is based off of.
+
+=== Gory Details of Feed Lines in ''feeds.conf'' ===
+
+Each line in feeds.conf is either a comment starting with ''#'' or a directive specifying where to find package definitions.  There are 3 fields in the directive lines:
+  - Access mechanism -- They can be any one of the following:
+    * ''src-bzr'' -- Use the Bazaar version control system to get package definitions
+    * ''src-cpy'' -- Copy package definitions from a local directory tree
+    * ''src-darcs'' -- Use the Darcs version control system to get package definitions
+    * ''src-git'' -- Use the Git version control system to get package definitions
+    * ''src-gitsvn'' -- Use Git to access package definitions managed by Subversion
+    * ''src-hg'' -- Use Mercurial version control system to get package definitions
+    * ''src-link'' -- Use a symbolic link to a local directory tree to get package definitions
+    * ''src-svn'' -- Use Subversion version control system to get package definitions
+  - Feed name -- This can be any string with characters in the set [_a-zA-Z0-9].  The name must be unique in ''feeds.conf''.
+  - Location of the package definitions -- For most access mechanisms, this is a URL.  For //src-cpy// and //src-link//, this is just a path.  The //src-git// access mechanism supports specifying branch names by appending '';//<branch_name>//'' to the URL.  (The semicolon is required and delineates between the URL for the git repository and the branch to use.)
+
+
+===== Building OpenWrt with AllJoyn =====
+FIXME To be added
+
+==== Adding AllJoyn Package Definitions to the Build ====
+FIXME To be added
+
+==== Including AllJoyn in the Build ====
+FIXME To be added
+
+==== Building OpenWrt and AllJoyn ====
+
+=== Full Build ===
+The first time you do a full build will take a long time.  This is because the OpenWrt build system needs to download the source for all the packages that are enabled in the build as well as the source code for all the cross-compilation tools.  It also needs to build the cross-compilation tools before it will start to actually build the target image and packages.  To get all this started, just simply invoke:\\
+''make''
+
+If you are building on a machine with multiple cores, you can give ''make'' the ''-j//#//'' option where ''//#//'' is the number of cores to use for building to speed things up.  For example:\\
+''make -j8''
+
+=== Building Just AllJoyn ===
+As a time saving short cut, once the cross-compilation tools are built, it becomes possible to build only those packages you are interested in.  This will only build IPK files and not the full target images.  the general form is:\\
+''make package///<package_name>///{clean,compile}''
+
+The OpenWrt build system will ensure that the packages ''//<package_name>//'' depends on will be built as well (the specified package can't be built until its dependencies are anyway).
+

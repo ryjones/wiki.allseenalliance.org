@@ -1,0 +1,18 @@
+====== Repository Information ======
+
+==== Primary Repositories ====
+
+The main git repositories for AllSeen Alliance projects are hosted on https://git.allseenalliance.org/
+
+To browse the repositories and find URLs for git projects, use https://git.allseenalliance.org/cgit/
+
+[[develop:contributing_source_code|Code contributions]] are handled using our [[https://git.allseenalliance.org/gerrit|Gerrit instance]]. 
+
+
+==== Mirror Repositories ====
+
+=== Github ===
+
+Each project has a read-only mirror at https://github.com/allseenalliance/
+
+Note that Github pull requests are not accepted. We do welcome [[develop:contributing_source_code|code contributions]] using [[https://git.allseenalliance.org/gerrit|Gerrit]].

@@ -1,0 +1,107 @@
+====== AllJoyn Package Development and Maintenance Process for OpenWrt ======
+
+===== Introduction =====
+
+OpenWrt is a distribution of Linux designed primarily for home gateways, routers, and access points.  Derivatives of OpenWrt are also being used for WiFi devices that operate in Station Mode and do not fall into the categories above.  At the heart of OpenWrt is a package management system used to install, remove, and update packages on a running system.  The AllJoyn project provides a number of packages for OpenWrt.
+
+This document does not cover the technical details of OpenWrt packages, but rather covers the process used to introduce new packages as well as maintain existing packages for each release.  For technical details on package development, please see [[https://www.openwrt.org]].
+
+While [[core:OpenWrt Feed Proposal]] talks briefly about new package development, this page provides a more detailed process and this page takes precedence over any conflict with [[core:OpenWrt Feed Proposal]].
+
+===== AllSeen Git Repository Branching Scheme Overview =====
+
+The AllSeen git repository used for the OpenWrt packages is core/openwrt_feed.  While some of its branches follow a similar usage pattern as for other AllJoyn projects, there are a few notable differences.  The first notable difference is that there are several release branches: one for each supported version of OpenWrt.  At times all three of these release branches may point to the same commit ID and at other times they may point to different changes.  This is due to the fact that AllJoyn packages may depend on OpenWrt packages that have changed between versions of OpenWrt.
+
+The reason that each supported version of OpenWrt gets its own release branch is because the core/openwrt_feed.git repository also serves as the package definition distribution mechanism (a.k.a., “feed” in OpenWrt parlance).  People who build AllJoyn into their copy of OpenWrt only need to specify the core/openwrt_feed git repository and the appropriate branch to have access to the packages for building.
+Should there be a need to create an alternate version of a package for a supported version of OpenWrt due to incompatibilities between OpenWrt versions, then appropriate test_<target-release-branch-name> branches will be created on an as-needed basis. The alternate test branch names will be prefixed with “test_” and the rest of the name will match that of the release branch it will feed into.
+
+The table below lists the current set of branches and their purpose.
+
+^ Branch Name            ^ Purpose ^
+| master                 | Minor updates to existing package definitions as well as integrations from feature branches are done on this branch.  The package definitions on this branch are expected to be buildable with the latest development version of OpenWrt. |
+| feature/<feature_name> | New package development and major updates to existing package definitions happen on feature branches.  Once development is complete, the feature branch gets merged into the master branch.  As with the master branch, the package definitions on this branch are expected to be buildable with the latest development version of OpenWrt. |
+| test                   | Packages in this branch go through release readiness tests.  What constitutes “release readiness” will be defined by the working group responsible for the project being packaged.  The package definitions on this branch are expected to be buildable with the latest development version of OpenWrt. |
+| openwrt_12.09          | Release distribution branch – builds with OpenWrt tagged version 12.09 |
+| attitude_adjustment    | Release distribution branch – builds with head of OpenWrt Attitude Adjustment branch |
+| openwrt_14.07          | Release distribution branch – build with OpenWrt tagged version 14.07 (will be created with the 14.12 release of AllJoyn) |
+| barrier_breaker        | Release distribution branch – builds with head of OpenWrt Barrier Breaker branch |
+| chaos_calmer           | Release distribution branch – builds with head of OpenWrt Chaos Calmer branch (will be created with the 14.12 release of AllJoyn or whichever version of AllJoyn gets released after the OpenWrt project actually creates their Chaos Calmer branch) |
+
+===== Adding a New Package =====
+
+New packages must be initially developed on a feature branch.  New packages may be developed for projects that have already existing releases or are themselves under initial development.
+New packages must set PKG_VERSION to 0.0.1 and PKG_REVISION to 1.  This will indicate a developmental version.
+
+Once the new package definition stabilizes it can be merged into the master branch.
+
+==== New Package for Project with Existing Source Tarball Releases ====
+
+If the new package for the existing project is designed for the latest current release of that project, it can be merged from the master branch into the test branch.  This provides an opportunity for the working group QA effort to run release readiness tests on the package prior to final release if so desired.  Once in the test branch it can follow the normal procedure for releasing a package.
+If the new package for an existing project is designed for the next upcoming release of the project, it must sit in the master branch until that project reaches release candidate testing at which time the normal package release process will be followed.
+
+==== New Package for a Project That Has Not Yet Released a Source Tarball ====
+
+A new package for a project under initial development will remain in the master branch until such time that the project enters release candidate testing.  At that time the new package for that project will be merged into the test branch and the normal release process will be followed.
+
+===== Updating an Existing Package =====
+
+Changes to existing package definitions take place in the master branch.  If a package definition requires a complete rewrite, then that should be done on a feature branch as if it were a new package for an existing project.
+
+===== Staging Packages for Release =====
+
+The testing branch is used for staging packages for the official release.  This is where QA will get the packages in order to perform release readiness tests for OpenWrt.  Once a project has been officially released, the PKG_VERSION and PKG_MD5SUM fields in the package definition Makefile will be updated to appropriate values.
+
+One last build-only verification of the packages with the updated PKG_VERSION and PKG_MD5SUM field must be performed to ensure that those values are valid.
+
+For a project to be considered released, its source tarball must be publicly available for download on the AllSeen Alliance website and the MD5SUM value of that tarball must be known.  Preferably, the MD5SUM should be generated at the same time as the source tarball and not from a downloaded copy of the source tarball.  This is to guard against security breaches where the source tarball gets replaced with one of unknown origin.
+
+===== Releasing a package =====
+
+The rules for merging a package from the test branch to the release branches depend on whether the package is being updated or if it is a completely new package.  This results from nature of the staggered releases of projects coming out of the various working groups.
+
+Regardless of whether a package is new or being updated, the entry criteria to releasing a package is the same: the source tarball must exist at a permanent URL and the package definition must have the correct PKG_VERSION and PKG_MD5SUM values.
+
+==== Updating Existing Packages ====
+
+Releasing existing AllJoyn packages for OpenWrt is basically an all or nothing deal.  The HEAD of the release branches must always contain a tested and supported release configuration.  This means that each and every package that exists in the release branches must be updated simultaneously.
+
+Before the updated packages in the test branch may be merged into the release branches, the test branch must contain updated versions of every package contained by the release branches.  If any of the packages that exist in the release branches have not been updated in the test branch, then all the packages in the test branch must remain there until all the packages have been updated.
+
+==== Releasing a New Package ====
+
+If a completely new package only depends on versions of other packages that have already been released, then it may be released immediately.
+
+If a completely new package depends on updated versions of other packages that have not yet been released, then it must wait in the test branch to be released with the packages that it depends on.
+Project requirements for packaging
+
+While not technically part of the process of creating a new package definition and moving it through test and into release, this section is informative of what is required of a project to be packaged and released for OpenWrt.
+
+The following list of requirements must be fulfilled before a package can be released for an AllSeen project:
+
+  * The project must release a source tarball that is publicly accessible from a permanent URL.  No dynamically generated URLs and no moving the source tarball once it has been released.
+  * The contents of the source tarball must never change once it has been published.  Any changes require a new version of the release, even if the timestamp on a file in the source tarball is the only thing to change.
+  * All files in the source tarball must reside under a top level directory that has a name that is identical to the base name of the source tarball that contains it.
+  * The project must be self-contained.
+    * The build process must not require the source of any other projects.
+    * It is acceptable and expected for projects to depend on the public header files and pre-built libraries of other project.
+    * The build process must be able to build with all dependent headers and libraries located in standard paths such that the “-I” and “-L” options are not required.
+  * The project must be buildable with the version of GCC used by the oldest version of OpenWrt that is supported.
+  * The build process must allow for specifying cross compilers and the paths to those cross-compilers.
+  * The build process must ensure that the environment variable STAGING_DIR is set when the cross-compiler version of GCC is invoked by the build system.  (For make, this is not an issue.  For scons, this requires some additional consideration in the scons files.)
+  * Project QA testing should be performed on both big-endian and little-endian architectures.
+
+===== Roles and Responsibilities =====
+
+The previous sections describe the process, however, they don’t describe which roles have what responsibilities. The responsibility of developing/maintaining a package will be incumbent upon the working group responsible for the project being packaged.  This is despite the fact that the core/openwrt_feed git repository falls under the Core Working Group governance.
+
+==== Working Group ====
+
+The working group is responsible for providing releases of the projects it controls.  The package must conform to the requirements stated previously.  It is the responsibility of the working group to ensure the quality of the release of the given project.
+
+==== Package Developer/Maintainer ====
+
+The package developer/maintainer is the person who will create and usher the package through the process outlined in this document.  While this person is not responsible for testing the functionality of the project they are packaging, they are responsible for ensure that their package builds with the supported versions of OpenWrt and that the package is both cleanly installable and removable.  The package must accurately identify all of its direct dependencies so that OpenWrt build system and the package manager will ensure the correct components are built and installed respectively.
+
+==== Quality Assurance ====
+
+It is expected that different work groups will have different QA processes.  Some work groups or members of work groups will want to perform release readiness tests on new or updated packages prior to actually releasing the project.  The amount of effort that QA puts into testing a package shall be determined by the package developer/maintainer and the working group responsible for the project in question.

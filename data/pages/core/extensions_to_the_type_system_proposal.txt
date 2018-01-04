@@ -1,0 +1,312 @@
+====== Proposal for extensions to the AllJoyn type system and introspection XML format ======
+
+This document proposes a number of extensions to the current AllJoyn type
+system and introspection XML format. The goal is to garner feedback from the
+community before we move forward with an implementation.
+
+The motivation for the proposed extensions is twofold:
+
+Firstly, we want to enable better code generation and automated
+marshaling/unmarshaling of messages (i.e. bring the marshaling capabilities of
+the C and C++ APIs in line with the "nicer" Java bindings)
+
+Secondly, we want to enhance the expressiveness of the introspection XML
+format. In order to ensure cross-vendor interoperability for the
+"standardized" interfaces (right now this means stuff like the About feature,
+but in the future this could conceivably be extended to encompass a canonical
+representation of various home automation related sensors and actuators like
+thermostats, window blinds, HVAC units, etc), we need a good formal language
+for describing these interfaces, preferably without having to rely too much on
+external documents that use verbose wording to clarify and help you
+interpret the interface definitions. The introspection XML format is
+the logical candidate for such a formal language, but in terms of
+descriptiveness, it falls short today.
+
+These are the extensions we have in mind:
+  - Named structs
+  - Named dictionaries
+  - Enumerations
+  - Optional struct fields/properties/method and signal arguments
+  - Discouraging the explicit use of the variant type
+
+The XSD has been updated accordingly and is available here : {{:core:extended-introspection-xsd.ppt|}}. (Note : to be able to upload the file, the extension xsd is renamed into ppt)
+This XSD also supports the description tags as defined for the events and actions feature.
+
+
+====Named structs====
+
+===Proposal===
+
+Allow (perhaps even enforce) explicit declaration of complex types in the
+introspection XML. Let's take the About interface definition as an example. It
+currently defines
+
+<code xml>
+<method name="GetObjectDescription">
+  <arg name="objectDescription" type="a(oas)" direction="out"/>
+</method>
+<signal name="Announce">
+  <!-- ... some args not relevant to this discussion -->
+  <arg name="objectDescription" type="a(oas)"/>
+</signal>
+</code>
+
+Let's replace this with
+<code xml>
+<struct name="ObjectDescription">
+  <field name="path" type="o"/>
+  <field name="interfaces" type="as"/>
+</struct>
+<method name="GetObjectDescription">
+  <arg name="objectDescription" type="a[ObjectDescription]" direction="out"/>
+</method>
+<signal name="Announce">
+  <!-- ... some fields not relevant to this discussion -->
+  <arg name="objectDescription" type="a[ObjectDescription]"/>
+</signal>
+</code>
+
+===Rationale===
+
+First, this enables us to write a code generator that constructs properly
+named language structures for each of the complex types defined in the
+interface. For example, in C the code generator would produce something like
+the following:
+
+<code C>
+typedef struct {
+  char *path;
+  char **interfaces;
+} org_alljoyn_About_ObjectDescription_t;
+typedef struct {
+  org_alljoyn_About_ObjectDescription_t *objectDescription;
+} org_alljoyn_About_GetObjectDescription_outargs_t;
+</code>
+
+Secondly,  the interface description becomes more descriptive:
+  * It is now clear what each of the fields in the (oas) struct represent
+  * It is officially stated (as opposed to just suggested) that GetObjectDescription and the Announce signal return the same kind of data structure representing the same kind of data, and not just two structures that are superficially similar but may contain entirely different kinds of information.
+
+===Discussion===
+
+We will refer to named types in a signature by enclosing the type name in ''['' and '']'' delimiters. (See discussion on https://lists.allseenalliance.org/pipermail/allseen-core/2014-March/thread.html  ). 
+
+While we do think that over time it would make sense to expose all this extra
+metadata in the actual introspection data on the wire, none of it is currently
+necessary at run time. The actual data exchange on the wire works perfectly
+well with anonymous structures today. Therefore we think it makes sense to
+introduce this new format only at the human-readable/code generation stages in
+the first phase, and keep on using the anonymous structures at run time. The
+substitution rules are straightforward: it is trivial to deduce the struct
+signature from the ''<struct>'' definitions, and you just have to replace
+every occurrence of ''[structname]'' in a type signature with the deduced
+struct signature.
+
+====Named dictionaries====
+
+Similarly to introducing named structs, we introduce named dictionaries. Below you will find an example.
+Let's take following example of an interface definition :
+
+<code xml>
+<interface name="org.alljoyn.Score">
+<method name="GetScore">
+  <arg name="scoreData" type="a{su}" direction="out"/>
+</method>
+
+<signal name="AnnounceScore">
+  <arg name="scoreData" type="a{su}"/>
+</signal>
+</interface>
+</code>
+
+Let's replace this with
+<code xml>
+<interface name="org.alljoyn.Score">
+<dict name="ScoreData">
+  <key type="s"/>
+  <value type="u"/>
+</dict>
+ 
+<method name="GetScore">
+  <arg name="scoreData" type="a[ScoreData]" direction="out"/>
+</method>
+
+<signal name="AnnounceScore">
+  <arg name="scoreData" type="a[ScoreData]"/>
+</signal>
+</interface>
+</code>
+
+A C code generator then will produce something like :
+
+<code C>
+typedef struct {
+  char *key;
+  uint32_t value;
+} org_alljoyn_Score_MetaData_t;
+
+typedef struct {
+  org_alljoyn_Score_MetaData_t *metaData;
+} org_alljoyn_Score_GetScore_outargs_t;
+
+typedef struct {
+  org_alljoyn_Score_MetaData_t *metaData;
+} org_alljoyn_Score_AnnounceScore_t;
+</code>
+
+
+====Enumerations====
+
+===Proposal===
+
+Something along these lines:
+<code xml>
+<interface name="foo">
+  <enum name="Color">
+    <enumerator name="UNKNOWN" value="0"/>
+    <enumerator name="RED" value="1"/>
+    <enumerator name="GREEN" value="2"/>
+    <enumerator name="BLUE" value="3"/>
+  </enum>
+  <property name="myColor" type="[Color]"/>
+</interface>
+</code>
+
+Where, like in C, the numerical values for the enumerators are optional: if
+they're not present, the enumerators are implicitly numbered 0-1-2-3-...
+
+On the wire, an enumeration would always be represented as a signed 32-bit
+integer.
+
+===Rationale===
+
+Common practice dictates that magical numbers are evil(tm). Having explicit
+enumeration support in the interface definition language would help in making
+the formal interface definition more self-describing.
+
+===Discussion===
+
+Enumerations have no impact on the data sent on the wire: we'd still be
+sending integers back and forth.
+
+Enumerations would have an impact on code generation: for each declared
+enumeration, an equivalent in the developer's programming language of choice
+would be generated.
+
+Like the named structs discussed above, it would be useful to eventually
+include this meta-information in the runtime introspection data, but (for us)
+this is not a priority right now.
+
+====Optional values====
+
+===Proposal===
+
+Add an optional ''optional'' (yeah, I know...) attribute to ''<field>'',
+''<arg>'' and ''<property>'' tags in the introspection XML. This attribute
+defaults to ''false'' if not specified.
+
+The ''optional'' attribute indicates that this field/arg/property may be absent
+in the struct/method invocation or return value/signal emission/bus object
+under consideration.
+
+This is how it would look in the interface definition language:
+
+<code xml>
+<interface name="foo">
+  <struct name="bar">
+    <field name="x" type="s" optional="true"/>
+    <field name="y" type="s" optional="false"/>
+    <field name="z" type="s"/> <!--not stating optional is the same as saying optional = false -->
+  </struct>
+  <property name="bar" type="s" optional="true"/>
+  <method name="baz">
+    <arg name="x" type="s" direction="in" optional="true"/>
+    <arg name="y" type="s" direction="out" optional="true"/>
+  </method>
+  <signal name="qux">
+    <arg name="z" type="s" optional="true"/>
+  </signal>
+</interface>
+</code>
+
+===Rationale===
+
+There are many cases in which objects (in the broad sense) that are seemingly
+of the same nature exhibit slightly different characteristics, which is
+reflected in the absence (or meaninglessness) of some of their declared
+attributes. Having explicit optional values helps capturing this diversity
+without having to resort to defining many different "versions" of the same
+type, or without having to resort to a meta-representation of the object (e.g.
+as an XML string or an ''a{sv}'' type).
+
+Concrete examples:
+  * In the About service, the application meta data is represented with a string-variant map (''a{sv}''). An accompanying document contains a table defining the meaning of each string key in the map, and the expected type of each variant value. With optional fields, this meta data could be declared as a properly typed struct in the interface definition, with the appropriate fields marked as optional.
+  * In DLNA, a media server's ContentDirectory service offers a Browse method that allows clients to discover the content on the media server. The Browse method returns a description of the media items present on the media server encoded in an XML string. The reason for this is that the different media items have wildly differing characteristics (some songs have a composer, others just a performing artist, sometimes you know the genre, sometimes you don't, etc.). The formal description of the ConentDirectory::Browse method does not capture any of the semantics of the returned results: it just states that Browse() returns a string. There is a whole auxiliary document needed to explain how to parse and interpret that returned string. A properly declared structure with optional fields would have saved the day here: the semantics would have been captured in the ContentDirectoryService SCPD, and the overhead of yet another XML parsing step for the interpretation of the Browse results would  have been avoided.
+
+The arguments raised above for structures can be extended to BusObject
+properties (considering a BusObject is a kind of struct, and its properties
+are similar to struct fields), signals (a signal describes an event that
+occurred, where you could consider the event to be described by a struct, with
+the signal args acting as struct fields) and method in and out args (sometimes
+it makes sense to have optional arguments to a call, in some contexts some of
+the declared return values are meaningless and hence could be left out).
+
+===Discussion===
+
+There are different schools of thought with regards to optional fields.
+
+The DDS XTypes ([[http://www.omg.org/spec/DDS-XTypes/1.0/|spec]]) school
+considers the absence of an optional value to be an explicit fact: the absence
+of a piece of information is information in its own right. Hence, in every
+received message one can explicitly check whether the optional fields are
+really present.
+
+The Google Protocol Buffers school approaches optional fields differently:
+when a received message does not contain a given optional value, a suitable
+default value is automatically inserted. This has the advantage that the
+application programmer has to do less manual checking: values will always be
+there for each field, regardless of whether the sender of the message actually
+provided a value. The downside of this approach is that it is no longer
+possible to make the distinction between an absent value, and a value that was
+present but equal to the default value.
+
+While we personally lean towards the DDS school of thought on this subject,
+both approaches have their merits. If the broader community sees a use for the
+concept of optional fields, we can still have a discussion which of the two
+approaches would be the best fit in the AllJoyn context.
+
+The current AllJoyn wire format does not have any provisions for optional
+fields, or for conveying the absence of optional field values. This means that
+introducing this concept in AllJoyn requires some changes to the DBus
+marshaling format currently in use. How these changes could be done in a way
+that minimizes the impact w.r.t. backwards compatibility is something that
+needs to be further investigated.
+
+====Discouraging the explicit use of variant types====
+
+===Proposal===
+
+This is more a meta-proposal: let's ban (or actively discourage) the use of
+variant fields/properties/arguments wherever possible in the standardized
+interfaces.
+
+If needed, a variant could be replaced by an explicitly declared union type
+that contains just the type variations you really need to describe a given
+field.
+
+===Rationale===
+
+Variants (both in their ''v'' and ''a{sv}'' forms) take a lot of
+descriptiveness out of the formal interface definition. You need auxiliary
+documentation to describe exactly which forms a field is expected to take in
+which context.
+
+Most of the ''a{sv}'' constructs currently in use could be replaced with
+declared structs with optional fields. The advantages of this approach are
+described at length above.
+
+Note that this does not mean variants are universally evil: for certain
+"infrastructure" interfaces (e.g. the DBus Properties interface, in particular
+the PropertiesChanged signal), they serve their purpose beautifully. The point
+is that these interfaces are really part of the underlying AllJoyn mechanism,
+rather than part of a standardized Internet of Things interface. 

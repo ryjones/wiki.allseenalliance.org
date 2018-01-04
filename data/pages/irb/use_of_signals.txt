@@ -1,0 +1,48 @@
+====== Deprecated ======
+The document you are viewing is the draft 1.0 version of the Interface Design Guidelines. It is no longer maintained, and slowly getting out of date. It is preserved on the wiki for historical purposes, the discussion at the bottom of the individual subpages may still be of some relevance.
+
+The officially approved current version of the Interface Design Guidelines is at all times linked from the [[:interfacereviewboard|IRB home page]].
+
+====Use of Signals====
+This section covers some best practices for the use of signals in Interfaces.
+
+===Types of Signals===
+Signals come in several flavors. The recipients of the signal vary based on the signal's flavor:
+  *  //unicast// signals have an explicit destination (a bus name). Only the intended recipient will receive the signal.
+  *  //sessioncast// signals do not specify a destination but a session id. All participants in the session (apart from the emitter) will receive the signal.
+  *  //local broadcast// signals are delivered to all participants that share the sender's routing node, provided that those participants installed an appropriate match rule.
+  *  //global broadcast// signals are delivered to all participants that are connected to a routing node that is somehow in session with the sender's routing node. Again, the recipients must have the appropriate match rule installed.
+  *  //sessionless// signals are delivered to all participants on the network, if they have the appropriate match rule. Note that sessionless signals have delivery semantics that are very different from the other signal types.
+
+> **Every signal in the Interface must be of a well-defined flavor. Document which flavor is intended for which signal.**
+
+>> **Note**: the current version of the Extended Introspection XML language is not yet sufficiently expressive to capture the distinction between the different signal flavors. It can only capture whether a signal is sessionless or not. For all other signal types, add an XML comment that clearly states the intended signal emission behavior.
+
+> **Use sessioncast signals, or explain why a sessioncast signal is insufficient.**
+
+As a rule of thumb, use sessioncast signals. In rare cases, a unicast signal is warranted. Sessionless signals have very specific semantics, use them only in those cases where you need these semantics. Avoid broadcast signals: the local broadcast signal is only relevant for interprocess communication on a single device (which is not exactly the scope of AllSeen), and the global broadcast signal is unpredictable: you can never know which participants will receive the signal and which ones won't. In addition, indiscriminate use of global broadcast signals will cause a lot of spurious network traffic.
+
+===Signals are for Events, Properties are for State===
+Signals are most useful for representing ephemeral occurrences related to the entities in the problem domain. Ephemeral occurrences are facts that are true at a single point in time. A colloquial term for these occurrences is //events//. One can contrast this with the observable //state// of the domain entities, which remains true over a longer period of time. That state is, as argued before, best modeled as a set of properties.
+
+For example, in a home security system, one of the domain entities is a door. A door has observable state: a location, whether it's locked, whether the door is open or closed. These aspects of the door are represented as properties in the Door Interface.  The fact that someone is walking through the open door, on the other hand, is definitely an event: this is true at this point in time, but in two seconds, that same person is no longer walking through the door. Hence, the PersonPassedThrough event would be modeled as a signal in the Door Interface.
+
+===Prefer intrinsic state and events over derived state and events===
+Intrinsic state refers to the natural state of being for the system being modeled.
+
+Intrinsic event refers to natural events from the system being modeled.  There are actually 2 kinds of intrinsic events: those that result in state change and those that do not alter state.  In AllJoyn, intrinsic events that change state are conveyed with the PropertiesChanged signal since state is conveyed via properties.  Intrinsic events that do not alter state will need to be send as their own signals.
+
+As an example of intrinsic state, consider a door.  A door has 2 intrinsic states: open or closed.  An example of derived state would be that the door was opened for X time.  Such state is derived by observing the state transition from closed to open and starting a timer.  The value of that timer is the derived state.
+
+Systems with more than one intrinsic state inherently have at least one intrinsic event to convey the transition from one state to the other.  In the case of the door, there are 2 such state transition events: door opened and door closed.  An example of a derived event could be that the door was left open for 5 minutes (derived from a 5 minute timer that started as a result of the door opened event and that the door closed event was never received before the timer expired).
+
+For intrinsic events that do not alter state, consider a turn-style.  The intrinsic event with a turn-style is that a person passed though.  While most mechanical turn-styles include a counter, that count of the number of people who passed through is derived state.  A turn-style could ring a bell instead of increment a counter.  Regardless of what other functionality a turn-style has it will always process the event of a person passing through which is what makes that the intrinsic event.
+
+===Don't Reinvent Updating Properties with Signals===
+
+> **For state that is represented as properties, do not define dedicated signals to inform observers that the properties have changed. **
+
+The D-Bus Properties Interface that is part of the AllJoyn framework already incorporates that functionality. Define your property as an updating property (see [[#types_of_properties|above]]) and rely on the existing framework functionality to convey the state update information to interested observers.
+
+
+~~DISCUSSION~~

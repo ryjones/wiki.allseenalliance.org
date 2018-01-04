@@ -1,0 +1,86 @@
+====== Core 16.04 Release Review ======
+
+===== Updates =====
+Patch releases were made to the both the Standard Core and Thin Core projects after the initial 16.04 release: 16.04a. The main change (and trigger for the patch on the Standard Core) was restoring the iOS support to the release, this involved fixing issues that were found in the iOS platform testing (and actually performing the testing, which was not accomplished in the original 16.04 release). Details of the other changes are listed in the Change History section of the [[https://git.allseenalliance.org/cgit/core/alljoyn.git/tree/alljoyn_core/docs/ReleaseNotes.txt?h=RB16.04|Standard Core release notes]] and [[https://git.allseenalliance.org/cgit/core/ajtcl.git/tree/ReleaseNotes.txt?h=RB16.04|Thin Core release notes]]. 
+===== Non-Code Aspects =====
+
+  * [[https://allseenalliance.org/developer-resources/alljoyn/docsdownloads|Documents]]
+  * [[develop:building_and_running|Building and Running]]
+  * [[:training|Training]]
+
+===== Features, Issues Addressed and Known Issues =====
+
+Please see the [[https://git.allseenalliance.org/cgit/core/alljoyn.git/plain/alljoyn_core/docs/ReleaseNotes.txt?h=RB16.04|Standard Core release notes]] and [[https://git.allseenalliance.org/cgit/core/ajtcl.git/tree/ReleaseNotes.txt?h=RB16.04|Thin Core release notes]] for the most relevant details.
+
+For a complete list of Features check this [[https://jira.allseenalliance.org/issues/?jql=project%20%3D%20ASACORE%20AND%20issuetype%20%3D%20%22New%20Feature%22%20AND%20fixVersion%20%3D%20%2216.04%22%20AND%20status%20%3D%20Closed|Core Jira query]].
+
+For a complete list of closed issues check this [[https://jira.allseenalliance.org/issues/?jql=project%20%3D%20ASACORE%20AND%20resolution%20in(done%2C%20fixed)%20AND%20TYPE%20in%20(Bug)%20and%20fixVersion%20in%20(%2216.04%22)%20ORDER%20BY%20priority%20DESC%2C%20key%20ASC|Core Jira query]]. //Note//: this includes all bugs filed including issues filed as a result of changes between the last release and this one.
+
+For a complete list of open issues check this [[https://jira.allseenalliance.org/issues/?jql=project%20%3D%20ASACORE%20AND%20resolution%3DUnresolved%20AND%20TYPE%20in%20%28Bug%2C%20Task%29%20ORDER%20BY%20priority%20DESC%2C%20key%20ASC|Core Jira query]].
+
+
+===== Quality Assurance =====
+
+We have a layered approach to testing that starts with verifying core functionality, such as messaging and security. Then, we execute platform-specific tests for each of the platforms listed above. This includes testing of transports, bindings, sample applications, as well as stress testing. We also conduct interoperability testing to ensure that, for example, AllJoyn applications running on a Windows laptop can interact with applications running on an Android phone. Finally, we do backward compatibility testing to ensure, for example, that a new routing node will communicate with an older routing node. 
+
+Issues identified during testing are documented in our bug tracking system. A triage process assigns the bugs a priority and a release target. Naturally, the highest priority bugs are targeted for the next release. Once a bug has been resolved-fixed, then the bug fix is verified, and the bug is closed. 
+
+==== Feature Test ====
+
+Feature test plans were completed for all of the major new features cited in the release notes referenced [[#features_issues_addressed_and_known_issues|above]].
+
+==== Regression Test ====
+
+AllJoyn Standard Library was tested successfully on the following:
+
+  * Full regression test
+    * Linux Ubuntu 14.04 LTS (64 bit)
+    * Android Lollipop 5.0 (ARM)
+    * OpenWRT Chaos Calmer (CC) branch
+    * Windows 7 and 10
+  * Smoke test
+    * OSX
+    * iOS
+
+AllJoyn Thin Library was tested successfully on the following:
+
+  * Full regression test
+    * Linux Ubuntu 14.04 LTS (64 bit)
+
+
+===== Toolchains used to build SDKs ===== 
+
+^SDK^Toolchain Used^
+| alljoyn-16.04.00-src.tar.gz| N/a - source|
+| ajtcl-16.04.00-src.tar.gz| N/a - source|
+| Core SDK - release (android)| Android NDK r10e, Oracle Java 7|
+| Core SDK - debug (android)| Android NDK r10e, Oracle Java 7|  
+
+===== Architectural Issues =====
+None
+
+===== Security Issues =====
+
+[[Security Enhancements]] ([[https://jira.allseenalliance.org/browse/ASACORE-1393|ASACORE-1393]])
+ feature was further refined
+
+===== Compatibility =====
+**SCL**
+  * ECDHE_PSK authentication mechanism has been marked deprecated. Use ECDHE_SPEKE or some other authentication mechanism instead of ECDHE_PSK ([[https://jira.allseenalliance.org/browse/ASACORE-2055|ASACORE-2055]])
+  * Some of the qcc::String methods have been marked deprecated ([[https://jira.allseenalliance.org/browse/ASACORE-2274|ASACORE-2274]])
+  * Apps calling AllJoynShutdown before waiting for all Standard Core Threads to finish execution will trigger a failed assertion on Debug builds and possibly an application crash on Release builds. Applications should use   BusAttachment::Join() to wait for threads to finish execution ([[https://jira.allseenalliance.org/browse/ASACORE-2811|ASACORE-2811]])
+  * Security 2.0 methods BusAttachment::AddApplicationStateRule and BusAttachment::RemoveApplicationStateRule were not needed so they have been removed ([[https://jira.allseenalliance.org/browse/ASACORE-2683|ASACORE-2683]])
+  * qcc::GetGid() and qcc::GetUid() return hard-coded, constant values on Windows, regardless of the current user's name and domain. This behavior is new for Windows domain users. Non-domain users were already getting hard-coded IDs in the 15.09 release ([[https://jira.allseenalliance.org/browse/ASACORE-2854|ASACORE-2854]])
+  * The incorrect definition of snprintf for Windows has been removed ([[https://jira.allseenalliance.org/browse/ASACORE-2891|ASACORE-2891]]). Applications should either:
+    * Use the Visual Studio 2015 CRT, that provides a correct snprintf implementation, or
+    * When using an older version of the Visual Studio CRT, call _snprintf then add a zero character string terminator if _snprintf returns a negative value
+**TCL**
+  * The AJ_Connect() API has been removed (was DEPRECATED since 14.02)
+
+===== End-of-life =====
+
+N/A
+
+===== Post-Mortem =====
+
+Post-mortem was held July 15: {{:core:allseen-corewg-16.04-post-mortem.pdf|Meeting Notes}} [[https://meetings.webex.com/collabs/#/files/detail?fileID=OEJLK2Q9YKUTJ901I4DT1NS2PA-HIZ3&containerID=UCJD4O38TYYWNXMWVUZXYISO88-HIZ3&containerType=us|WebEx Recording]].

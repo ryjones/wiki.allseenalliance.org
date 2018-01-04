@@ -1,0 +1,22 @@
+__**"how to test the test tool" or Build a DUT "gold master app"**__
+
+sample build instructions https://wiki.allseenalliance.org/develop/building_and_running
+
+There are sample apps included in the SDK that can be used as DUT "gold master" for you to verify correct operation of the validation tool.  Android onboarding SDK, has tools to simulate a device.  Android notification has notification service in tools directory.  Control Panel has control panel sample for Linux.  Etc.  Download the following Android zips from https://www.alljoyn.org/docs-and-downloads:
+in parallel will see if tools used in the development of the validation tool can be made avail.
+
+If using sample apps for Android, you can find the pre-built apks in the “alljoyn-android/services/<SERVICE FRAMEWORK>/tools” dir (after extracting the Android zips).
+ 
+If you build the AllJoyn sample app ipks for Linino using the tips in the link https://wiki.allseenalliance.org/develop/openwrt then the ipks should show up in the “/bin/ar71xx/packages” dir.
+
+NOTE:  build instructions are now updated https://wiki.allseenalliance.org/develop/building_and_running
+
+The Wiki has been updated for info about AC Sample App, below is info you can pass along to alliance members…. Now that we have sample apps, we should not need the DUT Simulator APK.  These samples cover the Phase 1 test cases and user guide.
+  
+The Android Onboarding SDK https://www.alljoyn.org/system/files/resources/alljoyn-onboarding-service-framework-14.02.00-android-sdk-rel.zip has an AboutConfOnbServer APK in the tools directory that simulates a device that offers up the about, config, and onboarding services.  
+
+The Android Notification SDK https://www.alljoyn.org/system/files/resources/alljoyn-notification-service-framework-14.02.00-android-sdk-rel.zip has a NotificationServiceUISample APK in the tools directory that can simulate a device that implements the producer side of the notification service.
+
+For control panel, the best solution is to build for Linux and run the ControlPanelSample, which simulates a device that offers up a control panel service.  See Downloading the Source and Building and Running https://wiki.allseenalliance.org/develop/downloading_the_source for more info. The binary is located here: $AJ_ROOT/core/alljoyn/build/linux/$TARGET_CPU/debug/dist/controlpanel/bin/ControlPanelSample
+
+The Linux AC Sample App simulates an Air Conditioning device and implements about, config, notification, and control panel.  Building and Running https://wiki.allseenalliance.org/develop/building_and_running has information about building and running.

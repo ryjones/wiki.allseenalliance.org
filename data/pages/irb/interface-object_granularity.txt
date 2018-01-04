@@ -1,0 +1,36 @@
+====== Deprecated ======
+The document you are viewing is the draft 1.0 version of the Interface Design Guidelines. It is no longer maintained, and slowly getting out of date. It is preserved on the wiki for historical purposes, the discussion at the bottom of the individual subpages may still be of some relevance.
+
+The officially approved current version of the Interface Design Guidelines is at all times linked from the [[:interfacereviewboard|IRB home page]].
+
+====Interface Granularity====
+> **An Interface must encapsulate a single, coherent block of information and functionality.**
+
+Do not create everything-and-the-kitchen-sink Interfaces. Split the functionality and data provided by the 
+Interface into logical, coherent blocks. This will facilitate reuse of your Interface by others with similar, but not identical, use cases.
+
+Don't overdo it either: it does not make sense to split every property, signal and method off into its own separate Interface.
+
+> **When parts of the functionality envisioned for an Interface are optional, split them off into a separate Interface.**
+
+An Interface definition is an all-or-nothing promise: if a bus object implements this Interface, it must implement all functionality defined in the Interface. By splitting optional features off in separate Interfaces, it becomes trivial to check whether a given object supports the optional functionality: it does if it implements the associated Interface.
+
+> **When parts of the functionality envisioned for an Interface are permitted only to a specific role,
+split them off into a separate Interface.**
+
+This is important to provide ease of use by a consumer app, so that behavior is predictable.
+An Interface definition should normally be treatable as an all-or-nothing promise: if a consumer app
+can access this Interface, it can access all functionality defined in the Interface.
+
+====Object Granularity====
+Consider how your data model can be split up over various (hierarchically organized) bus objects. Separate entities in the problem domain should be represented by separate objects on the bus.
+
+In many cases, there is an inherent one-to-many relationship in the data model: one firewall has many rules, one address book has many entries, etc. This kind of relationship can be modeled elegantly as a single parent object (the firewall, the address book, ...) that has many similar child objects (the rules, the contact entries, ...).
+
+There are limits to the scalability of the object hierarchy mechanism, though. As a rule of thumb, the parent/children hierarchy is suitable for up to a hundred children. If you expect more child objects, it is better to revert to an approach where child objects are not instantiated explicitly, but are modeled as elements of a single collection object. Assign some identifier to each element, and provide query methods in the collection object that allow the client to search for specific elements and retrieve their properties.
+
+For example, it would be unwise to represent a media collection as thousands of individual bus objects, each representing a single media file. It is better to assign a unique identifier to each media file, and provide a single MediaCollection object with Search(), Browse() and GetFile() query methods.
+
+>> **Tip**: consider using the well-known relational database modeling tools (Entity-Relationship diagrams, Normal Form decomposition, ...) to reason about your problem domain. While those tools are not to be applied blindly, they will provide useful insights and inspiration for your own Interface decomposition efforts.
+
+~~DISCUSSION~~

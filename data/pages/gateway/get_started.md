@@ -1,0 +1,266 @@
+# Get Started 
+
+Currently we support the 32-bit build on Windows and the 32-bit/64-bit build on Linux. 
+
+On Windows, you can either build the code using scons or Visual Studio 2012. Note that since the SIP E2E connector code is developed based on AllJoyn core v15.04 which doesn't support the build option of Visual Studio 2015, building the Visual Studio solution won't work in Visual Studio 2015.
+
+On Linux, you can only build the code using scons. Although the build steps are verified only on Ubuntu 64-bit 14.04 LTS, they should be applicable to other Linux distributions with slight modifications.
+
+## For Windows
+
+### Before the build
+
+Before building the connector using scons or Visual Studio 2012, you need to finish the steps 1-9 as below.
+
+1. Follow the instructions given in https://wiki.allseenalliance.org/develop/downloading_the_source to download the AllJoyn core source code including core and base services. 
+
+(1) Run the following two commands for each git repository to switch the version to 15.04.
+
+	
+	set VER="v15.04"
+	git -C core/alljoyn checkout -b %VER% origin/RB15.04
+
+
+(2) Define the environment variable "ALLJOYN_SRC_1504_HOME" as the folder where you keep the AllJoyn source code.
+
+2. We have made a small change in AllJoyn core String implementation to work around some issue. Please overwrite %ALLJOYN_SRC_1504_HOME%\core\alljoyn\common\src\String.cc by Tool\String.cc. Specifically, static member String::Empty is initialized by an empty string in our version of String.cc. You can search search 'SIP_E2E_CONNECTOR' for the modified content.
+
+3. Follow the instructions given in https://allseenalliance.org/framework/documentation/develop/building/windows/build-source to build AllJoyn core, control panel service, and notification service. Please 
+set "CPU=x86" when you build the AllJoyn code. The scons commands for debug and release builds are as follows:
+
+	
+	scons OS=win7 CPU=x86 MSVC_VERSION=11.0 BINDINGS=cpp 
+	scons OS=win7 CPU=x86 MSVC_VERSION=11.0 VARIANT=release BINDINGS=cpp
+
+    
+You may need to append the optional parameter "WS=off" to the end if you hit any build error related to white spaces. To save some typing, you may use the batch file BuildAllJoyn.bat under Tool to build all possible four flavors on Windows (x86 debug, x86 release, x86_64 debug, x86_64 release).
+   
+4. Unzip Ref\glib\glib-dev_2.28.8-1_win32.zip, Ref\iconv\iconv-1.9.2.win32.zip, Ref\sofia\sofia-sip-1.12.11.tar.gz, and Ref\intl\gettext-runtime-0.13.1.bin.woe32.zip to four different folders.
+
+5. Define the following four environment variables.
+
+	
+	GLIB_HOME = `<full path to the glib folder>`
+	ICONV_HOME = `<full path to the iconv folder>`
+	SOFIA_SIP_HOME = `<full path to the sofia folder>`
+	INTL_HOME = `<full path to the intl folder>`
+
+
+6. Copy Ref\glib\glib_2.28.8-1_win32.zip\bin\libglib-2.0-0.dll to %GLIB_HOME%\bin.
+    
+7. Copy Ref\sofia\libsofia_sip_ua.vcxproj to %SOFIA_SIP_HOME%\win32\libsofia-sip-ua and overwrite the existing vcxproj file. We have made the following changes on top of the existing libsofia_sip_ua.vcxproj:
+
+(1) Add su_source.c to the project libsofia_sip_ua.
+
+(2) Disable warning 4701, 4189
+
+(3) Add two include paths: 
+
+	
+	$(GLIB_HOME)\include\glib-2.0; 
+	$(GLIB_HOME)\lib\glib-2.0\include
+
+
+(4) Add one library path $(GLIB_HOME)\lib and one library glib-2.0.lib.
+
+8. Copy Ref\sofia\su_configure.h to %SOFIA_SIP_HOME%\win32\sofia-sip and overwrite the existing header. In the new su_configure.h, we enable the macro SU_HAVE_STDINT and disable the macros already defined in su_types.h.
+
+9. Open the solution %SOFIA_SIP_HOME%\win32\SofiaSIP.sln and build the project libsofia_sip_ua to generate libsofia_sip_ua.dll.
+
+### Build the connector
+
+Now it is ready to build the code.
+10. If you use scons, please run the following scons commands:
+
+(1) For debug,
+
+	
+	scons OS=win7 CPU=x86 MSVC_VERSION=11.0 WS=off
+
+
+(2) For release,
+
+	
+	scons OS=win7 CPU=x86 MSVC_VERSION=11.0 VARIANT=release WS=off
+
+
+The binaries will be generated in build\win7\x86\$VARIANT{debug, release}\dist\cpp\bin.
+ 
+11. If you use Visual Studio, please open the solution Test\VS\gateway_sw_vs\gateway_sw_vs.sln in Visual Studio 2012 and you will see three projects as below.
+
+(1) CloudCommEngine: this generates CloudCommEngine.exe which is the main program of the SIP E2E connector.
+
+(2) IMSTransport: this generates IMSTransport.dll which is used by CloudCommEngineto communicate with the IMS client.
+
+(3) sofia_IMS: this generates sofia_IMS.dll which is essentially the IMS client. 
+
+After you rebuild all three projects, the binaries will be generated in Test\VS\gateway_sw_vs\$VARIANT{Debug_1504, Release_1504}.
+
+### Run the connector
+
+To run the SIP E2E connector, please launch the executable CloudCommEngine.exe. To access our SIP server, please email renwei@smartconn.cc to request an xml for configuring the SIP client.
+
+If you have used Visual Studio to build the code, you also need to copy the following
+five dlls to the same folder where CloudCommEngine is located.
+
+	
+	%ICONV_HOME%\bin\iconv.dll
+	%INTL_HOME%\bin\intl.dll
+	%GLIB_HOME%\bin\libglib-2.0-0.dll
+	%SOFIA_SIP_HOME%\win32\libsofia-sip-ua\$VARIANT{Debug, Release}\libsofia_sip_ua.dll
+	%SOFIA_SIP_HOME%\win32\pthread\pthreadVC2.dll
+
+
+## For Linux
+
+### Before the build
+
+1. Follow the instructions given in https://wiki.allseenalliance.org/develop/downloading_the_source to download the AllJoyn core source code including core and base services. 
+
+(1) Run the following two commands for each git repository to switch the 
+version to 15.04.
+
+	
+	set VER="v15.04"
+	git -C core/alljoyn checkout -b %VER% origin/RB15.04
+
+    
+(2) Define the environment variable "ALLJOYN_SRC_1504_HOME" as the folder where you keep the AllJoyn source code, e.g.,
+
+	
+	export ALLJOYN_SRC_1504_HOME=~/repos/alljoyn
+
+
+2. We have made a small change in AllJoyn core String implementation to work around some issue. Please overwrite $ALLJOYN_SRC_1504_HOME/core/alljoyn/common/src/String.cc by Tool/String.cc. Specifically, static member String::Empty is initialized by an empty string in our version of String.cc. You can search search 'SIP_E2E_CONNECTOR' for the modified content.
+
+3. Follow the instructions given in https://allseenalliance.org/framework/documentation/develop/building/linux/build-source to build AllJoyn core, control panel service, and notification service. Note that although 
+libcap-dev:i386 is not given in the above AllSeen Alliance "Build From Source - Linux" webpage, it is needed for building the 32-bit AllJoyn core. The scons commands for debug and release builds are as follows:
+(1) 64-bit:
+
+	
+	scons OS=linux CPU=x86_64 BINDINGS=cpp 
+	scons OS=linux CPU=x86_64 VARIANT=release BINDING=cpp
+
+
+(2) 32-bit:
+
+	
+	scons OS=linux CPU=x86 BINDINGS=cpp 
+	scons OS=linux CPU=x86 VARIANT=release BINDING=cpp
+
+    
+You may need to append the optional parameter "WS=off" to the end if you hit any build error related to white spaces.
+
+4. Install the Sofia SIP and Glib packages.
+(1) 64-bit:
+
+	
+	sudo apt-get install libsofia-sip-ua-dev libsofia-sip-ua-glib-dev sofia-sip-doc libglib2.0-dev
+
+    
+(2) 32-bit:
+
+	
+	sudo apt-get install libsofia-sip-ua-dev:i386 libsofia-sip-ua-glib-dev:i386 sofia-sip-doc libglib2.0-dev:i386
+
+
+5. Define the environment variable "SOFIA_SIP_INCLUDE" as the folder where the Sofia SIP headers are installed, e.g.,
+
+	
+	export SOFIA_SIP_INCLUDE=/usr/include/sofia-sip-1.12
+
+    
+6. For the 32-bit build, define the environment variable "PKG_CONFIG_PATH" which will be used by the scons function ParseConfig to locate glib-2.0.pc.
+
+	
+	export PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig/
+
+    
+7. Download and install libiconv (courtesy of http://geeksww.com/tutorials/libraries/libiconv/installation/installing_libiconv_on_ubuntu_linux.php).
+(1) Download libiconv.
+
+	
+	wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+
+
+(2) Extract files from the downloaded package.
+
+	
+	tar -xvzf libiconv-1.11.tar.gz
+
+
+(3) Change to the directory where the package is extracted, e.g.,
+
+	
+	cd libiconv-1.14
+
+
+(4) Configure libiconv library.
+
+	
+	./configure --prefix=/usr/local/libiconv
+
+
+Replace "/usr/local/libiconv" above with the directory path where you want to copy the files and folders.  
+
+(5) Compile libiconv.
+
+	
+	make
+
+
+If you hit the undeclared-gets error, modify srclib/stdio.in.h in the following way: delete the line of 
+"_GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");" and add the three lines as below:
+
+	
+	#if defined(__GLIBC__) && !defined(__UCLIBC__) && !__GLIBC_PREREQ(2, 16)  
+	_GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");  
+	#endif  
+
+    
+(6) Install libiconv.
+With sudo,
+
+	
+	sudo make install
+
+
+Without sudo,
+
+	
+	make install.
+
+
+### Build the connector
+
+Now it is ready to build the connector.
+8. If you use scons, please run the following scons commands for debug and release builds:
+(1) 64-bit:
+
+	
+	scons OS=linux CPU=x86_64
+	scons OS=linux CPU=x86_64 VARIANT=release
+
+
+(2) 32-bit:
+
+	
+	scons OS=linux CPU=x86
+	scons OS=linux CPU=x86 VARIANT=release
+
+    
+The binaries will be generated in build\linux\$CPU{x86_64, x86}\$VARIANT{debug, release}\dist\cpp\bin.
+
+### Run the Connector
+
+1. Define the environment variable "LD_LIBRARY_PATH" as the current directory ".". Otherwise by default 
+Linux won't search the current directory for the shared libraries which will be loaded by CloudCommEngine.
+
+	
+	export LD_LIBRARY_PATH=.
+
+    
+2. Launch the executable CloudCommEngine. To access our SIP server, please email renwei@smartconn.cc to 
+request an xml for configuring the SIP client.
+
+If you need more info or have any question, please go back to the project wiki page https://wiki.allseenalliance.org/gateway/sip or send an email to `<renwei@smartconn.cc>`.

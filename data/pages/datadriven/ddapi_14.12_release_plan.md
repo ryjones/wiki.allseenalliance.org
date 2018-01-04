@@ -1,0 +1,41 @@
+# (Data-driven API) 14.12 Release Plan
+
+## Introduction
+
+*  Dev lead : Kristl Haesaerts
+
+*  QA lead : Kristl Haesaerts
+
+## Themes and Priorities
+
+A production-ready implementation of the DDAPI language binding for C++.\\ A unified approach aligned with [Security 2.0](core/security_enhancements), with the same rationale as the unified discovery and session setup mechanism.
+
+## Deliverables
+
+Source:
+
+
+*  Data-driven API Library (C++)
+
+## Milestones
+
+ | Milestone              | Date       | Details  | 
+ | ---------              | ----       | -------  | 
+ | API Freeze             | 2014/12/05 | complete | 
+ | Feature Freeze         | 2014/12/05 | complete | 
+ | Documentation Complete | 2015/01/16 | complete | 
+ | QA Complete            | 2015/01/16 | complete | 
+
+
+
+## Expected Work Group Dependencies
+
+
+*  alljoyn: AllJoyn Standard client and router 14.12: 
+      * Data-driven API library depends on the AllJoyn core library 
+
+*  codegen: AllJoyn code generator 14.12:
+      * Data-driven API code generator depends on the AllJoyn code generator
+## Compatibility with Previous Releases
+
+This release is the first official released version of the DDAPI and we do not claim compatibility with the experimental version delivered earlier. 

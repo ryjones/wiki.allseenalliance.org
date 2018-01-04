@@ -1,0 +1,48 @@
+====== Core Platform Support Process ======
+
+A core supported platform:
+  * Is actively maintained and tested prior to release
+    * Platform test cases are documented in TestLink (https://tl.allseenalliance.org)
+  * Is included in continuous integration (automated testing and builds)
+  * Has project committers that will address issues that arise
+
+Current supported platforms are listed here: https://allseenalliance.org/framework/documentation/supported-platforms
+
+Platforms are defined in terms of:
+  * OS (with version)
+  * CPU architecture
+  * Toolchain (with version)
+  * API (where needed)
+ 
+Other platforms or variations may be included in the code base and still build and run, but are not verified. For example, older compiler versions or newer versions of the OS may work fine. Bug fixes and feature porting may be on a best-effort basis from committers or contributors.
+
+===== Guidelines =====
+
+Platform dependencies such as operating systems or toolchains should be “released” versions (not beta) at least 1 month prior to the expected AllJoyn Core release. Unless platform support is dropped, the expectation is that support would continue to move forward as the platform evolves (for instance, as new OS versions are released).
+
+Each platform requires a sponsor committer who takes responsibility for coordinating efforts for that platform.
+
+These issues should be considered well in advance in order to account for the long lead times to deploy automated builds and identify resources.
+
+===== Timeline =====
+
+Around 6 months prior to release:
+  * Schedule a core WG meeting where platform changes will be discussed and disclose the meeting time in a TSC meeting.
+  * Project maintainers with specific platform needs should follow the core mailing list for platform status and to participate in the selection process.
+  * Contributors email platform change or addition proposals to [[allseen-core@lists.allseenalliance.org]] for preliminary discussion.
+    * Include OS (with version), CPU architecture, toolchain (with version), API (where needed), core project (SC or TC). If this is an update to an existing platform, be clear about which existing platform is being updated.
+
+Around 5 months prior to release:
+  * Core WG reviews platform proposals as part of a Core WG meeting. A majority of the project committers agree to the set of platforms and sponsor committers for the next release.
+    * Need to identify process for funding approval and engaging the testing contractor
+
+Less than 3 months prior to release:
+  * Publish the Core Release Plan, including the platform list. Present the list of platforms in a TSC meeting to ensure visibility, but a TSC vote isn't required to approve the list.
+  * The TSC would need to approve any changes in funding for the testing contractor
+
+===== Documentation =====
+
+The Core Release plan will list planned platform support.
+
+The “Supported platforms” page (https://allseenalliance.org/framework/documentation/supported-platforms)
+is the authoritative list of supported platforms for recent completed releases.

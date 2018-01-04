@@ -1,0 +1,60 @@
+====== Core 16.10 Release Plan ======
+
+===== Introduction =====
+
+The development lead is Josh Spain, Arvind Padole
+
+The QA lead is Carrie Hertel
+
+
+===== Themes and Priorities =====
+
+  * Official Security 2.0 Release
+  * Support for dependent services (Common Frameworks, CDM (formerly HAE), Gateway)
+  * Parity across OS and language bindings
+  * Basic IPv6 Support
+    * UDP support only, no TCP support
+    * IPv6 over ethernet, WiFi
+    * TCL and SCL to support sessions between routing nodes
+
+**New Features**:
+Full list in [[https://jira.allseenalliance.org/issues/?jql=project%20%3D%20ASACORE%20AND%20issuetype%20%3D%20%22New%20Feature%22%20AND%20fixVersion%20%3D%20%2216.10%22%20ORDER%20BY%20status%20ASC| JIRA]]
+^ JIRA Key/Link                                                          ^ Features                                                                  ^ Status                                           ^
+| [[https://jira.allseenalliance.org/browse/ASACORE-1393|ASACORE-1393]]  | Security 2.0                                                              | <html><span style="color:green">Complete</html>  |
+| [[https://jira.allseenalliance.org/browse/ASACORE-1811|ASACORE-1811]]  | Returning an error name/message on calling SetProperty                    | <html><span style="color:green">Complete</html>  |
+| [[https://jira.allseenalliance.org/browse/ASACORE-2608|ASACORE-2608]]  | public Security 2.0 API improvements                                      | <html><span style="color:green">Complete</html>  |
+| [[https://jira.allseenalliance.org/browse/ASACORE-2744|ASACORE-2744]]  | ProxyBusObject does not support descriptions on pre-16.04 nodes           | <html><span style="color:green">Complete</html>  |
+| [[https://jira.allseenalliance.org/browse/ASACORE-2748|ASACORE-2748]]  | Deprecate description members related to IntrospectWithDescription        | <html><span style="color:green">Complete</html>  |
+| [[https://jira.allseenalliance.org/browse/ASACORE-2772|ASACORE-2772]]  | Language-aware accessor functions needed for descriptions                 | <html><span style="color:green">Complete</html>  |
+| [[https://jira.allseenalliance.org/browse/ASACORE-2905|ASACORE-2905]]  | Issues with AboutData.java                                                | <html><span style="color:green">Complete</html>  |
+| [[https://jira.allseenalliance.org/browse/ASACORE-2924|ASACORE-2924]]  | Returning custom error name/message on get/set property requests in Java  | <html><span style="color:green">Complete</html>  |
+| [[https://jira.allseenalliance.org/browse/ASACORE-2965|ASACORE-2965]]  | Add AutoPinger feature to Java bindings                                   | <html><span style="color:green">Complete</html>  |
+| [[https://jira.allseenalliance.org/browse/ASACORE-3117|ASACORE-3117]]  | Java bindings for language-aware description accessors                    | <html><span style="color:green">Complete</html>  |
+| [[https://jira.allseenalliance.org/browse/ASACORE-3167|ASACORE-3167]]  | UDP support for IPv6                                                      | <html><span style="color:green">Complete</html>  |
+
+
+===== Deliverables =====
+
+Source:
+  * AllJoyn Standard Library (C++, C, Java, Obj-C)
+  * AllJoyn Thin Library
+
+
+===== Milestones =====
+^ Milestone                     ^ Date        ^ Details                                                                                                 ^ Status                                     ^
+| Freeze Existing Security API  | 2016/08/01  |                                                                                                         | ✔                                          |
+| Feature Freeze                | 2016/09/15  | branch cut, release testing starts                                                                      | branch delayed, but testing started        |
+| Code Freeze                   | 2016/10/19  |                                                                                                         | Delayed - merger transition, test illness  |
+| QA Complete                   | 2016/10/26  | many issues getting testing done, so issues rolled in that needed fixing over extended period of time.  | 11/22/16                                   |
+| Alliance Release              | 2016/10/27  | Ready to enter BI review 11/22/16 - process issues related to OCF merger need to be sorted out.         |                                            |
+
+
+
+
+===== Expected Work Group Dependencies =====
+
+None.
+
+===== Compatibility with Previous Releases =====
+
+  * Security 2.0 Developer, and wire APIs have changed from the Developer Preview versions in 15.09 and 16.04

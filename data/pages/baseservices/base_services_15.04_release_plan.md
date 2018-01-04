@@ -1,0 +1,37 @@
+# Base Services 15.04 Release Plan
+
+## Introduction
+
+Dev Lead: Lioy Marcello
+QA Lead: David McBride
+
+## Themes and Priorities
+
+
+*  Core 15.04 compatibility
+
+*  Official release review meeting and slides are linked [here](https///wiki.allseenalliance.org/baseservices/start#meetings_minutes)
+ 
+## Deliverables
+
+
+*  Base services SDK, code, and documentation
+
+## Milestones
+
+ | Milestone    | Date      | Details | 
+ | ---------    | ----      | ------- | 
+ | Release Date | 2015/6/05 |         | 
+
+## Quality Assurance
+
+The following table outlines the regression test efforts for this release. The items marked with an X were tested in the last release but are not tested for this release.  The item with a plus sign is testing that was added since the last release
+
+{{:baseservices:testtargets15.04.jpg?800|}}
+## Expected Work Group Dependencies
+
+None
+
+## Compatibility with Previous Releases
+
+-

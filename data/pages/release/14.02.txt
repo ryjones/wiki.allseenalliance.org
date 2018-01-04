@@ -1,0 +1,18 @@
+====== Release 14.02 ======
+
+This is the first Allseen Alliance release. The main focus is on bug fixes in the AllJoyn core (relative to version 3.4.6), additional iOS bindings for base services, and refinement of the notification service.
+
+This release is scheduled for February 28, 2014.
+
+==== Release Process Documents ====
+
+  * Core
+    * [[:core:Core 14.02 Release Plan]]
+    * [[:core:Core 14.02 Release Review]]
+  * Base Services
+    * [[:baseservices:Base Services 14.02 Release Plan]]
+    * [[:baseservices:Base Services 14.02 Release Review]]
+  * Developer Tools
+    * [[:devtools:Developer Tools 14.02 Release Plan]]
+    * [[:devtools:Developer Tools 14.02 Release Review]]
+

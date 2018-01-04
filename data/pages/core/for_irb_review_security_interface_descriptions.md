@@ -1,0 +1,232 @@
+# Proposed Security 2.0 Interfaces For IRB Review
+
+This page lists the proposed interfaces used in Security 2.0
+
+## Permission Module
+
+The Permission Module is the major component of the Security 2.0 system.  This module manages the permission policies and enforces the security rules. This module is exposed via a collection of interfaces.
+
+### Interface Permission.Claimer
+
+ | Interface Name             | org.allseen.Security.Permission.Claimer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ||||
+ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ | Object path                | /org/allseen/Security/Permission/Claimer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ||||
+ | Property Name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Signature                                                                                                                                                                        | Read/Write                                                                     | Description                                                                                                                             | Notes                                                                     | 
+ | Version                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | q                                                                                                                                                                                | Read Only                                                                      | Interface version number                                                                                                                |                                                                           | 
+ | Claimable                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | y                                                                                                                                                                                | Read Only                                                                      | The claimable state.  Valid values are:\\ 0 -- not claimable\\ 1 -- claimable\\ 2 -- claimed                                            |                                                                           | 
+ | Method Name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Input                                                                                                                                                                            | Output                                                                         | Description                                                                                                                             | Notes                                                                     | 
+ | Claim                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | certificate authority – (yy(ayay) - the public key of the certificate authority.  The app will trust any peer's identity certificate chained up to this certificate authority. | claimed public key – (yy(ayay)) - the public key of the claimed application. | Claim the application.  This action will make the claimer the owner of the application.  The admin security group also has full access. | The Permission denied error will be raised if the app is already claimed. | 
+ | :::                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | claimer public key – (yy(ayay) - the public key of the claimer                                                                                                                 | :::                                                                            | :::                                                                                                                                     | :::                                                                       | 
+ | :::                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | admin security group – (ay(yy(ayay)) - the admin security group                                                                                                                | :::                                                                            | :::                                                                                                                                     | :::                                                                       | 
+ | :::                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | identity cert chain – a(yay) - the identity certificate chain for the claimed app                                                                                              | :::                                                                            | :::                                                                                                                                     | :::                                                                       | 
+ | Reset                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | None                                                                                                                                                                             | None                                                                           | Reset to its original state by deleting all the trust anchors, DSA keys, installed policy and certificates.                             |                                                                           | 
+
+
+### Interface Permission.IdentityManager
+
+ | Interface Name             | org.allseen.Security.Permission.IdentityManager                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ||||
+ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ | Object path                | /org/allseen/Security/Permission/IdentityManager                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ||||
+ | Property Name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Signature                                                                                  | Read/Write                                                                     | Description                                   | Notes                                                                                              | 
+ | Version                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | q                                                                                          | Read Only                                                                      | Interface version number                      |                                                                                                    | 
+ | Method Name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Input                                                                                      | Output                                                                         | Description                                   | Notes                                                                                              | 
+ | InstallIdentity                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | certs – a(yay) - The identity cert chain.  Only X.509 DER format is currently supported. | None                                                                           | Install an identity cert chain to the app.    |                                                                                                    | 
+ | InstallManifest                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | serialNum – ay - the serial number of the identity certificate                           | None                                                                           | Install a manifest to the app                 | The hash digest of the manifest is verified against the digest listed in the identity certificate. | 
+ | :::                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | issuer - ay - the issuer authority key identifier                                          | :::                                                                            | :::                                           | :::                                                                                                | 
+ | :::                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | rules - a(ssa(syy)) - the permission rules                                                 | :::                                                                            | :::                                           | :::                                                                                                | 
+ | GetIdentity                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | None                                                                                       | identity cert chain – a(yay) - Only X.509 DER format is currently supported. | Retrieve the identity cert chain from the app |                                                                                                    | 
+ | GetPublicKey                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | None                                                                                       | public key – (yy(ayay) - the public key of the application.                  | Retrieve the public key                       |                                                                                                   
+
+
+### Interface Permission.PolicyManager
+
+ | Interface Name             | org.allseen.Security.Permission.PolicyManager |||| 
+ | ------------------------------------------------------------------------------- 
+ | Object path                | /org/allseen/Security/Permission/PolicyManager ||||
+ | Property Name                                                                    | Signature                                                                                                                      | Read/Write                                         | Description                                                                 | Notes | 
+ | Version                                                                          | q                                                                                                                              | Read Only                                          | Interface version number                                                    |       | 
+ | SerialNumber                                                                     | u                                                                                                                              | Read Only                                          | The serial number of the policy                                             |       | 
+ | Method Name                                                                      | Input                                                                                                                          | Output                                             | Description                                                                 | Notes | 
+ | InstallPolicy                                                                    | policy – (y(ua(a(yaya((yy(ayay)))a(ssa(syy))))))                                                                             | None                                               | Install the policy to the app.  It replaces any existing policy on the app. |      
+ | RemovePolicy                                                                     | None                                                                                                                           | None                                               | Remove the currently installed policy from the app                          |      
+ | GetPolicy                                                                        | None                                                                                                                           | policy – (y(ua(a(yaya((yy(ayay)))a(ssa(syy)))))) | Retrieve the currently installed policy from the app.                       |      
+ | InstallMembership                                                                | certChain – a(yay) - the certificate chain for the security group membership.  Only X.509 DER format is currently supported. | None                                               | Install a membership cert chain to the app.                                 |      
+ | RemoveMembership                                                                 | serialNum – ay - the serial number of the membership certificate                                                             | None                                               | Remove a membership certificate from the app.                               |       | 
+ | :::                                                                              | issuer - ay - the issuer's authority key identifier                                                                            | :::                                                | :::                                                                         | :::   | 
+ | GetManifestTemplate                                                              | None                                                                                                                           | manifest template – a(ssa(syy))                  | Retrieve the manifest template installed by the application developer.      |       | 
+
+### Interface Permission.Notification
+
+ | Interface Name      | org.allseen.Security.Permission.Notification |                                                                                                                                        |              |                                                                                                                                                                                                                                                                                                                                                                                       
+ | ------------------------------------------------------------------ |                                                                                                                                        |              |                                                                                                                                                                                                                                                                                                                                                                                       
+ | Object path | /org/allseen/Security/Permission/Notification|||    
+ | Property Name                                                      | Signature                                                                                                                              | Read/Write   | Description                                                                                                                                                                                                                                                                                                                                                                            | 
+ | Version                                                            | q                                                                                                                                      | Read Only    | Interface version number                                                                                                                                                                                                                                                                                                                                                               | 
+ | Signal Name                                                        | Params                                                                                                                                 | Session-less | Description                                                                                                                                                                                                                                                                                                                                                                            | 
+ | ConfigurationChanged                                               | policyVersion - y - the policy version number                                                                                          | yes          | Notification of permission configuration.  This signal is emitted at startup time and when the configuration is changed. This is used by the Security Manager to discover application to claim.  There is an [ email thread](https///lists.allseenalliance.org/pipermail/allseen-core/2015-March/001322.html) discussing why this session-less signal is used instead of About signal. | 
+ | :::                                                                | publicKey - a(yy(ayay) - public key of the application                                                                                 | :::          | :::                                                                                                                                                                                                                                                                                                                                                                                    | 
+ | :::                                                                | claimableState – y - an enum value for the claimable state.\\ Valid values are:\\ 0 -- not claimable\\ 1 -- claimable\\ 2 -- claimed | :::          | :::                                                                                                                                                                                                                                                                                                                                                                                    | 
+ | :::                                                                | policySerialNum - u - the policy serial number                                                                                         | :::          | :::                                                                                                                                                                                                                                                                                                                                                                                    | 
+
+### Introspection XML
+
+	
+	<node
+	       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	      xsi:noNamespaceSchemaLocation="https://www.alljoyn.org/schemas/introspect.xsd">
+	    `<interface name="org.allseen.Security.Permission.Claimer">`
+	        `<property name="Version" access="read" type="q"/>`
+	        `<property name="Claimable" access="read" type="y"/>`
+	        `<method name="Claim">`
+	            `<arg name="certificateAuthority" type="(yy(ayay))" direction="in"/>`
+	            `<arg name="claimerPublicKey" type="(yy(ayay))" direction="in"/>`
+	            `<arg name="adminSecurityGroup" type="(ay(yy(ayay)))" direction="in"/>`
+	            `<arg name="identityCert" type="a(yay)" direction="in"/>`
+	            `<arg name="claimedPublicKey" type="(yy(ayay))" direction="out"/>`
+	        `</method>`
+	        `<method name="Reset">`
+	        `</method>`
+	     `</interface>`
+	    `<interface name="org.allseen.Security.Permission.IdentityManager">`
+	        `<property name="Version" access="read" type="q"/>`
+	        `<method name="InstallIdentity">`
+	            `<arg name="certs" type="a(yay)" direction="in"/>`
+	        `</method>`
+	        `<method name="InstallManifest">`
+	            `<arg name="serialNum" type="ay" direction="in"/>`
+	            `<arg name="issuer" type="ay" direction="in"/>`
+	            `<arg name="rules" type="a(ssa(syy))" direction="out"/>`
+	        `</method>`
+	        `<method name="GetIdentity">`
+	        `<arg name="certs" type="a(yay)" direction="out"/>`
+	        `</method>`
+	        `<method name="GetPublicKey">`
+	            `<arg name="publicKey" type="(yy(ayay))" direction="out"/>`
+	        `</method>`
+	     `</interface>`
+	    `<interface name="org.allseen.Security.Permission.PolicyManager">`
+	        `<property name="Version" access="read" type="q"/>`
+	        `<property name="SerialNumber" access="read" type="u"/>`
+	        `<method name="InstallPolicy">`
+	            `<arg name="policy" type="(y(ua(a(ya((yy(ayay))ay)a(ssa(syy))))))" direction="in"/>`
+	        `</method>`
+	        `<method name="GetPolicy">`
+	            `<arg name="policy" type="(y(ua(a(ya((yy(ayay))ay)a(ssa(syy))))))" direction="out"/>`
+	        `</method>`
+	        `<method name="RemovePolicy">`
+	        `</method>`
+	        `<method name="InstallMembership">`
+	            `<arg name="certChain" type="a(yay)" direction="in"/>`
+	        `</method>`
+	        `<method name="RemoveMembership">`
+	            `<arg name="serialNum" type="ay" direction="in"/>`
+	            `<arg name="issuer" type="ay" direction="in"/>`
+	        `</method>`
+	        `<method name="GetManifestTemplate">`
+	            `<arg name="manifestTemplate" type="a(ssa(syy))" direction="out"/>`
+	        `</method>`
+	     `</interface>`
+	     `<interface name="org.allseen.Security.Permission.Notification">`
+	        `<property name="Version" access="read" type="q"/>`
+	        `<signal name="ConfigurationChanged">`
+	            `<arg name="policyVersion" type="y"/>`
+	            `<arg name="publicKey" type="a(yy(ayay))"/>`
+	            `<arg name="claimableState" type="y"/>`
+	            `<arg name="serialNumber" type="u"/>`
+	        `</signal>`
+	    `</interface>`                                                             
+	`</node>`
+	
+
+
+### Public Key Object Signature
+
+This object represents the public key.
+
+
+ | Public Key (yy(ayay)) |           |                                                             | 
+ | --------------------- |           |                                                             | 
+ | Field                 | Signature | Description                                                 | 
+ | alg                   | y         | ALgorithm to use. Current values: \\ 0 -- ECDSA with SHA256 | 
+ | crv                   | y         | The curve ID. Current values: \\ 0 -- NIST P-256            | 
+ | x-coord               | ay        | the X coordinate                                            | 
+ | y-coord               | ay        | the Y coordinate                                            | 
+
+### Certificate Object Signature
+
+The Certificate object represents the certificate.
+
+
+ | Certificate (yay) |           |                                                                               | 
+ | ----------------- |           |                                                                               | 
+ | Field             | Signature | Description                                                                   | 
+ | encoding          | y         | Data encoding scheme.  Current values: \\ 0 -- X.509 DER\\ 1 -- X.509 DER PEM | 
+ | cert data         | ay        | the certificate data depending on the encoding.                               | 
+
+
+### Policy Data Signature
+
+The functional description on the policy data is in the HLD in [Security 2.0](core/security_enhancements)
+
+The policy has a specification version number, the serial number, and the list of ACLs.  Each ACL is comprised of the list of peers and the associated permission rules. 
+
+ | Policy Data (y(ua(a(ya((yy(ayay))ay)a(ssa(syy)))))) |                                  |                                                                                                            |  | 
+ | --------------------------------------------------- |                                  |                                                                                                            |  | 
+ | Field                                               | Signature                        | Description                                                                                                |  | 
+ | version                                             | y                                | specification version number                                                                               |  | 
+ | serialNumber                                        | u                                | policy serial number.  During policy update, the application only accepts policy with higher serial number |  | 
+ | ACLs                                                | a(a(ya(yy(ayay))ay)a(ssa(syy)))) | the list of ACLs                                                                                           |  | 
+
+ | ACL (a(ya(yy(ayay))ay)a(ssa(syy))) |                   |                   | 
+ | ---------------------------------- |                   |                   | 
+ | Field                              | Signature         | Description       | 
+ | peers                              | a(ya(yy(ayay))ay) | the list of peers | 
+ | rules                              | a(ssa(syy)))      | the rules         | 
+
+ | Peer (ya(yy(ayay))ay) |            |                                                                                                                         | 
+ | --------------------- |            |                                                                                                                         | 
+ | Field                 | Signature  | Description                                                                                                             | 
+ | type                  | y          | type of peer.\\ The valid values are:\\ 0 -- ANONYMOUS\\ 1 -- ANY\\ 2 -- RESTRICTED\\ 3 -- PUBKEY\\ 4 -- SECURITY_GROUP | 
+ | public key            | a(yy(ayay) | optional public key; applicable for type RESTRICTED, PUBKEY, and SECURITY_GROUP                                         | 
+ | security group ID     | ay         | The security group ID                                                                                                   | 
+
+ | Rule (ssa(syy)) |           |                   | 
+ | --------------- |           |                   | 
+ | Field           | Signature | Description       | 
+ | obj             | s         | object path       | 
+ | ifn             | s         | interface name    | 
+ | mbrs            | a(syy))   | interface members | 
+
+ | Interface Member (syy) |           |                                                                                                                                                                                                                                                                               | 
+ | ---------------------- |           |                                                                                                                                                                                                                                                                               | 
+ | Field                  | Signature | Description                                                                                                                                                                                                                                                                   | 
+ | mbr                    | s         | member name                                                                                                                                                                                                                                                                   | 
+ | type                   | y         | message type.  Valid values are:\\ 0: any\\ 1: method call\\ 2: signal\\ 3: property                                                                                                                                                                                          | 
+ | action                 | y         | action mask flag.  The list of valid masks:\\ 0x01: Denied\\ 0x02: Provide -- allows sending signal, exposing method calls and producing properties\\ 0x04: Observe -- allows receiving signals and getting properties\\ 0x08: Modify -- set properties and make method calls | 
+
+
+### Manifest Data
+
+The manifest holds a list of rules.  The signature is a(ssa(syy))). The rules are described above.
+
+
+### BusAttachment API change
+
+The BusAttchment API will provide a method call to retrieve the PermissionConfigurator object.  The PermissionConfigurator object allows the application developer to perform certain configurations for the Permission module.
+
+PermissionConfigurator& BusAttachment::GetPermissionConfigurator();
+
+#### PermissionConfigurator functions
+
+ | Method Name               | Description                                                                                                 | 
+ | -----------               | -----------                                                                                                 | 
+ | SetManifestTemplate       | Set the permission manifest template for the application.                                                   | 
+ | GetClaimableState         | Retrieve the claimable state of the application.                                                            | 
+ | SetClaimable              | Set the claimable state to be claimable or not.                                                             | 
+ | GenerateSigningKeyPair    | Generate the signing key pair and store it in the key store.                                                | 
+ | GetSigningPublicKey       | Retrieve the public key info fo the signing key.                                                            | 
+ | SignCertificate           | Sign the X509 certificate using the signing key                                                             | 
+ | Reset                     | Reset the Permission module by removing all the trust anchors, DSA keys, installed policy and certificates. | 
+ | GetConnectedPeerPublicKey | Get the connected peer ECC public key if the connection uses the ECDHE_ECDSA key exchange.                  | 
+
+For more information, please refer the documentation in the PermissionConfigurator.h file.

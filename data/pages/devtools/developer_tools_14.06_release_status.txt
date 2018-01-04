@@ -1,0 +1,10 @@
+====== Developer Tools 14.06 Release Status ======
+
+===== Milestones =====
+
+^ Milestone              ^ Original Date  ^ Estimated/Actual Date ^ Reason for change                       ^
+| Feature Freeze         | 2014/06/06     | 2014/06/06            |                                         |
+| Documentation Complete | TBD     | TBD            |                                         |
+| QA Complete            | TBD     | TBD            |                                         |
+
+  * Initial Java code generator changes have not been contributed to the AllSeen Alliance yet.

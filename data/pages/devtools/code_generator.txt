@@ -1,0 +1,130 @@
+====== AllJoyn Code Generator ======
+===== Overview =====
+The AllJoyn code generator version 15.09 is a command line driven tool which reads AllJoyn introspection XML files and outputs both client and server code ready for compilation and running. You can think of it as a sample generator where you define the type of sample you want and it outputs the code which demonstrates that feature.
+
+Currently the code generator supports the Thin Library and Android Java versions of AllJoyn. Both have data type limitations. Other language support and support for more complex data type is planned.
+
+The unsupported data types for Thin Library are as follows:
+
+    Structures containing structures
+    Structures containing arrays
+    Structures containing dictionaries
+    Structures containing variants
+    Arrays of variants
+    Multi-dimensional arrays
+
+===== Installation =====
+You must have Cheetah installed to use the code generator. Before installing the code generator install Cheetah from here: [[http://www.cheetahtemplate.org/download.html]]
+
+The installers for Windows and Linux are available here: [[https://allseenalliance.org/releases/alljoyn/15.09/]].
+
+You can also build and install from the source here: [[https://git.allseenalliance.org/gerrit/#/admin/projects/devtools/codegen]]. Follow the directions in the Readme.txt file in the root directory.
+
+For Android development the AllJoyn Android core SDK is required. That can be downloaded from [[https://allseenalliance.org/source-code]] or [[https://allseenalliance.org/releases/alljoyn/15.09/]]. Unzip the SDK and set the enviroment variable ALLJOYN_SDK_HOME to the directory the unzipped SDK resides in.
+
+===== Running the code generator =====
+Before running the code generator the Cheetah template files must be compiled. From the command line run "ajcodegen-compile.py". If there were template files which needed to be compiled you will see a message similar to, 
+
+Successfully compiled .tmpl files in 'C:\Python27\lib\site-packages\AllJoynCodeGen\tl'
+Successfully compiled .tmpl files in 'C:\Python27\lib\site-packages\AllJoynCodeGen\android'
+
+You can now run ajcodegen.py -h to see the command line help. It will look similar to this:
+
+    usage: ajcodegen.py [-h] [-b OBJECT_PATH] [-c] [-l] [-p OUTPUT_PATH] [-R] -t
+                        {tl,android,ddcpp} [-v] -w WELL_KNOWN_NAME [-x]
+                        xml_input_file
+    
+    Generate AllJoyn code from XML source. Version 15.09.
+    
+    positional arguments:
+    xml_input_file      The file containing the xml definition of an object's
+                        interface(s).
+    
+    optional arguments:
+      -h, --help        show this help message and exit
+      -b OBJECT_PATH, --object-path OBJECT_PATH
+                        The object path (including name) of the object being
+                        defined in the xml input file. If the xml file
+                        contains the object path it does not match
+                        OBJECT_PATH, this tool will exit with an error. If the
+                        name is not defined either in the XML or using this
+                        flag, this tool will also exit with an error.
+      -c, --client-only Only generate the client side code; if not specified,
+                        both the client and service code are generated.
+      -l, --lax-naming  Relaxes the requirement that all method and signal
+                        arguments be named. If specified, default names will
+                        be generated for arguments.
+      -p OUTPUT_PATH, --output-path OUTPUT_PATH
+                        The path where the generated C++ files will be placed.
+                        If not specified, they will be output in the current
+                        working directory.
+      -R, --runnable    The generated client executable will make method calls
+                        with default values and the service method handlers
+                        will reply with default values. This option requires a
+                        valid object path to be specified (i.e. -b).
+      -t {tl,android}, --target-language {tl,android}
+                        The target language. 'android' is for Java code on the
+                        Android platform. 'tl' is C code for AllJoyn Thin
+                        Library.
+      -v, --version     show program's version number and exit
+      -w WELL_KNOWN_NAME, --well-known-name WELL_KNOWN_NAME
+                        The well-known name that the interface will use when
+                        requesting a bus name or advertising a name.
+      -x, --xml         Output verbose information about the XML during
+                        parsing.
+
+There is also a Video presentation on the architecture and how to use it for Thin Library code generation: [[https://wiki.allseenalliance.org/training]] (Mar 13, 2014 - Thin Library Code Generator).
+
+===== XML file sample =====
+The following is a quick sample of a XML file for use with the code generator:
+
+  <node name="/sampleObject">
+      <interface name="org.allseen.sample">
+          <method name="MethodOne">
+              <arg name="input" type="i" direction="in" />
+              <arg name="output" type="b" direction="out" />
+          </method>
+          <signal name="SignalOne">
+              <arg name="event" type="u" />
+          </signal>
+          <property name="PropertyOne" type="b" access="readwrite" />
+      </interface>
+  </node>
+
+More documentation on the introspection XML can be found here: [[http://dbus.freedesktop.org/doc/dbus-specification.html#introspection-format]].
+===== Android code organization =====
+The code generator outputs complete Eclipse projects (tested with version 3.7.2) for Android with the following settings:
+
+    org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.6
+    org.eclipse.jdt.core.compiler.compliance=1.6
+    org.eclipse.jdt.core.compiler.source=1.6
+
+The code generated has the expected Eclipse directory structure. In the of the output path root directory there will be "Client" and "Service" directories.
+
+These directories each contain an Eclipse project which must be imported. To do this right click in the "Package Explorer" pane of Eclipse and select "Import". Then select "Android: Existing Android Code Into Workspace". Then click "Next". Use the "Browse" button to select the directory containing both the "Client" and "Service" projects and press "OK". This will result in the "Projects" list being populated with the "Client" and "Service" projects. Select these projects and click "Finish".
+
+With the projects imported you can now edit the source or debug them as you would any other Android project.
+
+Search the files for "TODO:" to find instances where generated code should be replaced or enhanced with code specific to your application.
+===== Thin Library code organization =====
+All client side files start with "Client". All server side files start with "Server".
+
+There are two files used by both client and server. These are CommonClientService.c and CommonClientService.h.  These contain information such as the service port, the interface descriptions, and the instances of those interfaces.
+
+The "SConscript" file can be used to build the executables. To do this put the collection of files in a subdirectory of your Thin Library source (use the -p flag with ajcodegen) and modify the SConstruct file in the root of the Thin Library source. Add a line after the last existing env.SConscript() entry. This line should look like:
+
+    env.SConscript('<your codegen path>/SConscript')
+
+Where <your codegen path> will be the path to this set of files.
+
+Then, from the root of your Thin Library installation, run "Scons" (or optionally "Scons WS=off" to disable whitespace checking which will speed up the build).
+
+This will build the executables.
+
+Search the files for "TODO:" to find instances where generated code should be replaced or enhanced with code specific to your application.
+
+See the ReadMe.txt file in the output directory for more information. Some of the information is customized based on the .XML file used to generate the code.
+===== Data Driven API code organization =====
+See [[https://allseenalliance.org/developers/develop/api-guide/ddapi]] for usage details.
+===== Bug reporting =====
+Report bugs and make feature requests here: [[https://jira.allseenalliance.org/browse/ASADT]]

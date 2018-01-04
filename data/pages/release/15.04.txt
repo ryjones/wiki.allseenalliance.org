@@ -1,0 +1,29 @@
+===== Release 15.04 ======
+
+As of 29/04/15 this release is only composed of the Core projects, the Base Services projects will follow in late May or early June '15. This page will be updated as other projects make their 15.04 releases.
+==== Release ====
+
+SDKs: See the [[https://allseenalliance.org/source-code|Downloads]] page.
+
+Git tag:
+  * Core
+    * alljoyn.git
+      * [[https://git.allseenalliance.org/cgit/core/alljoyn.git/tag/?id=v15.04b|v15.04b Tag]]
+      * Commit:[[https://git.allseenalliance.org/cgit/core/alljoyn.git/commit/?id=1a942727765be022f52c2d15bada6ab0e0564a3e
+| 1a942727765be022f52c2d15bada6ab0e0564a3e]]
+    * ajtcl.git
+      * [[https://git.allseenalliance.org/cgit/core/ajtcl.git/tag/?id=v15.04b|v15.04b Tag]]
+      * Commit: [[https://git.allseenalliance.org/cgit/core/ajtcl.git/commit/?id=35548a3249bb60c0615652054d9ca0b2604e3639 | 35548a3249bb60c0615652054d9ca0b2604e3639]]
+
+
+==== Release Process Documents ====
+
+  * Common Frameworks
+    * [[baseservices:base_services_15.04_release_plan|Base Services 15.04 Release Plan]]
+  * Core
+    * [[:core:Core 15.04 Release Plan]]
+    * [[:core:Core 15.04 Release Review|Core 15.04 Release Review]]
+    * [[datadriven:ddapi_15.04_release_plan|Data-Driven API 15.04 Release Plan]]
+    * [[datadriven:ddapi_15.04_release_review|Data-Driven API 15.04 Release Review]]
+  * Developer Tools
+    * [[devtools:developer_tools_15.04_release_review|Developer Tools 15.04 Release Review]]

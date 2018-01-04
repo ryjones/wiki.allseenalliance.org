@@ -1,0 +1,101 @@
+# Device System Bridge (DSB) Project
+
+## Windows Dev Center
+
+    * Latest AllJoyn Device System Bridge related content available at [Device System Bridge page on Windows Dev Center](http://ms-iot.github.io/content/en-US/win10/AllJoynDSB.htm)
+    * Latest AllJoyn related Windows related content available at [AllJoyn page on Windows Dev Center](http://ms-iot.github.io/content/en-US/win10/AllJoyn.htm)
+
+## AllJoyn Device System Bridge
+
+AllJoyn provides developers with the flexibility to use a wide range of platforms and connection technologies to build devices for the AllJoyn ecosystem. However, many device makers have existing device solutions in their portfolios. For these situations, we created the Device System Bridge (DSB). The DSB adapts non-AllJoyn devices to the AllJoyn eco-system so that the adapted devices can interoperate with AllJoyn as their common language. DSBs support home automation systems such as Zigbee, and Z-Wave, and can even support industrial building automation systems such as BACnet. Additionally, the source code is available for customization to support other technologies.
+For more information on the purpose of Device System Bridges and its structure, check out this [whitepaper](https///git.allseenalliance.org/cgit/dsb.git/plain/Docs/AllJoyn%20-%20Device%20System%20Bridge%20-%20Whitepaper%20v1.0.pdf).
+
+### How DSB works
+
+The key capability of a DSB is to create a virtual representation of devices on the AllJoyn bus. So these devices, whatever their native connectivity or device ecosystem is, will appear and be accessible as AllJoyn devices. In the picture below two DSBs , one for Z-Wave and one for ZigBee create virtual representation of the two Z-Wave and the one ZigBee devices on the AllJoyn bus. With this all devices on the AllJoyn site can communicate with each other. Because the Z-Wave and ZigBee devices all on the AllJoyn bus they now can communicate with each other as well. 
+
+{{ :gateway:aj_docu_dsb_overview.png?600 |}}
+
+Another key element of the DSB design is that it will not require any changes to the AllJoyn or non-AllJoyn device system. All necessary adoptions are done in the DSB.
+
+As the picture also shows, there is no mapping from AllJoyn devices to the non-AllJoyn side. The objective of the DSB is to bring devices into the AllJoyn ecosystem. Enabling only one way simplifies the development. It also reduces the risk that AllJoyn security capabilities become weakened by the potentially less secure non-AllJoyn device system.
+
+### DSB Architecture
+
+The proposed DSB architecture consists of three main components, Network Access Stack, Adapter and Bridge. The picture below shows the high level overview of this architecture
+ 
+{{ :gateway:aj_docu_dsb_architecture.png?600 |}}
+
+**Bridge** - Represents each internal device object as AllJoyn device, separate bus attachment for each device - Devices are dynamically added to or removed from the AllJoyn bus - Configuration manages device visibility and security - Creates bus attachment for bridge and adapter configuration interface - Bridge code is agnostic to internal device types and reusable for any type
+
+**Adapter** - Instantiates and manages virtual devices on behalf of each device from the non-AllJoyn network - Translates device schemas into internal device objects - Manages network resources, e.g. access keys, credentials
+
+**Network Access Stack** - Access to non-AllJoyn Network specific , e.g. Z-Wave stack
+
+
+### Adapter Classes
+
+The diagram below show the classes developers will use in the Microsoft DSB template to create an abstraction of the native devices that need to be bridged into AllJoyn. The Bridge will use the instance of the adapter class to create the bus attachments for each device in the Adapter.devices list. 
+
+{{ :gateway:aj_docu_dsb_class_diagram.png?800 |}}
+
+### Special Handlers
+
+AllJoyn specifies several base services and standard interfaces frameworks such as LSF, HAE or Control Panel. The DSB can exposes those with special handlers. The current (11/2015) release of the DSB template contains implementations of the LSF and Control Panel interfaces. Developers will connect their code to the callback functions for LSF and Control Panel interfaces in the bridge. 
+
+{{ :gateway:aj_docu_dsb_special_handlers.png?300 |}}
+
+
+## DSB Resources
+
+### Visual Studio DSB Template
+[Visual Studio DSB Template](https///visualstudiogallery.msdn.microsoft.com/aea0b437-ef07-42e3-bd88-8c7f906d5da8) is an extension to Visual Studio that lets you easily create new DSB projects. The project will create all the necessary components such as the Bridge, a shell project for the adapter and all solution files to build the DSB as headed or headless device. This Visual Studio extension contains both the Native and Managed AllJoyn Device System Bridge templates.
+
+The template can be installed through Visual Studio Tools -> Extensions and Updates … -> Online -> In the “Search” field type “DSB” or “AllJoyn”.
+
+The [Mapping DSB Objects to AllJoyn](http://ms-iot.github.io/content/en-US/win10/AlljoynDsbApiGuide.htm) document describes the key interfaces and methods used to build the Alljoyn System Bridge.
+
+### IoT Explorer for AllJoyn (AllJoyn Explorer)
+
+The IoT Explorer for AllJoyn (previously known as AllJoyn Explorer) is a Windows Universal Application for interacting with AllJoyn devices on the local proximity network. Developers can list all available AllJoyn devices, inspect their interface and object structure, as well as receive signals, set and get properties, and call methods.
+
+
+*  [IoT Explorer for AllJoyn Store App](https///www.microsoft.com/store/apps/9nblggh6gpxl): This is the official store app location.
+
+*  [AllJoyn Explorer 1.0.1.11 (previous release)](https///github.com/ms-iot/samples/releases/download/AllJoynExplorer_1.0.11/AllJoynExplorer_1.0.1.11.zip): This zip contains the AllJoyn Explorer AppX bundle to be side-loaded on a developer machine. This is a previously released version of the IoT Explorer for AllJoyn application.
+
+*  [AllJoyn Explorer Setup Guide](https///github.com/ms-iot/samples/releases/download/AllJoynExplorer_1.0.11/AllJoyn_Explorer_Setup_Guide_v1.0.pdf): This pdf contains the documentation for how to deploy the AllJoyn Explorer.
+
+*  [AllJoyn Explorer User Guide](https///github.com/ms-iot/samples/releases/download/AllJoynExplorer_1.0.11/AllJoyn_Explorer_User_Guide_v1.0.pdf): This pdf contains the documentation for how to use the AllJoyn Explorer.
+
+### Sample DSBs
+
+    * [AllJoyn DSB Mock Adapter Tutorial and Sample](http://ms-iot.github.io/content/en-US/win10/samples/MockAdapterTutorial.htm). This tutorial shows how to use the Device System Bridge app to connect your IoT Core devices to mock BACnet devices.
+    * [AllJoyn DSB Z-Wave Adapter Tutorial and Sample](http://ms-iot.github.io/content/en-US/win10/samples/ZWaveTutorial.htm). This tutorial, based on the demo at the Build 2015 conference, shows how to use the Device System Bridge app to connect your IoT Core devices to Z-Wave devices.
+    * [AllJoyn DSB GPIO Adapter Tutorial C++](http://ms-iot.github.io/content/en-US/win10/samples/AlljoynDSB_GpioTutorial.htm) This tutorial demonstrates how to use the AllJoyn Device System Bridge template to create a sample C++ app that exercises the device GPIO.
+    * [AllJoyn DSB GPIO Adapter Tutorial C#](http://ms-iot.github.io/content/en-US/win10/samples/AlljoynDSB_ManagedGpioTutorial.htm) This tutorial demonstrates how to use the AllJoyn Device System Bridge template to create a sample managed app that exercises the device GPIO.
+    * [AllJoyn DSB ZigBee Adapter Tutorial and Sample](http://ms-iot.github.io/content/en-US/win10/samples/ZigBeeAdapterTutorial.htm) This tutorial shows how to use the Device System Bridge app to connect your IoT Core devices to ZigBee devices.
+    * [AllJoyn DSB BACnet Adapter Tutorial and Sample](http://ms-iot.github.io/content/en-US/win10/samples/BACnetAdapterTutorial.htm) This tutorial shows how to use the Device System Bridge app to connect your IoT Core devices to BACnet devices.
+    * [AllJoyn.JS Tutorial](http://ms-iot.github.io/content/en-US/win10/samples/AllJoynJS.htm) This tutorial shows how to run AllJoyn.JS application developed by Allseen Alliance as a Windows 10 UWP application. AllJoyn.JS allows you to write JavaScript to create, monitor and control AllJoyn devices.
+
+## Additional Resources
+
+    * `<html>``<b>`git clone https://git.allseenalliance.org/gerrit/dsb`</b>``</html>`
+    * Or view tree at [https://git.allseenalliance.org/cgit/dsb.git](https///git.allseenalliance.org/cgit/dsb.git)
+
+    * [AllJoyn page on Windows Dev Center](http://ms-iot.github.io/content/en-US/win10/AllJoyn.htm)
+    * [AllJoyn Studio page on Windows Dev Center](http://ms-iot.github.io/content/en-US/win10/AllJoynStudio.htm)
+    * [DSB page on Windows Dev Center](http://ms-iot.github.io/content/en-US/win10/AllJoynDSB.htm)
+
+    * [Using the AllJoyn Studio extension](http://ms-iot.github.io/content/en-US/win10/AllJoynStudio.htm)
+    * [AllJoyn Producer and Authoring AllJoyn Introspection](http://ms-iot.github.io/content/en-US/win10/AllJoynProducer.htm)
+    * [Troubleshooting AllJoyn with Windows 10](http://ms-iot.github.io/content/en-US/win10/AllJoynTroubleshooting.htm)
+
+#### Videos
+
+    * [//build 2015 AllJoyn Technical Session](https///channel9.msdn.com/Events/Build/2015/2-623)
+    * [WinHEC 2015 AllJoyn Technical Session](https///channel9.msdn.com/Events/WinHEC/2015/IOT200)
+
+## Documents
+
+*  Original Project Proposal {{::allseen-tsc-4-7-15.pdf|Device System Bridge (DSB) Project Proposal slides 18-20}}

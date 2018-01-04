@@ -1,0 +1,11 @@
+====== Developer Tools 14.02 Release Status ======
+
+Thin Library code generator testing had to be postponed because the QA engineers were fully booked to validate the core working group code for 14.02. Testing of the code generator will begin after the Feb. 28 release of 14.02.
+
+===== Milestones =====
+
+^ Milestone              ^ Date              ^ Details                              ^
+| API Freeze             | 2014/02/04        | No APIs exported                     |
+| Feature Freeze         | 2014/02/04        | Features already set.                |
+| Documentation Complete | 2014/03/14        |                                      |
+| QA Complete            | 2014/03/28        |                                      |

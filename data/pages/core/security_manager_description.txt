@@ -1,0 +1,148 @@
+**//__Draft version - To be approved__//**
+
+====== The Security Manager ======
+===== Introduction =====
+
+In an AllJoyn ecosystem, many applications running on several devices coexist and potentially communicate. Security 2.0 ensures that AllJoyn applications can securely communicate within the system. Often in many setups, peers join and leave the system in an ad-hoc manner. Hence, it is hard for peers to know upfront what other peers will be around let alone how they should interact with each other. This becomes more crucial as peers need to know who can be trusted and what rights do other peers have. Hence, It is essential after deployment that applications are configured, e.g., having the right policy and certificates. In order to allow for such secure configuration, administrators will use what is referred to as the security manager. 
+A security configuration consists of two parts: 
+  - Certificates: certificates provide proof that an application is managed by a security manager. They can be used to gain access to resources of other peers or to provide resources themselves to others. The certificates describe the rights the holder has. The following certificates are provided by the security manager:
+     - Identity certificates: a certificate signed by the security manager providing proof of the identity information of an application. Normally accompanied by the permission rules, i.e., Manifest. (see [[https://allseenalliance.org/developers/learn/core/security2_0/hld |HLD]])
+     - Membership certificates: proof of security group membership. (see [[https://allseenalliance.org/developers/learn/core/security2_0/hld |HLD]])
+  - Policy:  policy is a list of Access Control Lists (ACLs) (see [[https://allseenalliance.org/developers/learn/core/security2_0/hld |HLD]]). These ACLs describe how other peers can access the holder of the policy. 
+Security managers use AllJoyn to securely transfer certificates and policies to the applications they manage. 
+
+==== What does the security manager actually manage? ====
+
+Essentially, a security manager manages applications and devices. But what does this mean and do we really manage applications and devices? The security agent will use AllJoyn security features to set-up a secure connection to a peer. The only way it has to identify this peer is by the peer's public key. Since the security manager hands out certificates granting rights to peer's public key, in fact, it means the security manager actually is managing keys. Hence,  when asking what is being managed, the main question is; who has access to a key? There is no easy answer to this questions. It all depends on the OS and platform the software is running on. 
+
+  * On a plain Linux or Windows machine, applications can choose to protect data on per-user basis, making it hard to protect the key from other applications running for the same user. On the other hand, the key is also not application-specific. When the same application runs for a different user, it will not be able to access the key anymore. 
+  * Smartphones operating systems do a better job in sandboxing applications. The link between the key and the application is stronger there.
+
+How many keys you need per device depends on the device: 
+  * A single-function device, (e.g., a temperature sensor) is considered as one application where one key is used for all operations.
+  * Every app on a smartphone is considered as an app on its own, so one key per application. 
+  * The built-in firmware of a smart TV is also considered as a single app. Applications installed on top of the firmware of the TV are separate apps and should have their own keys.
+
+==== What can we trust? ====
+
+AllJoyn's software stack can exist in many forms; running on top of some hardware within an OS, or it could be embedded in an application which is installed on a device or it could be integrated in the firmware of a device. The security manager cannot distinguish among these cases. It only sees remote peers. Furthermore, the security manager cannot assume applications are running on trustworthy systems. If an application runs on a compromised or malicious system, there is little the security manager can do to protect the app against the malicious system. A genuine application running on a malicious system, should be treated as malicious. We should try to protect the ecosystem by:
+  - Being able to revoke the rights granted to an application.
+  - Make sure compromised or even malicious applications are limited to the rights they were given. Since we cannot trust the OS nor the hardware the applications are running on, these checks must be done at the remote peer side.
+
+The protective measure should be defined so that a well-behaving app on a well behaving system can protect itself from unwarranted access. However, there is always a risk that two (or more) malicious applications could team-up. Each individual app gets a small acceptable set of rights, but then combining their rights, they can launch attacks. 
+
+When claiming an application two considerations must be made: 
+  - Can I trust the application?
+  - Can I trust the device and the application that is running on? Not only the device and its OS, but especially for desktop systems as well, what other applications are there? These applications might try to get access to the keystore (where certificates reside) of the genuine app. This is not something we can fix within the AllSeen Alliance. This remains an integration aspect.
+
+==== Sharing keystores ====
+
+When an application is claimed (thus becoming a trusted managed application), it will store its certificates inside a keystore. This keystore can be shared. The security manager cannot prevent applications from doing so nor the system can. Is it recommended to share keystores? In short, the advantage of doing so is that you only have to claim one application, while multiple applications can use it. However, the certificates in the store will only grant a limited set of permissions to the keystore users. Hence, sharing the keystore only makes sense if it contains certificates granting all permissions required by its users. For instance, sharing a  keystore can be beneficial if the applications granted access to it, are known upfront and the union of rights is known. 
+
+Sharing keystores does have some side effects; every app using the keystore will appear as a manageable application. The security manager will be able to manage one keystore via multiple apps which adds an extra layer of complexity to get concurrent access rights.
+
+We also partially lose the ability to sandbox applications, as applications using a shared keystore get full set of rights linked to the store and not necessarily the ones they strictly need.
+ 
+=== Applications integrated in firmware === 
+
+The firmware of a device could consist of multiple smaller AllJoyn applications. From an end-user perspective, he or she wants only to claim this device once. Those applications are allowed to share a common keystore, but only one of them should provide the Security interfaces. Hence, only one application is seen from a security manager perspective. When expressing the permissions required for this application, it should take into account all permissions required by the apps running on that device. 
+
+=== Standalone applications ===
+Standalone applications are those downloaded and installed on a desktop computer, tablet or smart phone, etc. Standalone applications should not share a keystore. If such an application is built from separate sub-applications (each of them using a separate bus attachment, then they should follow the same rules as applications integrated in firmware. 
+
+===== Security Manager Architecture =====
+
+Depending on your setup, one may need different tools. A large enterprise has different requirements than a home does. Not all administrators have a strong technical background. A tool for home users should have a straightforward, understandable user interface (hiding complex features). These simplifications should be done inside the security manager, so it is transparent to the applications and devices in which setup they are deployed.
+
+A security manager can be deployed in multiple forms. For a home setup, it can be a single application accessed by one person. For an enterprise setup, multiple administrators may need to use it, so its core can run on a server, with several local admin application interacting with it.
+
+==== Operations ====
+The security manager provides the following operations: 
+  * Security group management: create, update and delete security groups.
+    * Allow grouping of applications based on a uniquely defined GUID and the public key of the security manager. AllJoyn applications can become members of a group when they are issued a membership certificate for that group.
+  * Identity management: create, update and delete identities.
+    * Identities are used to define the users of applications. Users can map to physical persons, but they could also hold more of a conceptual meaning. An identity is represented by a GUID and the public key of the security manager. Applications can act on behalf of a user when they receive an identity certificate for that user. Applications should only have one identity certificate.
+  * Application/key management:
+    * Claim and unclaim applications: make it managed/unmanaged by  the security manager.
+    * Manage certificates of AllJoyn applications.
+    * Manage policies (ACLs) of AllJoyn applications.
+
+As AllJoyn applications might come and go offline at any moment in time, it is important to be able to change the security configuration of offline applications. Only claiming an application should be done when the application is online, as this might require entering a PSK. Once an application is claimed, any other changes to the security configuration of an application should be made possible even when the application is offline. The security manager should take care of synchronizing an offline application whenever it comes back online.
+
+{{  :core:secmgrarch.png?400 |Security Manager Architecture.  }}
+
+A security manager consists of four functional blocks. When discussing the functional blocks of the security manager, it is important to understand that those blocks can reside on different machines and that for some it is possible to have multiple instances.
+  * Certificate Authority (CA): the CA provides/generates and signs certificates. For simplicity reasons, we assume the Identity CA and the Security Group CA to be one and the same CA, but in theory they could also be implemented by different CAs.
+  * Configuration Storage: it enables persistency of security configuration of the managed applications.
+  * User Interface (UI): the administrator interface with the security manager allowing to make configuration changes. The user interface does not need to be part of the manager itself. It could be running in a web browser or it could offer a REST API, so that a custom UI can be built on top.
+  * Security Agent: the core of the security manager that interacts with managed applications in order to deploy configuration updates sent using AllJoyn as the communication protocol.
+
+The following assumptions are made: 
+  * The four functional blocks of the security manager can be combined into a single application, but it should be possible to run them in different applications or even on different hosts.
+  * A security manager can have multiple security agents acting on its behalf.
+  * AllJoyn applications are agnostic to the security manager topology.
+  * A security manager is identified by the public-key of its CA. We call this the key of the security manager.
+
+=== Interfaces ===
+
+The Alliance envisions multiple implementations of security managers and does not provide implementation specifications. The alliance does specify how security managers need to interact with AllJoyn security 2.0 based applications and devices. 
+  * org.alljoyn.Bus.Application.State: a sessionless signal sent by AllJoyn applications for discovery reasons.
+  * org.alljoyn.Bus.Security.*: interfaces that are needed to manage applications securely.
+More details can be found in the [[https://wiki.allseenalliance.org/core/for_irb_review_security_interface_descriptions |interface descriptions]] provided by the for Interface Review Board.
+
+==== Security Manager Library ====
+
+The security manager library provides all the needed APIs and components to help develop a security manager for administrating managed AllJoyn applications.
+
+Whilst these components (see the security manager architecture section) can be all combined in a single application, it is also possible that they can be implemented by different applications running on different machines. Alternatively, some components may reside in the cloud. The security manager library is generic enough to allow these scenarios.
+
+Essentially, the intrinsic core component is the security agent with all the AllJoyn-specific application monitoring, update and remote managing logic. The CA/Storage implementation provided is considered as a sample. However, the agent to CA/Storage API is binding whilst the UI to CA/Storage API is non-binding.
+
+=== Integration === 
+
+An implementation of the CA/Storage is provided as a sample that works on local devices. It can be used by the integrator for a quick start. However, other possible CA/Storage implementations can be allowed to forward any request to another application or to a cloud service. A security manager CLI is provided as a sample of how the library can be used to create a security manager using the provided CA/Storage.
+
+Also the interaction with the UI component is not strictly defined. The UI could be part of the application. But it is also possible to provide a REST-like API towards a UI running on another device. Once the agent is initialized it awaits commands from the UI. Also, it will respond to events on the AllJoyn bus or events coming from the CA/Storage. The agent can work without triggers from the UI.
+
+=== Assumptions ===
+
+The security manager library assumes:  
+  * The UI interacts directly with the storage for any applications management needed. 
+  * The agent can send events to the UI. 
+  * The storage and the CA are seen as one integrated component defining needed functionalities that the agent and the UI seek.
+    * Their functionalities are grouped in a single integration API.  
+    * Even though that in a cloud solution the storage and CA are most likely to be separated, still functionally they are tightly coupled. If there is a strict separation, then the split must be made inside the integration API. 
+  * The agent can always contact the CA/Storage component. 
+  * Notifications from CA/storage are only delivered at best effort. 
+  * More than one agent could use the same CA/Storage. The CA/Storage component can be optimized to handle the work balance adequately. 
+  * The agent must be aware it is competing with other agents to apply updates. 
+  * Configuration changes can occur while applying configuration updates. This allows the UI to interact directly with the CA/Storage component.
+
+=== Utilities === 
+
+The security manager library comes with a number of utility classes that help in generating certificates and policies that grant full access to all interfaces to all members of a set of security groups. Also, serialization and deserialization of manifests are provided.
+
+===== Future Considerations =====
+
+==== Inter security manager interactions ====
+
+When applications interact with each other, they check if the interaction is allowed by their policies as previously set by their security manager(s). In practice, a peer must present a certificate (chain) signed by its security manager public key. Meaning that with the basic features we created silos, you can only talk to applications managed by your own security manager. In practice applications managed by different security managers need to interact with each other as well. Two ways are provided to allow for this; Delegation and Restricted User schemes. 
+
+=== Delegation === 
+
+Delegation can be summarized in the following use case: I am the administrator of my home ecosystem. I claim appliances in the home and provide them with security configuration. I am the only person having access to the security manager as the administrator. When my kids want to get access to an appliance, then they have to ask me to get approval for each application they want to use. This is not workable. With delegation, my security manager gives a membership certificate with delegation rights to the security manager of each of my kids. With this certificate, they can delegate this membership certificate to their applications. They only need to ask one time and then they can make any of their applications part of my group. Even though my kids did not interact directly with each other, with these delegated certificates they interact with each other in the scope of this group. 
+
+More details can be found in the [[https://allseenalliance.org/developers/learn/core/security2_0/hld |HLD]].
+
+=== Restricted User === 
+
+Restricted user tries to address the same problem as delegation but takes a different approach to solve it. With delegation, you give a membership certificate with delegation rights to an application. With that certificate the application can prove that it has been granted access to a given group. On the other hand, with the restricted user scheme, it is done the other way around. A policy is defined on the owned, (i.e., belonging to a given security manager) applications to give access to applications from a different security manager. This would be as if delegated membership certificates are pre-installed on all owned managed applications. Hence, when a peer comes around, it does not need to send the proof, the application already has it. Since policy comes from a trusted source, we do not need certificates and can use more compact ACLs.
+
+More details can be found in the [[https://allseenalliance.org/developers/learn/core/security2_0/hld |HLD]].
+
+=== Multiple agents for one CA/Storage ===
+Although the Security Agent is designed in such way that multiple agents should be able to handle the requests made to one CA/Storage component, this feature has not been tested and hence is experimental.
+
+===Human readable descriptions for interfaces ===
+The Security Manager does not yet support the retrieval of human-readable description of the interfaces that are listed in the manifests and policies of the applications. This requires the configuration and set-up of an 
+external Interface Description Server as described in the [[https://allseenalliance.org/developers/learn/core/security2_0/hld |HLD]].

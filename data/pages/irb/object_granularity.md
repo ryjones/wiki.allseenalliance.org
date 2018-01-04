@@ -1,0 +1,11 @@
+### Object Granularity
+
+Consider how your data model can be split up over various (hierarchically organized) bus objects. Separate entities in the problem domain should be represented by separate objects on the bus.
+
+In many cases, there is an inherent one-to-many relationship in the data model: one firewall has many rules, one address book has many entries, etc. This kind of relationship can be modeled elegantly as a single parent object (the firewall, the address book, ...) that has many similar child objects (the rules, the contact entries, ...).
+
+If you find yourself inventing some kind of object id, and adding methods to your Interface that return different results based on the value of this object id, you should consider this a warning bell: you're probably ignoring the object granularity guideline.
+
+>> **Tip**: consider using the well-known relational database modeling tools (Entity-Relationship diagrams, Normal Form decomposition, ...) to reason about your problem domain. While those tools are not to be applied blindly, they will provide useful insights and inspiration for your own Interface decomposition efforts.
+
+~~DISCUSSION~~

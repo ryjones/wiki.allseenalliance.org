@@ -1,0 +1,42 @@
+# Gateway Agent 14.06 Release Plan
+
+## Introduction
+
+Dev Lead: Tsahi Asher
+
+QA Lead: Gally Gabbay
+
+## Themes and Priorities
+
+**NOTE:** 14.06 is an **__unofficial__** release of the Gateway Agent. Please refer to the [14.12 Release Plan](gateway/gateway_14.12_release_plan) for up to date information.
+
+The 14.06 version of the Gateway Agent provides the following features:
+
+*  Gateway Management App
+
+*  Gateway Controller API + Android sample
+
+*  Gateway Connector API + Linux sample
+
+*  OpenWrt feed
+
+## Deliverables
+
+Gateway Agent
+
+## Milestones
+
+ | Milestone              | Date       | Details        | 
+ | ---------              | ----       | -------        | 
+ | API Freeze             | 2014/11/30 | General freeze | 
+ | Feature Freeze         | 2014/11/30 |                | 
+ | Documentation Complete | TBD        |                | 
+ | QA Complete            | 2014/12/23 |                | 
+
+## Expected Work Group Dependencies
+
+None
+
+## Compatibility with Previous Releases
+
+First release targets AllJoyn 14.06. Untested with 14.02.

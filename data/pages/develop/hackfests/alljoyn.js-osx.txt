@@ -1,0 +1,69 @@
+instructions to build for Darwin.
+
+Setup the following tools:
+Xcode
+
+Open a browser and navigate to http://itunes.apple.com/us/app/xcode/id497799835?mt=12.
+Download and install the free Xcode application.
+After successful installation, from your Applications folder, select and open Xcode.
+Select the Xcode → Preferences menu item.
+Select the Downloads tab.
+Select the Components tab.
+Verify that the Command Line Tools have been installed. Note: You may need to run the following command from a terminal window to install the Command Line Tools:
+$ xcode-select --install
+Homebrew
+Use Homebrew to deploy scons, git, and uncrustify to your OS/X system.
+
+Open a browser and navigate to http://mxcl.github.com/homebrew/.
+Download Homebrew.
+Navigate to https://github.com/mxcl/homebrew/wiki/installation, and follow the directions for installation.
+Scons
+Use the Scons build tool to generate the AllJoyn C++ API binaries for iOS and OS/X.
+
+To install Scons, open a terminal window, and type this command:
+
+$ brew install scons
+
+Git
+Use Git for source control.
+
+To install Git, open a terminal window, and type this command:
+
+$ brew install git
+
+
+
+Pull down the software and compile:
+
+   mkdir allseen_14.06
+   cd allseen_14.06/
+   export AJ_ROOT=`pwd`/alljoyn
+   git clone https://git.allseenalliance.org/gerrit/core/alljoyn.git $AJ_ROOT/core/alljoyn
+   git clone https://git.allseenalliance.org/gerrit/core/ajtcl.git $AJ_ROOT/core/ajtcl
+   git clone https://git.allseenalliance.org/gerrit/services/base.git $AJ_ROOT/services/base
+   git clone https://git.allseenalliance.org/gerrit/services/base_tcl.git $AJ_ROOT/services/base_tcl
+   export VER=v14.06
+   pushd $AJ_ROOT/core/alljoyn; git checkout -b $VER $VER; popd
+   pushd $AJ_ROOT/services/base; git checkout -b $VER $VER; popd
+   pushd $AJ_ROOT/services/base_tcl; git checkout -b $VER $VER; popd
+   git clone https://git.allseenalliance.org/gerrit/core/alljoyn-js.git $AJ_ROOT/core/alljoyn-js
+   curl http://duktape.org/duktape-0.11.0.tar.xz > duktape-0.11.0.tar.xz
+   tar -xvf duktape-0.11.0.tar.xz 
+   export DUKTAPE_DIST=`pwd`/duktape-0.11.0
+   cd alljoyn/core/alljoyn
+   export CONFIGURATION=release
+   scons OS=darwin CPU=x86 BD=on WS=off VARIANT=release BINDINGS=cpp SERVICES="about,config,controlpanel,notification" SDKROOT=`pwd`
+   export ALLJOYN_DISTDIR=`pwd`/build/darwin/x86/release/dist/
+   cd ../ajtcl/
+   scons WS=off VARIANT=release
+   cd ../alljoyn-js/
+   scons WS=off VARIANT=release
+   cd console/
+   scons WS=off VARIANT=release
+ 
+
+That should build everything and you are now ready to test!
+Now you can run the console application (in the alljoyn-js/console folder):
+./ajs_console --name AllJoynRocks
+This will wait to accept connections from a script (in the alljoyn-js folder):
+./alljoynjs —name AllJoynRocks js/notif.js

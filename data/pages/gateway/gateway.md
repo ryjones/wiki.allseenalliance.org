@@ -1,0 +1,83 @@
+# Gateway Working Group
+
+## Mission
+
+The mission of the Gateway Working Group is to develop and provide standard and secure interfaces between AllJoyn applications and devices in a proximal network and external protocols, networks and services. 
+
+### Objectives
+
+
+*  Provide standard ways to connect AllJoyn proximal networking applications and interfaces with external protocols and services
+
+*  Retain and enhance AllJoyn's proximal network privacy and security benefits
+
+*  Enable easy traffic management for high performance and efficient networking and services for AllJoyn applications and devices
+
+### Scope of Projects in Gateway Working Group
+
+
+*  Remote application connectivity
+
+*  Protocol connectors with other Personal Area Network (PAN) protocols
+
+*  Protocol connectors for interoperability with external network segments, protocols and cloud services connectors
+
+*  Telemetry interfaces
+
+*  Update service interfaces
+
+## Contact for Additional Gateway WG Information
+
+For more information about the Gateway Working Group and its current projects, see the project pages below. For questions or additional information you can also send questions to the working group mailing list, or to the working group chair.  This mail list is for anyone interested in any or all of the projects listed below.  New project ideas and proposals are always welcome, and there are many volunteers and developers that will assist with your questions, or with how to become engaged contributing to our projects.
+
+
+*  Gateway Working Group Chair - Art Lancaster, Affinegy - `<alancaster@affinegy.com>`
+
+*  Gateway Working Group Email list - Mailing List: `<allseen-gateway@lists.allseenalliance.org>` ([Subscribe](https///lists.allseenalliance.org/mailman/listinfo/allseen-gateway))
+
+## Projects in the Gateway Working Group
+
+
+*  [Gateway Agent Project](gateway/gatewayagent) - Provides a standard AllJoyn routing interface local applications/devices and external networks / protocols. These interfaces are supported with a plug-in interface for connectors, including the connector projects in this working group.
+
+*  [XMPP Connector Project](gateway/xmppconn) - A Connector that provides end to end AllJoyn applications and services based on the XMPP standard communications protocol
+
+*  [MQTT Connector Project](/mqtt) - A Connector that provides end to end AllJoyn applications and services using MQTT
+
+*  [SIP End2End Connector Project](gateway/sip) - A Connector that provides end to end AllJoyn applications and services based on the SIP telecommunications protocol
+
+*  [U+ Connector Project](/u) - A Connector that provides for interoperation between AllJoyn applications and the U+ protocol
+
+*  [Device System Bridge](gateway/dsb) - The DSB is provided for Windows platform and adds support for  existing device automation interfaces (Z-wave, BACnet, ZigBee) and creates a virtual proxy of these devices on the AllJoyn bus. With DSB enabled, AllJoyn devices and non-AllJoyn devices can now interoperate seamlessly.
+
+*  [Home Device Bridge Project](gateway/HDB) - A platform portable device bridge supporting for non-AllJoyn devices (such as ZigBee, Z-wave or other automation protocols) to become virtual AllJoyn device/applications.
+
+
+#### Archived projects
+
+The followed project was archived with no current committers.
+
+
+*  [Update Service Project](gateway/update_service) - A project to provide update services for AllJoyn applications.
+
+*  [Analytics Connector Project (Archived)](analytics-telemetry/overview) - This project defines AllJoyn interfaces that provide device manufacturers a common API for capturing events, state, and other information, to be collected and transmitted outside the AllJoyn proximal network.
+## Working Group Presentations
+
+The presentations below are overviews regarding status or planning for the Gateway Working group.  For specifics on any of the projects see the project pages listed above.
+
+
+*  Gateway Working Group Status Update August 29, 2016 {{:gateway:allseen_tsc_gateway_wg_update_2016-08-29.pdf|}}
+### Older presentations as background
+
+*  Gateway Working Group Status and 2016 Roadmap March 14, 2016 {{:gateway:allseen_tsc_gateway_wg_update_2016-03-14.pdf|}}
+
+*  Gateway Working Group Status presentation to the TSC December 21, 2015 {{:gateway:allseen-gateway-wg-update-12-21-15.pdf|}}
+
+## Weekly Gateway Working Group Meetings
+
+The Gateway Working Group holds a weekly meeting which is open for participation by anyone with interest in these projects. For additional information see the page below.  This includes the schedule and how to call in.  It also includes links to the meeting history and recordings.
+
+[Gateway Working Group Weekly Meetings](gateway/gateway_working_group_weekly_meetings)
+
+
+

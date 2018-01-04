@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<!-- 
+This XSD (20140918) supports following extensions :
+named structs, named dictionaries, enums, optional properties, 
+descriptions at several levels (node, interface, method, signal, arg, property)
+-->
+
+    <!-- 
+	     *******************************************************
+	     *                                                     *
+	     *               Attribute Definitions                 *
+	     *                                                     *
+	     *******************************************************
+	-->
+	
+	<xs:attribute name="name" type="xs:string"/>
+
+	<xs:attribute name="access">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="read"/>
+				<xs:enumeration value="write"/>
+				<xs:enumeration value="readwrite"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+
+	<xs:attribute name="optional" type="xs:boolean" default="false"/>
+
+    <!-- 
+	     *******************************************************
+	     *                                                     *
+	     *               Type Definitions                      *
+	     *                                                     *
+	     *******************************************************
+	-->
+
+	<xs:simpleType name="arg_direction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="in"/>
+			<xs:enumeration value="out"/>
+			<!--  unset is used by the app as metadata. -->
+			<xs:enumeration value="unset"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+        <xs:simpleType name="dictionary_key_type">
+                <!-- dictionary key types are always simple types -->
+                <xs:restriction base="xs:string">
+                        <xs:pattern value="[ybnqiuxtdso]"/>
+                </xs:restriction>
+        </xs:simpleType>
+
+        <xs:simpleType name="field_type">
+                <!-- field types can only be non-flattened.
+                     Conceptually, the pattern looks like this:
+                     a*(<basic type>|<[NamedTypeReference]>)
+                  -->
+                <xs:restriction base="xs:string">
+                        <xs:pattern value="a*([ybnqiuxtdsogv]|\[\w+\])"/>
+                        <xs:minLength value="1"/>
+                </xs:restriction>
+        </xs:simpleType>
+
+        <xs:simpleType name="arg_and_property_type">
+                <!-- arg and property types can be flattened or non-flattened.
+                     Non-flattened looks like this (see field_type):
+                     a*(<basic type>|<[NamedTypeReference]>)
+                     Flattened looks like this:
+                     [ybnqiuxtdsogav\{\}\(\)]*
+                     Note that the a*<basic type> branch of non-flattened is trivially
+                     covered by the flattened pattern, so we don't have to specify it separately.
+                  -->
+                <xs:restriction base="xs:string">
+                        <xs:pattern value="([ybnqiuxtdsogav\{\}\(\)]*)|(a*\[\w+\])"/>
+                        <xs:minLength value="1"/>
+                </xs:restriction>
+        </xs:simpleType>
+
+	<xs:complexType name="arg_type">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+			<xs:element maxOccurs="unbounded" minOccurs="0" ref="description"/>
+		</xs:sequence>
+		<xs:attribute ref="name"/>
+		<xs:attribute name="type" type="arg_and_property_type" use="required"/>
+		<xs:attribute default="unset" name="direction" type="arg_direction"/>
+		<xs:attribute ref="optional"/>
+	</xs:complexType>
+
+	<xs:complexType name="nested_node">
+		<xs:choice maxOccurs="unbounded" minOccurs="1">
+			<xs:element maxOccurs="unbounded" ref="interface"/>
+			<xs:element maxOccurs="unbounded" name="node" type="nested_node"/>
+		</xs:choice>
+		<xs:attribute ref="name" use="required"/>
+	</xs:complexType>
+
+	<!-- 
+	     *******************************************************
+	     *                                                     *
+	     *               Element Definitions                   *
+	     *                                                     *
+	     *******************************************************
+	-->
+
+	<xs:element name="description">
+		<xs:complexType mixed="true">
+			<xs:sequence>
+				<xs:any maxOccurs="unbounded" minOccurs="0" namespace="##any" processContents="skip"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	
+	<xs:element name="annotation">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="signal">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded" minOccurs="0">
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="description"/>
+				<xs:element maxOccurs="unbounded" minOccurs="0" name="arg" type="arg_type"/>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+			</xs:choice>
+			<xs:attribute ref="name" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="method">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded" minOccurs="0">
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="description"/>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+				<xs:element maxOccurs="unbounded" minOccurs="0" name="arg" type="arg_type"/>
+			</xs:choice>
+			<xs:attribute ref="name" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="property">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="description"/>
+			</xs:sequence>
+			<xs:attribute ref="name" use="required"/>
+			<xs:attribute name="type" type="arg_and_property_type" use="required"/>
+			<xs:attribute ref="access" use="required"/>
+			<xs:attribute ref="optional"/>
+		</xs:complexType>
+	</xs:element>
+
+
+	<xs:element name="struct">
+		<xs:complexType>
+			<xs:sequence>
+                                <xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+                                <xs:element name="field" minOccurs="1" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                                <xs:sequence>
+                                                        <xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+                                                </xs:sequence>
+                                                <xs:attribute ref="name" use="required"/>
+                                                <xs:attribute name="type" type="field_type" use="required"/>
+                                                <xs:attribute ref="optional"/>
+                                        </xs:complexType>
+                                </xs:element>
+			</xs:sequence>
+			<xs:attribute ref="name" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="dict">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+                                <xs:element name="key" minOccurs="1" maxOccurs="1">
+                                        <xs:complexType>
+                                                <xs:sequence>
+                                                        <xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+                                                </xs:sequence>
+                                                <xs:attribute name="type" type="dictionary_key_type" use="required"/>
+                                        </xs:complexType>
+                                </xs:element>
+                                <xs:element name="value" minOccurs="1" maxOccurs="1">
+                                        <xs:complexType>
+                                                <xs:sequence>
+                                                        <xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+                                                </xs:sequence>
+                                                <xs:attribute name="type" type="field_type" use="required"/>
+                                        </xs:complexType>
+                                </xs:element>
+			</xs:sequence>
+			<xs:attribute ref="name" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+
+	<xs:element name="enum">
+		<xs:complexType>
+			<xs:sequence>
+                                <xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+                                <xs:element name="enumerator" minOccurs="1" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                                <xs:sequence>
+                                                        <xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+                                                </xs:sequence>
+                                                <xs:attribute ref="name" use="required"/>
+                                                <xs:attribute name="value" type="xs:int" use="optional"/>
+                                        </xs:complexType>
+                                </xs:element>
+			</xs:sequence>
+			<xs:attribute ref="name" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="interface">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="annotation"/>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="description"/>
+				<xs:choice>
+					<xs:element ref="method"/>
+					<xs:element ref="signal"/>
+					<xs:element ref="property"/>
+					<xs:element ref="struct"/>
+					<xs:element ref="dict"/>
+					<xs:element ref="enum"/>
+				</xs:choice>
+				<xs:choice maxOccurs="unbounded" minOccurs="0">
+					<xs:element ref="annotation"/>
+					<xs:element ref="method"/>
+					<xs:element ref="signal"/>
+					<xs:element ref="property"/>
+					<xs:element ref="struct"/>
+					<xs:element ref="dict"/>
+					<xs:element ref="enum"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute ref="name" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="node">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="description"/>
+				<xs:choice maxOccurs="unbounded" minOccurs="1">
+					<xs:element maxOccurs="unbounded" ref="interface"/>
+					<xs:element maxOccurs="unbounded" name="node" type="nested_node"/>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute ref="name"/>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

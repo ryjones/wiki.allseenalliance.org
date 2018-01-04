@@ -1,0 +1,1 @@
+{{:tsc:technical_steering_committee:proposals:allseen-tsc-1-26-15.pdf|BTLE Proposal (pages 11-15)}}

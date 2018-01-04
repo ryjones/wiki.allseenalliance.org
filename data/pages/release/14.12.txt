@@ -1,0 +1,42 @@
+===== Release 14.12 ======
+
+This version of AllJoyn from the AllSeen Alliance included new Core features, as well as Base Services, Gateway Agent and Lighting Service Framework releases.  All of those projects are part of the first [[https://allseenalliance.org/compliance|Base Implementation]].
+
+==== Release ====
+
+SDKs: See the [[https://allseenalliance.org/source-code|Downloads]] page.
+
+Git tag:
+  * alljoyn.git [[https://git.allseenalliance.org/cgit/core/alljoyn.git/tag/?id=v14.12a|v14.12a Tag]]
+    * Commit: [[https://git.allseenalliance.org/cgit/core/alljoyn.git/commit/?id=8a2cdca2540495416b607599aac834111d2a0afb | 8a2cdca2540495416b607599aac834111d2a0afb]]
+  * ajtcl.git [[https://git.allseenalliance.org/cgit/core/ajtcl.git/tag/?id=v14.12 | v14.12 Tag]]
+    * Commit: [[https://git.allseenalliance.org/cgit/core/ajtcl.git/commit/?id=7022be185af53f83b46cdd43bb79a48a39100ac5 | 7022be185af53f83b46cdd43bb79a48a39100ac5]]
+  * codegen.git [[https://git.allseenalliance.org/cgit/devtools/codegen.git/tag/?id=v14.12 | v14.12 Tag]]
+    * Commit: [[https://git.allseenalliance.org/cgit/devtools/codegen.git/commit/?id=57da5f3d5975d3512c360a08b9dedb20ba54227b | 57da5f3d5975d3512c360a08b9dedb20ba54227b]]
+
+Projects:
+  * [[https://git.allseenalliance.org/cgit/core/alljoyn.git]]
+  * [[https://git.allseenalliance.org/cgit/core/ajtcl.git]]
+  * [[https://git.allseenalliance.org/cgit/devtools/codegen.git]]
+
+==== Release Process Documents ====
+
+  * Base Services
+    * [[:baseservices:base_services_14.12_release_plan|Base Services 14.12 Release Plan]]
+    * [[:baseservices:base_services_14.12_release_review|Base Services 14.12 Release Review]]
+
+  * Core
+    * [[:core:Core 14.12 Release Plan]]
+    * [[:core:Core 14.12 Release Status]]
+    * [[:core:Core 14.12 Release Review|Core 14.12 Release Review]]
+
+  * Developer Tools
+    * [[:devtools:Developer Tools 14.12 Release Plan]]
+    * [[:devtools:Developer Tools 14.12 Release Review]]
+
+  * Data-Driven API
+    * [[datadriven:ddapi_14.12_release_plan|(Data-driven API) 14.12 Release Plan]]
+    * [[datadriven:ddapi_14.12_release_review|(Data_driven API) 14.12 Release Review]]
+
+  * Gateway
+    * [[gateway:gateway_14.12_release_plan|Gateway Agent 14.12 Release Plan]]

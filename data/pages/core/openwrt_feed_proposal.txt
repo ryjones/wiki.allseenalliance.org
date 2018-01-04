@@ -1,0 +1,38 @@
+----
+**The TSC voted to create the OpenWRT project (incubation phase) within the Core working group on {{:tsc:allseen_alliance_-_tsc_minutes_02.18.14.pdf|18 Feb 2014}}**
+----
+
+This is a proposal for creating a git repository on the AllSeen Alliance website for the purpose of acting as a feed that can be easily incorporated into OpenWrt based systems.
+
+====== Requirements ======
+  - Must provide packages suitable for the current stable release branch - OpenWrt 12.09 (Attitude Adjustment) at the time of this writing.
+  - Must provide packages suitable for the current development branch - OpenWrt Barrier Breaker at the time of this writing.
+
+=== Questions: ===
+  - Should legacy versions of OpenWrt continue to get updated package definitions when new versions of AllJoyn are released?  For example, lets say that Barrier Breaker is finally released and becomes the "current stable release branch".  In this case, should we continue to support 12.09?
+  - If so, how long should we support the legacy version(s)?
+
+====== Organization ======
+The mechanism in OpenWrt for fetching package definitions from feeds supports branch names when using a git repository for the feed.  I think we should take advantage of that capability and have a one-to-one mapping between the branches in our git based feed and OpenWrt releases.  Given the current state of OpenWrt there would be 2 branches in our git based feed with the following mapping:
+
+^ Feed Branch Name    ^ OpenWrt Release Name                ^
+| attitude_adjustment | OpenWrt 12.09 (Attitude Adjustment) |
+| barrier_breaker     | OpenWrt Barrier Breaker             |
+
+The driving reason for multiple branches on a per OpenWrt release basis is that changes in OpenWrt packaging can affect AllJoyn package definitions.  In particular, the package definition for the Onboarding service depends on a library whose package changed names between the Attitude Adjustment release and the Barrier Breaker development branch.  This means that the Onboading package definition for Barrier Breaker will not work with Attitude Adjustment and vice versa.  Future changes to OpenWrt and/or new packages that depend on OpenWrt packages that have changed over time will be subject to needing different versions that are appropriate to the specific OpenWrt release.
+
+By using this mapping, the correlation between a branch on the proposed feed (git repository) and OpenWrt release will be obvious and the feeds.conf.default file in the OpenWrt build environment will only need to be updated when the OpenWrt project starts a new development version.
+
+
+====== New package development processes ======
+This does not directly affect the AllSeen Alliance itself but is included so that interested parties will know what needs to be done to get new packages added to the feed.
+
+Over time, it is expected that new packages will need to be developed to encapsulate new functionality that is desired to be included on OpenWrt based systems.
+
+The nature of packages is that they (generally) specify released versions of software to build.  The source code for a given package is not included with the package definition.  Instead, the package definition describes how to download the source code and the archive format containing that source code.  Most commonly, source code is contained in gzipped tarballs (files ending in ".tar.gz") and are downloaded from an HTTP server.  This nature affects how packages get developed and when to add new packages to the feed.
+
+New packages will need to be developed by a person interested in seeing a component included on OpenWrt that is not already included.  Since the component will likely be a new AllSeen component that has not been released yet, this will add a slight complication to the process.  Normally, a package is created for an existing code base that has already at least one public release.  Such a package can be added to the feed at anytime.  With AllSeen, there will likely be packages that need to be created for a code base that has not been released yet.  In this case, the developer will need to setup an internal, private feed within their organization as well as internally host development versions stored in tarballs of the code to be packaged.  Once the code to be packaged is publicly released in the form of source tarballs on the AllSeen Alliance website, the OpenWrt package definition can be submitted for inclusion into the feed.
+
+====== Maintainers and Committers ======
+
+Steve Kinneberg is the proposed maintainer for the OpenWrt Feed project. Other core working group committers will also have commit privileges.

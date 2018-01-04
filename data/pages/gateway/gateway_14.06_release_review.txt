@@ -1,0 +1,37 @@
+====== Gateway Agent 14.06 Release Review ======
+
+===== Features =====
+
+New features introduced
+
+===== Non-Code Aspects =====
+
+Link to user documents, examples, tutorials
+
+===== Architectural Issues =====
+
+Notable changes to internal architecture or impact on system architecture for other work groups or users of this code.
+
+===== Security Issues =====
+
+Changes affecting security
+
+===== Quality Assurance =====
+
+Document test coverage and results
+
+===== Known Issues =====
+
+Any known bugs or limitations
+
+===== End-of-life =====
+
+List newly discontinued APIs or features
+
+===== Standards Compliance =====
+
+List any standards referenced for this release
+
+===== Schedule Post-Mortem =====
+
+Compare actual project milestones to the published release plan estimates

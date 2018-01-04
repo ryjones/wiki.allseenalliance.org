@@ -1,0 +1,1 @@
+{{:tsc:technical_steering_committee:proposals:allseen_wg_proposal_media_delivery_framework_19sep2014.pdf|Media Delivery Framework Proposal}}

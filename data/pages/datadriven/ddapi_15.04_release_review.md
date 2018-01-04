@@ -1,0 +1,57 @@
+# Data-Driven API 15.04 Release Review
+
+The Data-Driven API (DDAPI) for AllJoyn is an alternative API for the AllJoyn framework that is specifically tailored to use cases for the Internet of Things.
+
+For more information on the DDAPI, consult the [Developer Documentation on the AllSeen Alliance Website](https///allseenalliance.org/developers).
+
+## Features
+
+This release ports all functionality of the Data-Driven API 14.12 release to run on top of the Core 15.04 release.
+
+No new features were added in this release. Read the documentation for a description of all features.
+
+## Non-Code Aspects
+
+The DDAPI documentation is included in the source repository
+
+    * use doxygen (''tools/Doxyfile'') to generate the API reference manual
+    * ''README.md'', included in the source tarball and repository provides information on how to build the DDAPI. 
+
+For information on how to use the DDAPI in your own applications, read the [Developer Documentation on the AllSeen Alliance website](https///allseenalliance.org/developers/develop).
+
+DDAPI Release 15.04 is dependent on Code Generator Release 15.04.
+
+## Quality Assurance
+
+**Test Coverage**
+
+A range of automated unit tests has been performed with a coverage of 89.3%. 
+
+**Unit Tests**
+
+Unit tests were validated on Linux Ubuntu 12.04 using GCC version 4.6.3 (64 bit).
+
+## Known Issues
+
+### Core
+
+Running the DDAPI under stress conditions can cause deadlocks, timeouts and segmentation faults. These issues have been investigated and are caused by the following underlying Core issues:
+
+
+*  [ASACORE-1786: Potential deadlock due to NullEndpoint](https///jira.allseenalliance.org/browse/ASACORE-1786)
+
+*  [ASACORE-1967: Deadlock in PBO PropertiesChanged handler code](https///jira.allseenalliance.org/browse/ASACORE-1967)
+
+*  [ASACORE-1979: No reply is sent to request when failed to generate a reply message](https///jira.allseenalliance.org/browse/ASACORE-1979)
+
+*  [ASACORE-1992: DDAPI stress test triggers message timeout when using AllJoyn daemon](https///jira.allseenalliance.org/browse/ASACORE-1992)
+
+### DDAPI
+
+The following issues are part of the DDAPI implementation itself:
+
+
+*  [ASACORE-1976: DDAPI unit_test/PropertiesTest.cc sometimes segfaults due late clean-up of previous test](https///jira.allseenalliance.org/browse/ASACORE-1976)
+      * This is an issue in the implementation of the tests for the DDAPI, and should not affect any user of the DDAPI.
+
+*  [ASACORE-1981: DDAPI deadlocks when simultaneously unregistering and registering observers](https///jira.allseenalliance.org/browse/ASACORE-1981)

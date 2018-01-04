@@ -1,0 +1,39 @@
+====== OpenWrt Package Development ======
+
+The OpenWrt feed for AllJoyn is contained this git repository: https://git.allseenalliance.org/cgit/core/openwrt_feed.git/
+
+===== OpenWrt Setup =====
+
+This assumes that you have the latest development version of the OpenWrt source build system downloaded and built once already for your desired target platform.  You can get full setup instructions from the [[build_alljoyn_for_openwrt|Build AllJoyn for OpenWrt]] page.
+
+==== Adding the AllJoyn Feed ====
+
+If you do not have a ''feeds.conf'' file, create one by copying ''feeds.conf.default'' to ''feeds.conf''.  Add the following lines to your ''feeds.conf'' file:
+
+<file>
+src-git alljoyn_dev https://git.allseenalliance.org/gerrit/core/openwrt_feed
+</file>
+
+
+===== Building Alternate Versions of AllJoyn Source =====
+
+The package defintion Makefiles for AllJoyn in the master branch of the core/openwrt_feed.git repository do not reference any files that can be downloaded and built.  Therefore, you will need to use OpenWrt's source override mechanism in order to build source code you have on your local machine.  The instructions on this page are derived from
+[[http://wiki.openwrt.org/doc/devel/packages]].
+
+  - Checkout the branch you wish to build in your local copy of the git repository
+  - Update your feed: ''./scripts/feed update alljoyn_dev''
+  - Create a symbolic link to the .git directory of your source code:\\ ''ln -s /path/to/your/copy/of/the/git/repository/with/your/code/.git feeds/alljoyn_dev///<package_name>///git-src''
+  - Install your package definition into the OpenWrt build system: ''./scripts/feeds install //<package_name>//''
+  - Start ''make menuconfig''
+  - Enable ''[*] Advanced configuration options (for developers)  --->''
+  - Under that, enable ''[*]   Enable package source tree override''
+  - Ensure that your package is enabled to be built
+  - Exit ''make menuconfig'' saving your changes
+  - Build your package: ''make package///<package_name>///{clean,compile}''
+
+Note that this will only build the code that is currently checked into HEAD.  That means uncommitted changes sitting in your workspace will **not** be built.
+
+===== Anatomy of a Package Definition =====
+
+==== Example Makefile ====
+FIXME To be written...

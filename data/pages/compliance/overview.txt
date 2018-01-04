@@ -1,0 +1,95 @@
+====== Compliance and Certification Working Group (under TSC) ======
+The Compliance and Certification Work Group develops guidelines and conducts reviews on compliance-related software, tools, test plans and documentation for testing and certification requirements for AllJoyn code at the AllSeen Alliance.
+
+This page hosts all technical-related information associated with AllSeen Alliance Compliance and Certification including meeting schedules, agendas, and minutes. To contact the Compliance and Certification Work Group, send an email to the [[allseen-cc@lists.allseenalliance.org|Compliance and Certification (Technical) mail list]].
+
+Original proposal for this Working Group can be found [[tsc:Compliance and Certification Working Group Proposal|here]]
+
+Ram Jeyaraman is the Compliance and Certification Working Group chair.
+
+Committers:
+  * Aaron Pulliam (QCE)
+  * Diego Bartolome (AT4 Wireless)
+  * Jun Zhang (Haier)
+  * Ram Jeyaraman (Microsoft)
+  * Ryan Li (TP-Link)
+  * Takeshi Matsushita (Sharp)
+  * Telis Kaleas (QCE)
+  * Zhang Longfei (TP-Link)
+
+Contributors:
+  * Vinay Madenur Raghunatha (QCE)
+  * Lisa Lammens (QCE)
+
+===== Resources =====
+
+  * Mailing List: <allseen-cc@lists.allseenalliance.org> ([[https://lists.allseenalliance.org/mailman/listinfo/allseen-cc|Subscribe]])
+  * Issue Tracker: [[https://jira.allseenalliance.org/browse/ASACOMP|ASACOMP Jira]]
+
+===== Accessing the Compliance and Certification Working Group Documentation =====
+To access the Compliance and Certification Working Group Documentation, please create account and log-in to the  [[https://allseen.causewaynow.com/site/login|AllSeen Causeway tool]].
+
+Once logged in, select View Workgroups on the left side to select the Working Group you would like to visit/join
+
+After you join a Working Group, you will have access to that Working Group's dashboard, which includes a section containing all documentation
+
+If you have any questions, please email bpreston@linuxfoundation.org
+
+*** Note: All documentation is now located on the Causeway tool
+===== Meeting Schedule and Logistics =====
+C&C WG meetings are held weekly for one hour on alternate weeks on Wednesdays at 7:00am Pacific Time. To participate in the next meeting, please refer to the information below:  
+
+7am Pacific Time Meeting Info
+  * Meeting URL: https://meetings.webex.com/collabs/meetings/join?uuid=MCTGWOVD8SWIB18VF87K7CPWN3-HIZ3
+  * Meeting number: 196 107 334
+  * Meeting password: This meeting does not require a password.
+  * Audio Connection: +1-415-655-0001 US TOLL
+  * Access code: 196 107 334
+
+===== Document Process for WGs creating Service Frameworks =====
+
+The TSC formally approved (April 8, 2014) the following document process for all working groups. This process puts certain requirements on all WGs to provide support for compliance and certification. The Committer or Contributor of Core (About...) and each Service Framework (Config, Control Panel, Notifications, Onboarding, Lighting, etc...) MUST Provide to C&C WG:
+
+  * Interface Definitions docs associated with the Core Interfaces or Service Framework Interfaces. (see the Interface Design Guidelines page) [[https://wiki.allseenalliance.org/irb/interface_design_guidelines]]
+  * Test Case Specs which are written against the Interface Definition docs (Test Specs template available at [[https://allseen.causewaynow.com/wg/CC_WG/document/183|Test Specs Template]])
+  * Provide Test Code implementing the Test Case Specs 
+  * Please send documents to the [[allseen-cc@lists.allseenalliance.org|Compliance and Certification (Technical) mail list]].
+  * Allow at least 2 weeks lead time for C&C WG to approve documents 
+  * Documents MUST be approved by C&C WG BEFORE a product can be certified
+ 
+
+===== Versioning =====
+Version Numbering//
+The recent release process change (https://wiki.allseenalliance.org/_media/tsc/allseenalliance-tscminutes09.16.14.pdf) allows service projects to have multiple feature releases per core release. AllJoyn needs a versioning scheme that captures://
+  * Core dependency: <core-year>.<core-month>, e.g. 14.06
+  * Feature release level: For use by services with more than one feature release built on the same core version
+  * Bug fix: versions not affecting incompatibility and certification
+
+We will now append a letter for bug fix releases:
+<core-year>.<core-month>.<feature><bugfix-letter>
+Examples:
+  * 14.06.00 is an initial service release using core 14.06
+  * 14.06.00a is a bug fix release
+  * 14.06.00b is another bug fix release
+  * 14.06.01 is the next service feature release using core 14.06 
+
+As before, bug fix releases cannot add features, modify APIs, or introduce incompatible behavior. They are only intended to address critical stability and security issues.
+
+The AllJoyn core will only add features on major releases 14.12, 15.04, etc. 
+
+Documentation should follow this same versioning, including
+  * 14.06 Update1, Update2, etc is used when errors are found or clarifications are made  
+
+
+
+
+
+
+
+
+===== Meeting minutes and recordings =====
+
+  * [[https://meetings.webex.com/collabs/url/xAUJ1XG6wciqMczSgCIPZhkByP7tTX9t7ZLHfvoNNjS00000|Jan 13, 2016]]
+  * [[https://meetings.webex.com/collabs/url/xS9sJISdkAwtejNgGWjvouCfY2K3YV6NM4CEerKBvxq00000|Feb 10, 2016]]
+  * [[https://meetings.webex.com/collabs/url/PewVSHUc5EltUwomV1GQ8SFyJJV0UkX2x5HFk1QbbKK00000|Mar 23, 2016]]
+  * [[https://meetings.webex.com/collabs/url/hP33qptJ1crU28mUqi3yVq-KsOKKKlcOe9RIo1HFL4O00000|Jun 15, 2016]]

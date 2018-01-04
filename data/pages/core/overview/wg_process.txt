@@ -1,0 +1,145 @@
+====== CORE WORKING GROUP PROCESS======
+  * Last Updated: March 05, 2015
+  * Approved by Core WG: March 7, 2015
+
+The following is the result of discussions by the Core WG (Working Group) to identify basic processes and procedures for those contributing to the Core WG projects. 
+
+Feedback is encouraged and should be posted to the Core WG mail list.  You can subscribe by going here: [[https://lists.allseenalliance.org/mailman/listinfo/allseen-core]]
+
+===== COMMUNICATION=====
+There are 3 main forms of communication for the Core WG.
+  * Mail list
+  * Conference calls
+  * JIRA tickets
+
+===== MAIL LIST=====
+Discussions take place initially using the Core WG mail list, and then may be moved to a technical conference call, if needed.  
+
+The mailing list address is [[allseen-core@lists.allseenalliance.org]]
+
+To subscribe to the mail list or review the list archives, go here:  [[https://lists.allseenalliance.org/mailman/listinfo/allseen-core]]
+
+Some basic guidelines for the mail list:
+  * When discussing a specific project, preface the project name in the subject line
+    * e.g., [Security 2.0] Compelling technical question about the project
+  * Send all conference call requests to the Core WG mail list
+
+===== CONFERENCE CALLS=====
+
+**STANDING CONFERENCE CALLS**
+The Core WG conference call is held every other week to discuss general status, as well as other items of interest..
+Additionally, the Core WG holds a JIRA Triage meeting to discuss outstanding JIRA tickets.  These are typically held weekly, and are held twice a week for 4 weeks leading up to a major release. 
+If there is an item that requires deeper discussion, you are encouraged to set up a separate conference call.
+
+**WHERE TO FIND DIAL-IN INFORMATION FOR CONFERENCE CALLS**
+When a conference call is set up, the meeting information is sent to the Core WG mail list.  The access information for all recurring meetings is posted on the Core WG wiki page listed here: [[https://wiki.allseenalliance.org/core/overview]] 
+
+Tip: The meeting request will have an .ics file that, depending on your calendar application of choice, will add the meeting to your calendar along with all the information to dial into the meeting.
+
+**REQUESTING A CONFERENCE CALL**
+To set up a call, make a request on the Core WG mail list. If there is agreement on the mail list, a call will be set up for you with the agreed upon date and time.
+
+**RECORDING CONFERENCE CALLS**
+With the exception of the Triage meetings, all calls are recorded.  The recording, as well as any presented material, is posted onto the Core WG Wiki page.  It is the responsibility of the presenter to send the material presented to the Core WG mail list once the meeting is complete so that it can be added to the Core WG wiki page.
+
+===== JIRA PROCESS===== 
+[[https://jira.allseenalliance.org]]
+
+JIRA is used to track all activity impacting the Core WG code base.  The Core WG uses JIRA to track the following:
+  * New feature requests
+  * Identified issues requiring resolution (i.e., bugs)
+  * Tasks required to implement features
+  * Updates and additions to documentation
+
+**NEW FEATURE REQUESTS**
+All new features must have a corresponding JIRA ticket.  This ticket will act as the umbrella ticket to help track activity for the feature.  All issues and tasks related to this feature should be linked to the JIRA ticket for the feature.
+
+**SUBMITTING ISSUES**
+Everyone is encouraged to submit JIRA tickets for any issued discovered with the code base, samples, and associated documentation.  The more detail that is included in the ticket, the faster the issue can be triaged and resolved.
+
+**PRIORITY & SEVERITY** 
+The priority and severity settings are identified on a separate page linked [[core:overview:jira_process|here ]] 
+
+Typically, two weeks prior to a release, all remaining non blocking tickets are deferred to the next major release.
+
+**TRIAGE TEAM**
+The Core WG triage team meetings are listed on the [[core:overview|Core WG wiki page linked here]]. The role of the triage team is outlined [[https://wiki.allseenalliance.org/core/overview/jira_process#triage_team|here]]. 
+
+Projects within the Core WG that wish to hold separate triage meetings focused on their specific project must obtain approval from the Core WG.
+
+**CONTRIBUTIONS TO THE CODE BASE**
+Placeholder for the high-level process for contributing code and including it in a major release.
+
+{{:core:overview:jirahighlevelprocess.jpg|}} 
+
+Submit JIRA ticket -> Request a branch* -> Contribute code -> Test the code -> File JIRA tickets for each issue found during testing -> Fix the identified issues -> Obtain agreement from Core WG that the right amount of testing was completed -> Merge the branch with master -> Release branch is made for a specific release (i.e., 15.10).
+
+===== BRANCHES===== 
+**FEATURE/LARGE CODE CHANGES BRANCH**
+All features and large code changes are implemented on their own branch and are not merged to master until after sufficient diligence (testing) has been completed and the Core WG determines the feature is ready for release.
+If it is believed that the amount of code does not warrant making a branch, an exception request is made to the Core WG.
+
+**Updating your branch with master**: It is strongly advised to update your branch with the latest from Master as frequently as possible (every couple of days if not daily) to ensure early detection of any changes that adversely affect your feature.
+
+**INTEGRATION BRANCH**
+In order to ensure that all features targeted for a specific release manage the integration effectively, an integration branch is created daily around 2 months prior to a release. This will merge all targeted feature branches and perform automated tests.  All issues identified during this process are communicated via JIRA tickets.
+
+**Merging branches**: The branch owner must merge master into his branch within the past 48 hours before attempting to merge with master or an integration branch
+
+Note: All features being added to a specific release must complete their testing and merge with master before the release branch is created.
+
+**REQUESTING A BRANCH**
+All branch requests are done through the Core WG mail list.
+
+===== Development Guidelines ===== 
+
+**Proposed Changes**:  All proposed changes should be communicated to the Core WG email list to allow for discussion.  This includes advertising proposed changes to protocol, API syntax, and behavior.  
+
+**New Interfaces or updates to existing interfaces**: All updated and new interfaces must be submitted to the Interface Review Board and approved by the TSC and the Core WG.
+
+**Features and language bindings**:  All proposed features must be reviewed by the Core WG.  This should include agreement on supported language bindings.
+
+=== Contributions breaking Base Services builds ===
+If a contribution breaks the build in Base Services, it should be discussed by the Core WG either on the mail list or at the weekly status meeting.
+
+  * The contribution will not get merged until the break in the build is addressed  
+  * If there is a valid reason then the contributor needs to appeal to a committer 
+    * e.g. they have a corresponding fix in Base Services to address what they are doing
+    * Committers can override that particular failure
+
+
+===== Proposed Breaking Change Process ===== 
+TSC approval is required for any change which would break an existing app that worked with the last major release.   In general, breaking changes should be avoided by instead adding a new API, and deprecating the existing API (following the below Deprecation Process) as needed.
+
+===== Deprecation Process ===== 
+
+  *   Any change in developer API requires the working group approval
+      * TSC process still being defined
+  *   AllJoyn interface changes require TSC approval
+
+All deprecated APIs are supported for 2 major releases, removed after 4 major releases and a runtime and/or compile time warning generated if API is used
+
+Example:
+  * API deprecated in 15.04
+  * Tested in 15.04 & 15.10
+  * Not tested after 15.10
+  * API remains untested in 16.04 & 16.10
+  * Removed in 17.04
+
+====== Changing Process ======
+This process is meant to be a living document and should be updated based on the working group's evolving requirements.  This high level process helps track and manage the change requests.
+
+  - Make a request to add or modify a process using the discussion widget at the bottom of the page
+  - Send a notification to the working group mail list pointing to this page so others can comment
+  - Propose an agenda item for the following working group status meeting to discuss the request
+  - Working group discusses the request and any updates are added to the discussion widget at the bottom of this page
+    - Note: Working group may require additional time to discuss the proposal
+  - Once the working group is in agreement, a notice is sent to the mail list giving 4 working days for final comments and the process is added/modified 7 working days after the notice is sent out.
+
+====== Feedback ======
+This page is expected to evlove over time.  Your feedback is encouraged.  Please use the discussion widget at the bottom of this page to submit your feedback and ideas.
+
+If other working groups or projects choose to leverage this process and make changes to the process, please add your changes to the discussion below and the Core WG team will see if it should be added to this page.
+
+
+~~DISCUSSION~~

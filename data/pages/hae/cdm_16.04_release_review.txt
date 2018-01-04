@@ -1,0 +1,65 @@
+====== CDM 16.04 Release Review ======
+
+===== Features =====
+
+  * 45 interfaces are included in this release.
+  * Integrated controllee and controller are supported for SCL.
+  * Integrated controllee is supported for TCL.
+  * Integrated controller is supported for Android.
+
+The original name of the framework was HAE (Home Appliance & Entertainment). Because it was used for the most of the development process, there could be somewhere (i.e. inside and outside CDM) references quoting this old name.
+
+===== Software Release =====
+
+  * https://git.allseenalliance.org/cgit/cdm.git/tree/cpp/docs/ReleaseNotes.txt?h=v16.04
+  * https://git.allseenalliance.org/cgit/cdm_tcl.git/tree/docs/ReleaseNotes.txt?h=v16.04
+  * API Reference - You can make Doxygen manual when you build the code. (Refer Doxygen part of README.md file in the downloaded code)
+
+===== Non-Code Aspects =====
+
+  * See README.md file in the downloaded code.
+
+===== Architectural Issues =====
+
+None
+
+===== Security Issues =====
+
+None
+
+===== Quality Assurance =====
+
+Every published CDM Interface was tested by running it as a component of different CMD Controlee applications, covering for both SCL and TCL cases, and make interact them with CMD Integrated Controller applications based on SCL and Android.
+
+The interfaces were tested on the following platforms:
+
+- CDM SCL and TCL:
+
+  - Linux Ubuntu 16.04 LTS (32 bit)
+  - Linux Ubuntu 14.04 LTS (64 bit)
+  - Linux Ubuntu 14.04 LTS (32 bit)
+
+- Android Integrated Controller:
+
+  - Android JellyBean 4.2.2
+  - Android Marshmallow 6.0
+
+===== Known Issues =====
+
+[[https://jira.allseenalliance.org/browse/ASABASE-884?jql=fixVersion%20%3D%2016.04%20AND%20labels%20in%20(HAE%2C%20CDM)|Search for known issues]].
+
+===== Compatibility =====
+
+Compatible with the 16.04 AllJoyn Core and Base Services
+
+===== End-of-life =====
+
+None
+
+===== Standards Compliance =====
+
+None
+
+===== Schedule Post-Mortem =====
+
+TBD

@@ -1,0 +1,79 @@
+====== Downloading the Source ======
+
+Download the source by using the repo tool (works on Linux and Mac) or by running individual git commands (works on all platforms).
+
+Additionally, some platforms have additional details:
+  * [[develop:openwrt|OpenWRT]]
+
+===== Download Using Repo =====
+
+==== Install Repo ====
+
+Follow these instructions to [[http://source.android.com/source/downloading.html#installing-repo|download the repo tool]].
+
+==== Create Working Directory ====
+
+<code>
+mkdir WORKING_DIRECTORY
+cd WORKING_DIRECTORY
+</code>
+
+==== Init Repo Client ====
+
+<code>
+repo init -u https://git.allseenalliance.org/gerrit/devtools/manifest
+</code>
+
+To sync with the most recent tags (including bugfix releases) for a given release number, e.g. [[release:14.06|v14.06]] or [[release:14.12|v14.12]]:
+
+<code>
+repo init -u https://git.allseenalliance.org/gerrit/devtools/manifest -b RB14.12 -m versioned.xml
+</code>
+
+Or, if you are working on a future release, run this to pull the tip from the release branch, e.g. RB15.04
+
+<code>
+repo init -u https://git.allseenalliance.org/gerrit/devtools/manifest -b RB15.04
+</code>
+
+Note, you can safely ignore these "errors":
+<code>
+curl: (22) The requested URL returned error: 404
+Server does not provide clone.bundle; ignoring.
+</code>
+==== Download the Source ====
+
+<code>
+repo sync
+</code>
+
+===== Download Using Git =====
+
+Run these commands to download the source by using individual git commands
+
+<code>
+mkdir WORKING_DIRECTORY
+cd WORKING_DIRECTORY
+
+git clone https://git.allseenalliance.org/gerrit/core/alljoyn.git core/alljoyn
+git clone https://git.allseenalliance.org/gerrit/core/ajtcl.git core/ajtcl
+git clone https://git.allseenalliance.org/gerrit/services/base.git services/base
+git clone https://git.allseenalliance.org/gerrit/services/base_tcl.git services/base_tcl
+git clone https://git.allseenalliance.org/gerrit/data/datadriven_api.git data/datadriven_api
+git clone https://git.allseenalliance.org/gerrit/devtools/codegen.git devtools/codegen
+</code>
+
+Run these commands to optionally sync to a specific revision, like [[release:14.06|v14.06]] or [[release:14.02|v14.02]]
+
+<code>
+export VER=v14.06
+git -C core/alljoyn checkout -b $VER $VER
+git -C core/ajtcl checkout -b $VER $VER
+git -C services/base checkout -b $VER $VER
+git -C services/base_tcl checkout -b $VER $VER
+
+# note on Windows, the commands look like this...
+set VER="v14.06"
+git -C core/alljoyn checkout -b %VER% %VER%
+
+</code>

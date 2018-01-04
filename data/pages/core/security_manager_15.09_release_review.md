@@ -1,0 +1,57 @@
+# Security Manager 15.09 Release Review
+
+## Non-Code Aspects
+
+
+*  [Security Manager Description](https///wiki.allseenalliance.org/core/security_manager_description)
+
+*  [Building and Running](https///git.allseenalliance.org/cgit/core/securitymgr.git/tree/docs/README.md?id=v15.09)
+
+## Features, Issues Addressed and Known Issues
+
+Please see the [Release Notes](https///git.allseenalliance.org/cgit/core/securitymgr.git/tree/docs/ReleaseNotes.txt?id=v15.09) for most relevant details.
+
+For a complete list of fixed issues check this [Jira query](https///jira.allseenalliance.org/issues/?jql=project%20%3D%20ASACORE%20AND%20fixVersion%20in%20(%2215.09%22)%20AND%20component%20%3D%20%22Security%20Manager%22%20ORDER%20BY%20key%20ASC)
+
+For a complete list of known issues check this [Jira query](https///jira.allseenalliance.org/issues/?jql=project%3D%22Core%20SW%22%20and%20status%20not%20in%20(closed%2C%20resolved)%20and%20type%20not%20in%20(task%2C%20%22New%20Feature%22)%20%20and%20component%20%3D%20%22Security%20Manager%22%20order%20by%20priority%20DESC%2C%20id%20ASC).
+
+## Quality Assurance
+
+The functional test plan for the Security Manager can be found [here](https///wiki.allseenalliance.org/_media/core/security_enhancements/release_plan/secmgr2.0-func-test-plan-rb15.09.pdf).
+
+The functional tests have run successfully on the following platforms:
+
+
+*  Linux Ubuntu 14.04 LTS (64 bit)
+
+*  Windows 7/8.1 (64 bit)
+
+*  Windows 10 (64 bit)
+
+A system test where multiple AllJoyn applications ran in separate processes and were managed by a security manager was executed. The test is known as the "multipeer_claim" test.
+
+## Toolchains used to build SDKs
+
+ | SDK                                  | Toolchain Used | 
+ | ---                                  | -------------- | 
+ | security-manager-15.09.00-src.tar.gz | N/A - source   | 
+
+## Architectural Issues
+
+There were no major architectural changes.
+
+## Security Issues
+
+There are no known security issues.
+
+## Compatibility
+
+There are no known compatibility issues.
+
+## End-of-life
+
+N/A
+
+## Post-Mortem
+
+Pending

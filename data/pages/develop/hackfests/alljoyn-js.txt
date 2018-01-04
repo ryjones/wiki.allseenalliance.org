@@ -1,0 +1,441 @@
+====== Before you read ======
+
+If you already have a device that has AllJoyn and AllJoyn.js installed on it and need help with writing an AllJoyn.js application you can refer to [[alljoyn-js:getting-started|this hands-on guide]].
+
+====== Getting started with AllJoyn.js ======
+
+The primary goal of AllJoyn.js is to make it easy to develop AllJoyn applications in one of the most widely used programming languages in the world.
+
+AllJoyn.js is a deep integration of the AllJoyn Thin Core Library (AJTCL) and base services with Duktape (www.duktape.org), an ECMAScript 5.0 compliant compiler and runtime specifically designed for running in small-footprint embedded microcontrollers. Although designed to work within the limited resources of embedded mocrocontrollers, Alljoyn.js is not limited to this use case and can also be used for general AllJoyn programming on Windows, Linux, and other high-level operating systems.
+
+The AllJoyn.js runtime environment includes a “ScriptConsole” service that provides support for installing new scripts and interacting with a running JavaScript application. The ScriptConsole service is an AllJoyn service and like any other AllJoyn service can be accessed over the network from another device running a corresponding client application. The current code base includes a command line ScriptConsolse client on Linux, Windows and Mac OSX. This command line tool can be used to install new scripts into a running AllJoyn.js instance and also allows JavaScript code to be entered in real time. The ScriptConsole also supports remote logging of string data passed to the print() and alert() JavaScript functions.
+
+====== Building from source (Windows and Linux) ======
+
+Building AllJoyn.js from source requires a few dependencies. The AllJoyn functionality is based off of AllJoyn Thin Client. Underneath the Thin Client is the JavaScript engine itself which compiles and runs the scripts. This JavaScript engine is called duktape. To interface with AllJoyn.js the console application is needed. The console allows you to send scripts over-the-air as well as send “evals”. The console application requires AllJoyn Standard Client.
+
+===== Duktape =====
+
+AllJoyn.js requires a dependecy called duktape which is the ECMAScript compiler. That source code can be found here. Please download [[http://duktape.org/duktape-1.2.1.tar.xz|version 1.2.1]]. After downloading, extract the archive somewhere and note the location. AllJoyn Thin Client compiles and links against the duktape source so an environment variable needs to be set to duktape's location.
+
+Windows
+<code>
+set DUKTAPE_DIST="C:\Path\to\duktape\root"
+</code>
+
+Linux
+<code>
+export DUKTAPE_DIST=/Path/to/duktape/root
+</code>
+
+===== AllJoyn Thin Client =====
+AllJoyn.js itself is built on top of AllJoyn Thin Client. The console application is built off of AllJoyn Standard Client. You will need to have both building in order to run AllJoyn.js as well as use the console.
+
+Instructions for getting Thin Client sources can be found [[https://wiki.allseenalliance.org/develop/downloading_the_source|here]]
+
+Instructions for building and running can be found [[https://wiki.allseenalliance.org/develop/building_and_running|here]]
+
+Note: AllJoyn Thin Client must be built under the RB15.04 release branch.
+
+<code>
+git checkout RB15.04
+scons
+</code>
+===== Base Services =====
+
+AllJoyn.js requires additional services above just AllJoyn Thin Client. The git repository for the base services can be downloaded using git clone:
+<code>
+git clone https://git.allseenalliance.org/gerrit/services/base.git
+</code>
+
+The RB15.04 release branch must also be checked out:
+<code>
+git checkout RB15.04
+</code>
+===== AllJoyn.js =====
+Once Thin Client has been built you can move onto getting and building AllJoyn.js. First you need to ensure that your folder structure is setup correctly or AllJoyn.js wont know where to find the libraries you built in the previous steps. Your folder structure should be as follows:
+
+<code>
+allseen
+   | ---- core
+   |        | ---- alljoyn-js
+   |        | ---- ajtcl    (Thin Client)
+   |        | ---- alljoyn  (Standard Client)
+   |
+   | ---- services
+            | ---- base_tcl
+            | ---- base
+</code>
+
+As seen above, the AllJoyn.js git repository must be checked out at the same level as AllJoyn Thin Client. AllJoyn.js can be pulled from git in the same manor as the other AllJoyn repositories:
+<code>
+git clone https://git.allseenalliance.org/gerrit/core/alljoyn-js.git
+git checkout RB15.04
+scons
+</code>
+===== Console Application =====
+
+To build the console application another environment variable needs to be set which points to the location of the alljoyn library (alljoyn.lib). This location is in the build directory in the alljoyn (Standard Client) repository. The full path is “/build/<os>/<architecture>/<debug|release>/dist”. Set the environment variable the same way as you did for duktape.
+
+Windows
+<code>
+set ALLJOYN_DIST="<path-to-alljoyn-folder>/build/win7/<architecture>/<variant>/dist"
+</code>
+
+Linux
+<code>
+export ALLJOYN_DIST=<path-to-alljoyn-folder>/build/linux/<architecture>/<variant>/dist
+</code>
+
+With that set the console application should be able to build. Navigate to the console folder and run scons
+<code>
+cd console
+scons
+</code>
+===== Building and Running =====
+
+Once the folder structure is setup correctly you should be able to build AllJoyn.js by running scons. This will create a binary, "alljoynjs(.exe)". Running a script can be done two different ways, directly passing it in via the command line, or through the console (over-the-air).
+
+==== Passing the script as a parameter ====
+
+Before running the alljoynjs binary another environment variable needs to be set. LD_LIBRARY_PATH tells alljoynjs where any libraries are that it may need. Specifically alljoynjs needs libajtcl.so. This library is located in the Thin Client git repo.
+<code>
+export LD_LIBRARY_PATH=<path-to-libajtcl.so>
+</code>
+Remember that this is only a temporary solution and if it is desired for this path to persist you should add this command to your .bashrc or .bashprofile file. Another option is to prefix running alljoynjs with the LD_LIBRARY_PATH variable.
+
+After LD_LIBRARY_PATH is set you can run AllJoyn.js.The optional parameters are:
+<code>
+--name          Set the device name for the AllJoyn.js instance
+
+--nvram-file    Specify an NVRAM file to be used (useful if running multiple instances from the same directory)
+
+--log-file      Specify a log file to be used (Linux only)
+
+--daemon        Run in daemon mode (background, Linux only)
+
+--debug         Print debug logs
+
+<script>        The script to be ran (must be last parameter)
+
+./alljoynjs --name my_js --nvarm-file ajtcl.nvram --log-file log.txt --daemon my_script.js
+</code>
+
+==== Installing a script via the Console ====
+As with alljoynjs LD_LIBRARY_PATH will need to be set. Instead of libajtcl.so it needs to point to the location of alljoyn.lib. Depending on how you got your executable (pre-compiled or built from source) the location will either be in the same directory as the console itself or in the build directory of the alljoyn git repository. The full path in the git repository is:
+<code>
+export LD_LIBRARY_PATH="/alljoyn/build/<os>/<architecture>/<variant>/dist/cpp/lib"
+</code>
+
+Once that is set the console can be ran. There are just two optional parameters allowed:
+<code>
+--name          A specific AllJoyn.js device you want to connect to
+
+--debug         Start the console in debugger mode
+
+<script>        The script to be installed (must be last parameter)
+
+./ajs_console --name my_js my_script.js
+</code>
+
+In the console window you will see (where unique name and session ID are different):
+<code>
+Found script console service: :sL2zNFpI.35
+Joined session: 1744270397
+</code>
+
+At this point you can start interacting with the AllJoyn.js device. The basic usage allows for "Evals" which are simple lines of JavaScript that the AllJoyn.js device will execute and return the result
+<code>
+var i = 10;
+Eval: var i = 10;
+Eval result=0: undefined
+var j = 20;
+Eval: var j = 20;
+Eval result=0: undefined
+i + j
+Eval: i + j;
+Eval result=0: 30
+</code>
+
+Don't worry about the several undefined eval results. This just means that the line “var i = 10” had no return value. The console also supports real time debugging which is covered in a later section below.
+====== Download precompiled binaries ======
+
+===== Windows, Linux and Mac =====
+The Allseen Alliance hosts pre-built binaries for AllJoyn.js and the console application.
+
+[[https://build.allseenalliance.org/ci/job/alljoyn-js-win/|AllJoyn.js Windows]]
+
+[[https://build.allseenalliance.org/ci/job/linux-js-nightly/|AllJoyn.js Linux]]
+
+[[https://build.allseenalliance.org/ci/job/alljoyn-js-mac/|AllJoyn.js Mac]]
+
+The console application still requires the dependency of several Standard Client libraries. Those libraries can be obtained, pre-compiled, by [[https://allseenalliance.org/developers/download|downloading the SDK]]. Similar to building from source, you will need to point the console to the location of these libraries.
+
+Windows
+<code>
+set ALLJOYN_DIST="<path-to-SDK>"
+</code>
+
+Linux
+<code>
+export ALLJOYN_DIST="<path-to-SDK>"
+</code>
+
+Once that is done, you can download the pre-built console application for your platform.
+
+[[https://build.allseenalliance.org/ci/job/alljoyn_js-console-win/|Console Windows]]
+
+[[https://build.allseenalliance.org/ci/job/alljoyn_js-console-linux/|Console Linux]]
+
+[[https://build.allseenalliance.org/ci/job/alljoyn_js-console-mac/|Console Mac]]
+===== Arduino Yun =====
+
+Assumes you have [[http://wiki.linino.org/doku.php?id=wiki:upgradetolininoio|updated your Yun to the LininoIO image]].
+
+AllJoyn.js has been permanently added to the Arduino Yun/Linino ONE repositories and can be installed using opkg:
+<code>
+$ opkg update
+$ opkg install ajtcl-alljoynjs
+</code>
+(Note:  Internet connection required)
+
+====== Dashboard Application ======
+
+In order to take full advantage of the services that AllJoyn.js implements you will need an Android application called Dashboard. Dashboard will render a control panel, consume notifications, on-board AllJoyn(.js) devices, and allow you to edit config values of those devices. Dashboard can be found in the [[https://play.google.com/store/apps/details?id=org.alljoyn.dashboard&hl=en|Google Play Store]] 
+
+====== Debugging AllJoyn.js ======
+Now that you have AllJoyn.js running you've probably started writing your own scripts. As your scripts get more and more complex it can be easy to introduce a bug. These bugs can sometimes be very hard to find. As with many other programming languages (C/C++, Java etc.) there are debugging programs, like GDB for example, to help lead you to your bug. AllJoyn.js also has the capabilities to debug your program similar to GDB. Bundled with the console application is a purely command line debugger. There is also a Python based GUI debugger (recommended). 
+
+To use the command line debugger there is no special dependencies. It builds with the console application out of the box. To use it you simply run the console with the flag "--debug".
+<code>
+./ajs_console --debug
+</code>
+You should see the console connect as usual but instead of your script immediately executing it will be paused as soon as the console is connected to the AllJoyn.js target. At this point you can begin to execute debug commands. Debug commands are all prefixed with "$" to separate them from regular console commands like Eval. Below is a list of all the debug commands:
+<code>
+$in                      // Step in
+$out                     // Step out
+$over                    // Step over
+$pause                   // Pause execution
+$resume                  // Resume execution
+$addbreak <file> <line>  // Add a breakpoint
+$delbreak <index>        // Delete a breakpoint
+$lb                      // List all breakpoints
+$locals                  // List all local variables
+$bt                      // See your stack trace
+$getvar <name>           // See a variable and its value
+$putvar <name> <value>   // Change a variables value
+$getscript               // See the current script
+$eval <command>          // Do an eval while debugging
+$attach                  // Attach to an AllJoyn.js target
+$detach                  // Disconnect the debugger
+</code>
+If your already familiar with debugging principals and/or GDB then you can continue onto the next section. If this is your first time using a debugger then you may want to continue reading. 
+===== Stepping =====
+While your debugging the most common commands will be some form of a step. Stepping allows you to walk over your code line by line. Debuggers have three step commands: In, Out, and Over. Stepping in can have two effects, if the line your on is a function you will be taken into that function. If not you will simply step to the next line. Step over simply steps to the next line of code, regardless what the current line does. Step out will take you out of the current programs scope. For example, if your in a function and you execute step out, you will be brought up to the line where that function was called.
+<code>
+1.  function my_func() {
+2.      var s = 'a string';       <-- (4)
+3.      var t = 'another string'; 
+4.      print('In my_func()');
+5.      print(s + t);
+6.  }
+7. 
+8.  function main() {
+9.      print('In main()');  <-- (2)
+10.     my_func();           <-- (3)
+11. }                        <-- (5)
+12. 
+13. main();    <--- (1)
+</code>
+
+In the example above you would start at the marker labeled (1) or line 13. From here stepping in would take you into main() at marker (2). You could then step over, arriving at (3). Stepping in again would take you to the start of my_func() at marker (4). If you decided to step out from (4) the remainder of my_func() would execute and you would step to after my_func() was called, or marker (5). That covers the basics of stepping in a debugger. The next topic covers breakpoints.
+===== Breakpoints =====
+Single stepping becomes tedious if you need to cover large sections of code. You may know that you have a bug in a specific function and don't need to step through the rest of your script. This is where breakpoints become useful. A break point is a "tag" or "marker" on a line of code that halts execution when the script execution reaches that point. To add a breakpoint using the text console you will use the addbreak command.
+<code>
+$addbreak <file> <line>
+</code>
+The file parameter is the name of your script and the line is the line in the script your wish to add the breakpoint on. Once you have added a breakpoint you can resume execution and if that line gets hit the debugger will automatically pause at that line. To delete a breakpoint you will use the delbreak command.
+<code>
+$delbreak <index>
+</code>
+The index you provide (0 - N) corresponds to when you added the breakpoint. For example the first breakpoint you add is index zero, the second is one etc. If you delete a breakpoint all indexes are shifted down, meaning you will never have a gap in indexes. For example adding three breakpoints will give you index's 0, 1, and 2. Say you then delete the breakpoint at index 1. The breakpoint that was at index 2 will now be at index 1, and index zero will remain the same. If this is confusing there is a command to show you all your current breakpoints, "$lb". This stands for list breakpoints and it will do just that. If you have added and removed breakpoints and are not sure what indexes correspond to breakpoints simply execute $lb and you will be shown all current breakpoints.
+<code>
+$lb
+Breakpoints: 
+File: print2.js, Line: 10   <-- Index 0
+File: print2.js, Line: 20   <-- Index 1
+File: print2.js, Line: 15   <-- Index 2
+</code>
+The next section is brief but important because it shows you where you are and where you have been in your script.
+===== Stack Trace =====
+You may be debugging and get lost in your script. After stepping in and out it may be difficult to remember where you were or where you will go if you execute your next step. This is where your stack trace comes into play. It will list your current position and all other points in time where your scope has changed. Take the previous example:
+<code>
+1.  function my_func() {
+2.      var s = 'a string';       
+3.      var t = 'another string'; 
+4.      print('In my_func()');     <-- You are here
+5.      print(s + t);
+6.  }
+7. 
+8.  function main() {
+9.      print('In main()'); 
+10.     my_func();         
+11. }                     
+12. 
+13. main(); 
+</code>
+Say your stepping through the above script and you stop at line 4. If you are here and you execute $bt you will be presented with:
+<code>
+$bt 
+File: my_script.js, Function: my_func, Line: 4, PC: 3
+File: my_script.js, Function: main, Line: 10, PC: 2
+</code>
+This means that your currently at line 4 in my_func(). The second line shows you that the function that called my_func() was main() and it was called at line 10. This is just a simple stack trace but as you get deeper and deeper into functions the trace will grow.
+At this point we have covered all the needed functions for navigating a script using the debugger. Until now we have covered all the functions to get you stepping through your scripts. The next section goes over functions to see and manipulate variables.
+==== Variable Functions ====
+Being able to see the value of variables is quite useful for finding a bug in your script. Up until now you have probably had to print out variables in question to determine their values at run time. There are several debugging functions that allow you to see a variables value while debugging. First you will need to get a list of variables using $locals.
+<code>
+$locals
+</code>
+This will print out all the current local variables and their values in your current scope. Some complex data types like objects or pointers are not as useful to you in this context because it will just show you the C pointer to that variable. Types such as numbers, strings, or buffers will show you the real value which is very useful. Similar to $locals is $getvar which just gets a single variable as opposed to multiple. The key difference is that $getvar works on global variables not just locals:
+<code>
+var glb1 = "I am a global";
+
+function main() {
+   var local = "I am a local";
+   print('Im in main');
+}
+
+main();
+</code>
+In this script the only way to see the value of glb1 is to use $getvar:
+<code>
+$getvar glb1
+I am a global
+</code>
+The counterpart to $getvar is $putvar and it does what you expect it to. $putvar allows you to change the value of a variable while debugging.
+<code>
+1.  function my_func() {
+2.      var s = 'a string ';       
+3.      var t = 'another string'; 
+4.      print('In my_func()');     <-- You are here
+5.      print(s + t);
+6.  }
+7. 
+8.  function main() {
+9.      print('In main()'); 
+10.     my_func();         
+11. }                     
+12. 
+13. main(); 
+</code>
+We will use the same script for this example as well. Assuming your at line 4, you can use $putvar to change the output of the print statement on line 5.
+<code>
+$putvar s "changed "
+$over
+$over
+PRINT: "changed another string"
+</code>
+Instead of printing "a string another string" it prints "changed another string". This can be very useful if you, for example, want to pass in different values into a function and see the result. Instead of having to change the script and re-run it repeatedly you can just use $putvar. The last debugging function is probably the most useful, and also exists outside of the debugging world, Eval.
+===== Eval =====
+Using Eval while debugging behaves almost identically as using eval regularly. Note that while debugging you must use $eval and cannot use the standard eval by simply typing the command. Eval in the context of debugging is syntactically the same though, you just need to prefix your eval string with $eval.
+<code>
+$eval 1+1
+2
+</code>
+Using Eval while debugging is very powerful. Its use overlaps getvar and putvar because you can use it to get and change variables.
+<code>
+$eval i = 10;
+// i will now equal 10
+</code>
+You can eval use it to create new variables while your debugging, then use those new variables in conjunction with locals or globals that already exist in your script. Another use is for object inspection. Since getvar does not give you an objects elements you can use eval and stringify to get the elements of an object, then in turn the elements values. Say you have an object.
+<code>
+var object = {
+   int_val:100,
+   str_val:"string"
+}
+</code>
+You can then do
+<code>
+$eval print(JSON.stringify(object));
+{"int_val":100,"str_val":"string"}
+</code>
+Now that you know that object has elements 'int_val' and 'str_val' you can interrogate them using eval.
+<code>
+$eval object.int_val
+100
+$eval object.str_val
+"string"
+</code>
+Eval can even be used to execute a function while debugging
+<code>
+$eval foo(bar);
+<foo will then be executed>
+</code>
+The command line debugger is useful but very primitive. For debugging, a GUI is very important because it allows you to see most of what was just talked about all on one screen, without the need to execute commands for each little piece of information. The text console was talked about in depth because it will give you better understanding of what is actually going on under the covers of the debugger. Fortunately a GUI debugger is available to you as a Python application. Underneath it is executing the same commands that were just talked about but it organizes the output in windows to be easily viewed and manipulated. The GUI debugger does require some extra dependencies which will be discussed further.
+===== Python GUI Debugger =====
+If you have read and understand the previous sections on debugging the GUI will come naturally to you. Most of the functions are available as buttons and things like breakpoints and stack traces can be viewed in windows. The easiest way to learn how to use the GUI debugger is to just start using it with some of your scripts. In order to use it, though, you will need to install some additional dependencies. These dependencies are, Python (version 2.7 or 3.4 (for Windows)), Python extensions, and Tkinter. 
+
+==== Linux ====
+
+On linux use the following commands to get the additional dependencies:
+<code>
+sudo apt-get install build-essential python-dev
+</code>
+Once installed navigate to your AllJoyn.js repository and cd to the console folder. From here you need to build the library that allows Python to communicate with AllJoyn.js.
+<code>
+cd <ajs_git_repo>
+cd console
+python setup.py build
+python setup.py install <--- May need to run as root user
+</code>
+These commands should build the library and install it in a location that python can find. If the installation was successful you can start up the GUI and start debugging.
+<code>
+python pydebugger.py
+
+python debugger.py --name <device>
+</code>
+
+Once an AllJoyn.js client is found the GUI will pop up and you can start debugging your script. 
+==== Windows ====
+Getting the Python GUI built on Windows is not quite as easy as Linux and may require a hack to do so. The problem at hand is that Python 3.x that is available for download was built using Visual Studio 2010. If you have VS 2010 installed you should have no problem getting it working. If not you will need to go through some extra steps for it to build correctly. Regardless of VS version the initial steps are the same.
+
+1. Download [[https://www.python.org/downloads/release/python-342/|Python 3.4]] (preferably 64 bit)
+
+2. Download [[http://sourceforge.net/projects/pywin32/files/|Python extensions for Windows]] (same architecture as Python 3.4)
+
+3. Install, Python 3.4 then Python extensions for Windows
+
+If you plan on using Python 3.4 for all your current Python needs then you do not need to follow the next step. If you already had Python 2.x installed and still need to use it then you must rename the python.exe in your Python 3.4 installation to python34.exe. This prevents your system from defaulting to Python 3.4 when "python" is evoked from the command line. Instead, to run Python 3.4, you can run "python34" from the command line.
+
+The next steps will depend on your Visual Studio version. If you have VS 2010 skip to the "Building" section. Otherwise continue.
+
+As mentioned before, since Python 3.4 was build using Visual Studio 2010 and you have a different version, you need to "trick" Python into thinking that it is using VS 2010. This can be done by navigating to the Python 3.4 install directory and opening the file:
+<code>
+<Python34 dir>/Lib/distutils/msvs9compile.py
+</code>
+Search for the line:
+<code>
+VERSION = get_build_version()
+</code>
+Replace it with:
+<code>
+VERSION = 12.0
+</code>
+The actual number you use (12.0 in this case) will depend on the VS version you have installed.
+
+VS 2011 = 10.0
+
+VS 2012 = 11.0
+
+VS 2013 = 12.0
+
+Once that change is made you may move on to building the Python GUI debugger below.
+==== Building ====
+The steps for building are nearly the same as Linux except you should use Python 3.4 to run setup.py.
+<code>
+cd <ajs_git_repo>
+cd console
+python34 setup.py build
+python34 setup.py install
+</code>

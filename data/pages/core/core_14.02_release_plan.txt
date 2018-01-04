@@ -1,0 +1,29 @@
+====== Core 14.02 Release Plan ======
+
+===== Introduction =====
+
+  * Dev. Lead: Todd Malsbary
+  * QA Lead: David McBride
+===== Themes and Priorities =====
+
+This is a bug-fix release.
+
+===== Deliverables =====
+
+AllJoyn core.
+
+===== Milestones =====
+
+^ Milestone              ^ Date              ^ Details                              ^
+| API Freeze             | 2014/02/04        |                                      |
+| Feature Freeze         | 2014/02/04        |                                      |
+| Documentation Complete | 2014/02/28        |                                      |
+| QA Complete            | 2014/02/28        |                                      |
+
+===== Expected Work Group Dependencies =====
+
+Core has no dependencies on other work groups.
+
+===== Compatibility with Previous Releases =====
+
+Build time compatibility has changed: BundledDaemon.o and libajdaemon.a are now called BundledRouter.o and libajrouter.o to match the core terminology.

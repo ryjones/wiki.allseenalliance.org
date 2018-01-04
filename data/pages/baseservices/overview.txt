@@ -1,0 +1,41 @@
+====== Common Frameworks Working Group ======
+
+The Common Frameworks Working Group develops the basic services such as Notifications, Control Panel and Onboarding that depend on the AllJoyn core; other high-level services can also build upon these services.
+
+[[https://wiki.allseenalliance.org/tsc/committers#common_frameworks|List of committers]]
+
+===== Resources =====
+
+  * Mailing List: <allseen-baseservices@lists.allseenalliance.org> ([[https://lists.allseenalliance.org/mailman/listinfo/allseen-baseservices|Subscribe]])
+  * Issue Tracker: [[https://jira.allseenalliance.org/browse/ASABASE|ASABASE Jira]]
+
+===== Projects =====
+
+  * [[baseservices:start|Base Services]]
+  * [[:locationservices|Location Services]]
+  * [[:mediadelivery|Media Delivery]]
+
+===== Release Planning =====
+
+  * **Base Services v16.10**
+    * {{baseservices:common_frameworks_roadmap_16.10.pdf |Release plan}}
+  * **Base Services v16.04**
+    * {{baseservices:base_service_16.04_release_plan.pdf |Release plan}} 
+
+===== Weekly Triage Meetings =====
+
+The Working Group holds weekly, one hour triage meetings. The purpose of these meetings currently is to review [[https://jira.allseenalliance.org/browse/ASABASE|JIRA]] with a focus on the next Base Services release.
+
+==== When ====
+
+Mondays at 2:00pm Pacific Time.
+
+==== How to Attend ====
+
+**Phone Dial-in ([[http://www.howtocallabroad.com/usa/|USA]]):** +1-415-655-0001 US TOLL\\
+**Meeting ID:** 194 148 470\\
+**Meeting [[https://meetings.webex.com/collabs/#/meetings/detail?uuid=M7UAES8KG25W8BXVEIRMHZXZ0H-HIZ3&rnd=793628.65281|Link]]:** https://meetings.webex.com/collabs/#/meetings/detail?uuid=M7UAES8KG25W8BXVEIRMHZXZ0H-HIZ3&rnd=793628.65281\\
+
+**For callers outside the US:** It is recommended that you use the WebEx Java Plug-In to join the meeting.
+
+For more information about joining a WebEx meeting please visit the [[https://meetings.webex.com/collabs/support/nfaqs?_iframe=/webex/v1.3/support/en_US/faq/faq_meetings_signed_out.htm| WebEx FAQ]]

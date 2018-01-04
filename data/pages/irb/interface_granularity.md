@@ -1,0 +1,15 @@
+### Interface Granularity
+
+> **An Interface must encapsulate a single, coherent block of information and functionality.**
+
+Do not create everything-and-the-kitchen-sink Interfaces. Split the functionality and data provided by the 
+Interface up in logical, coherent blocks. This will facilitate reuse of your Interface by others with similar, but not identical, use cases.
+
+Don't overdo it either: it does not make sense to split every property, signal and method off into its own separate Interface.
+
+> **When parts of the functionality envisioned for an Interface are optional, split them off into a separate Interface.**
+
+An Interface definition is an all-or-nothing promise: if a bus object implements this Interface, it must implement all functionality defined in the Interface. By splitting optional features off in separate Interfaces, it becomes trivial to check whether a given object supports the optional functionality: it does if it implements the associated Interface.
+
+~~DISCUSSION~~
+

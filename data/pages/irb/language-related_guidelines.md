@@ -1,0 +1,48 @@
+# Deprecated
+
+The document you are viewing is the draft 1.0 version of the Interface Design Guidelines. It is no longer maintained, and slowly getting out of date. It is preserved on the wiki for historical purposes, the discussion at the bottom of the individual subpages may still be of some relevance.
+
+The officially approved current version of the Interface Design Guidelines is at all times linked from the [IRB home page](/interfacereviewboard).
+
+### Language-related Guidelines
+
+++++ Use English words for identifiers |
+Always use U.S. English spelling when there are different ways to spell a word.
+
+For example:
+
+*  Use *caliber* instead of *calibre*
+*  Use *license* instead of *licence*
+++++
+
+++++ Only use abbreviations and acronyms in type or member names if they are widely understood and commonly used |
+
+It's perfectly fine to use HTML or id (short for "identity"), but don't use "temp" instead of "temperature".  One source for determining whether an abbreviation or acronym is "widely understood" is if it is listed in the [RFC Editor Abbreviations List](http://www.rfc-editor.org/rfc-style-guide/abbrev.expansion.txt) with an asterisk.
+++++
+
+++++ In UpperCamelCase and lowerCamelCase identifiers, capitalize acronyms and initializers as if they were regular words |
+
+Often, type or member names will include some kind of acronym or initialism (HTML file, DB connection, IP address, ...). The convention is to treat these as "regular" words, and hence capitalize only the first letter of the word.
+Hence,
+
+*  *HtmlFile* instead of *HTMLFile*
+*  *DbConnection* instead of *DBConnection*
+*  *IpAddress* instead of *IPAddress*
+++++
+
+++++ Use Consistent Terminology |
+Don't use multiple terms for the same concept.  If a term is defined in the [AllJoyn glossary](https///allseenalliance.org/developers/learn/glossary)[GLOS], use it rather than a different synonym.  (For example, use "producer" not "provider".)
+++++
+
+++++ Use names that describe actors and not acts |
+Consider the following statements:
+
+*  A road construction object implements a *paver*, not a *pavement*.
+
+*  A list object implements a *container*, not a *containment*.
+
+*  An object that manages a resource implements a *manager*, not a *management*.
+++++
+
+~~DISCUSSION~~
+

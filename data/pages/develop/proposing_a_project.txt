@@ -1,0 +1,41 @@
+====== Proposing a Project ======
+
+To propose a new AllSeen Alliance project, please assemble a proposal from the following template. Email the information to <allseen-tsc@lists.allseenalliance.org> for preliminary discussion and to get assistance in posting the proposal to the [[tsc:technical_steering_committee:proposals|Working Group Proposals]] page. Once a proposal is shared, the TSC can vote on accepting it after two weeks. Common template used to present a project proposal is the 16x9 PPT template, which can be downloaded [[https://wiki.allseenalliance.org/tsc/templates_for_documentation|here]]
+
+See the [[https://allseenalliance.org/about-allseen/governance/project-and-working-group-lifecycle|Project and Working Group Lifecycle]] for more details.
+
+----
+
+===Project Description:===
+  *//What is the purpose and intent of the project//
+  *//Include any architecture diagrams or specifications//
+  *//How will it benefit the community//
+===Scope:===
+  *//What features and functionality will be developed//
+  *//How will the development be staged//
+  *//What AllJoyn interfaces will be developed//
+  *//What is the completion criteria//
+===Dependencies:===
+  *//Identify existing AllSeen projects this new proposal depends on//
+  *//Are there any external dependencies//
+  *//If any are open source please include responses to Section 4 of {{:develop:inclusion_of_third-party_open_source_software.docx|attached template}}//
+===Project Name:===
+  *//Proposed name for the project//
+  *//Proposed name for the git repository//
+===Proposed Working Group:===
+  *//Is there an existing working group under which this project is being proposed//
+===Committers and Contributors:===
+  *//Name of and affiliation of the maintainer//
+  *//Names and affiliations of the committers//
+  *//Any other contributors//
+  *//What QA and test resources will be available//
+===Initial Contribution:===
+  *//Is there an initial contribution being made to the project//
+  *//If so what is the nature of the contribution//
+    *//Specifications//
+    *//Design documents//
+    *//Code//
+    *//Test plans//
+===Proposed Release Schedule:===
+  *//When is the first release planned//
+  *//Will this align with the current release cadence//

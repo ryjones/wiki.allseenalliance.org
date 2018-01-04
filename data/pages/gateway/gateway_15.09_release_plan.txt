@@ -1,0 +1,63 @@
+====== Gateway Agent 15.09 Release Plan ======
+
+===== Introduction =====
+
+Dev Lead: Josh Spain
+
+QA Lead: Jes Golka
+
+===== Themes and Priorities =====
+
+The 15.09 release of the Gateway Agent is designed to be compatible with AllJoyn Core and Base Services 15.09. It also adds support for JavaScript Connector applications as well as the ability to download aftermarket Connector applications to the device.
+
+==== Changes ====
+
+The following changes are made to this release:
+  * Support for AllJoyn Core and Base Services 15.09
+  * Package Manager component
+  * JavaScript Connectors
+  * Bug fixes
+
+==== Components ====
+
+The following major components are available in this release:
+
+   * Gateway Management App (Linux/C++)
+   * Package Manager (Linux/C++)
+   * Gateway Connector API (Linux/C++)
+   * Gateway Controller API (Android/Java)
+
+==== Samples ====
+
+The following samples are provided:
+
+   * Gateway Connector Linux sample (Linux/C++)
+   * Gateway Connector JavaScript sample (Linux/JavaScript)
+   * Gateway Controller Android sample (Android/Java)
+
+===== Deliverables =====
+
+The following deliverables are provided to the community:
+
+   * Gateway Agent Linux SDK
+   * Gateway Controller Android SDK
+   * OpenWrt feed
+   * Developer Documentation
+
+===== Milestones =====
+
+^ Milestone               ^ Date        ^ Details         ^
+| API Freeze              | 2016/02/29  | General freeze  |
+| Feature Freeze          | 2016/02/29  |                 |
+| Documentation Complete  | 2016/03/30  |                 |
+| QA Complete             | 2016/03/30  |                 |
+
+===== Expected Work Group Dependencies =====
+
+  * Core 15.09
+  * Base Services 15.09
+
+===== Compatibility with Previous Releases =====
+
+  * 14.12
+  * 15.04

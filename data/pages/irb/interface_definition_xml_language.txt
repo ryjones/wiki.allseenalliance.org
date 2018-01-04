@@ -1,0 +1,25 @@
+====== Deprecated ======
+The document you are viewing is the draft 1.0 version of the Interface Design Guidelines. It is no longer maintained, and slowly getting out of date. It is preserved on the wiki for historical purposes, the discussion at the bottom of the individual subpages may still be of some relevance.
+
+The officially approved current version of the Interface Design Guidelines is at all times linked from the [[:interfacereviewboard|IRB home page]].
+
+====Interface Definition XML Language====
+
+The formal definition of an AllJoyn Interface is expressed in a well-defined XML format, called the Introspection XML language. The name is due to the fact that the definition format was originally designed for run-time introspection of DBus (and later AllJoyn) bus objects and their Interfaces.
+
+===Two Flavors===
+There are two flavors of the Interface Definition XML:
+  *  The "classic" flavor, which is inherited directly from D-Bus. This format is defined in the [[http://dbus.freedesktop.org/doc/dbus-specification.html|D-Bus specification]][DBUS], and is used as output of the ''org.freedesktop.DBus.Introspectable.Introspect'' method.
+  *  The Extended Introspection XML format is an evolution of the classic Introspection XML format that aims to do away with a number of ambiguities in the classic format. This format is better suited as input for code generators, and strives to provide a clearer definition of the Interface semantics that relies less on external documentation. The format is defined in the [[irb:extended_introspection_xml|Extended Introspection XML Schema]][EIXS], and is accepted as input by the Allseen Alliance code generator (the ''devtools/codegen'' project). A subset of this format is used as output of the ''org.allseen.Introspectable.Introspect'' method.
+
+===Valid XML===
+> **Interfaces offered up for standardization must be described in the Extended Introspection XML format.**
+
+All Interface definitions offered up for standardization must validate against the official [[irb:extended_introspection_xml#schema_definition|Extended Introspection XML Schema Definition]][EIXS].
+
+===Use of External Documentation===
+> **Interface designers should strive to describe the semantics of their Interface as accurately as possible in the formal XML language. **
+
+It is allowed to rely on external documentation (in the form of an Interface Definition document[IDT] that accompanies the formal XML description) to provide extra information where necessary, but this must never be done gratuitously. Whenever it is possible to capture the semantics in the Extended Introspection XML format directly, this must be done.
+
+~~DISCUSSION~~

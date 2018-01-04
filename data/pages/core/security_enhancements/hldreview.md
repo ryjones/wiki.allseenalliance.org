@@ -1,0 +1,149 @@
+# Core Security 2.0 HLD Review
+
+Open Questions & Action Items
+
+## HLD Review Meeting Recordings
+
+*  March 25, 2015 Open questions discussion part 2
+    * [WebEx Recording](https///meetings.webex.com/collabs/url/oGn38byASWRS9tlZ2j-ujT-88qalY3B8xabEMqlrYym00000)
+
+*  March 24, 2015 Open questions discussion part 1
+    * [WebEx Recording](https///meetings.webex.com/collabs/url/m3NdJMsteroYMzxGnESgVLA-OVAUn15MrJht6v1lo3i00000)
+
+*  March 19, 2015 HLD Review #2
+    * {{:core:meeting_notes_for_hld_review_held_on_3-3_3-6_and_3-19.pdf|Meeting Notes}} 
+    * [WebEx Recording](https///meetings.webex.com/collabs/url/cI-D8y9nx-krKAUG3UMrknNrb83Rbuhcqu9dKd9w3nm00000)
+
+*  March 06, 2015 HLD Review #1 part 2
+    * {{:core:meeting_notes_for_hld_review_held_on_3-3_and_3-6.pdf|Meeting Notes}} 
+    * [WebEx Recording](https///meetings.webex.com/collabs/url/FHeABKYj57sE27ifFF8XDTrrANUzFNEwvcYtPg0JR9e00000)
+
+*  March 03, 2015 HLD Review #1 part 1
+    * [WebEx Recording](https///meetings.webex.com/collabs/url/EFt-NCcDNzn5E0OFE_4CUXcuQmjeNFSk4f5SasPmd_u00000)
+
+## Open Action Items
+
+*  1 **Ken** to add JIRA ticket to Onboarding project regarding question "During onboarding, is claim() called a. Before ConfigureWiFi(), so that the Onboarding interface is subject to security 2.0 policy?"
+
+*  2 **Gerrit** to determine impact to Security Manager regarding not using sessionless signals as identified on page 42
+
+*  3 **Gerrit** to propose implementation including interface for core for question "Does the list of supported auth
+
+*  4 **Gerrit** to update documentation regarding question "During onboarding, is claim() called a. Before ConfigureWiFi(), so that the Onboarding interface is subject to security 2.0 policy?"
+
+*  5 **Phil** to file JIRA tickets as identified in the notes
+
+*  6 **Phil** to update HLD based on agreed comments
+
+*  7 **Phil** to update HLD to identify 2.0 separate from future features
+
+*  8 **Phil** to propose changes to section 2.5.2.4 
+
+*  9 **Phil** to update the HLD regarding questin "Should we put auth data in/with identity cert, so one can ACL apps without membership certs?" with resolution: Put ACL into one manifest and identity cert containis manifest. Membership cert does not have Auth data.
+
+*  10 **Phil** to update the HLD and propse sample permission rules that allow for outbound regarding question "Should outbound rule default allow or default deny when no ACL?" with resolution: Initial policy will allow all
+
+*  11 **Phil** to update HLD and add JIRA ticket for code change regarding question "[thread: guild equivalence] How should security group equivalence be expressed?"
+
+*  12 **Phil** to create JIRA ticket for future release for question "Should a router node do any rate-limiting to mitigate DoS attacks?"
+
+*  13 **Phil** to draft proposal given discussion arond question "With a manifest, how should we handle when an app needs new permissions"
+
+*  14 **Cam** to submit proposal regarding question "Section 2.2.4: In ECDHE_ECDSA, when a certificate presented is invalid (e.g. due to lifetime expired), should the session be rejected and make the client come back with ECDHE_NULL? Or should it be accepted but treated as anonymous?" mechanisms need to be in the signal? Why can't the standard negotiation figure it out?"
+
+*  15 **Rob** will own firming on service for Sec 2.0 regarding question "Where do you get descriptions from? A) Alliance server, B) App/device vendor server, C) App/device itself, D) Security-manager vendor server?"
+
+*  16 **Rob** to follow up with Dave regarding question "Section 2.2.4: Should the case where interface is not marked secured and ACL entry is there anyway succeed if anonymous is allowed?"
+
+*  17 **Rob** to follow up with Dave regarding question "Sessionless signals are not secure, and spoofing signals can result in a reputation attack.  How do you mitigate this attack for “Claimed” signals: should they be session-based signals, or should the data be signed?"
+
+*  18 **Rob** to follow up with Dave regarding question "Do we need to add action mask flags for sending and receiving signals?"
+
+## Closed Action Items
+
+NONE
+
+## Open Questions for Sec 2.0
+
+NONE
+## Open Questions for future security releases
+
+ 1.  Section 2.2.4: Should the case where interface is not marked secured and ACL entry is there anyway succeed if anonymous is allowed?
+
+    * Resolution/Agreement: None
+    * Action: Rob (MSFT) to follow up with Dave - This is not blocking Sec 2.0
+ 2.  Sessionless signals are not secure, and spoofing signals can result in a reputation attack.  How do you mitigate this attack for “Claimed” signals: should they be session-based signals, or should the data be signed?
+
+    * Resolution/Agreement:  NONE.  Not blocking for Sec 2.0
+    * Action: Rob (MSFT) to follow up with Dave.    
+ 3.  Do we need to add action mask flags for sending and receiving signals?  Currently sending signal is covered under the action mask PROVIDE while receiving signal is covered un action mask OBSERVE.
+
+    * Resolution/Agreement:  NONE Not blocking Sec 2.0
+    * Action: Rob (MSFT) to follow up with Dave.  
+## Resolved Questions
+
+ 1.  Is a shared keystore allowed?    What if the app is using a shared keystore for one busattachment and an app-specific keystore for another busattachment?  Is that allowed or not?
+
+    * Resolution/Agreement:  Yes - not recommended with user downloaded apps
+    * Recomendation: More detailed solution is a Sec 2.X (post core 15.08) feature.
+ 2.  Should policies be singular in page 9 drawing?
+
+    * Resolution/Agreement:  Yes, one policy per keystore. HLD updated
+ 3.  Are GUIDs needed for CA?  Or do you need to send the cert chain when authentication with a peer? What goes in Issuer field of Identity Cert?
+
+    * Resolution/Agreement:  Agreement based on proposal in discussion thread on this page
+ 4.  Should we put auth data in/with identity cert, so one can ACL apps without membership certs?
+
+    * Resolution/Agreement:  Put ACL into one manifest and identity cert containis manifest.  Membership cert does not have Auth data.
+    * Action: Phil to update the HLD
+ 5.  Should outbound rule default allow or default deny when no ACL?
+
+    * Resolution/Agreement:  Initial policy will allow all
+    * Action: Phil to update the HLD 
+    * Action: Phil to propse sample permission rules that allow for outbound
+ 6.  Section 2.2.4: In ECDHE_ECDSA, when a certificate presented is invalid (e.g. due to lifetime expired), should the session be rejected and make the client come back with ECDHE_NULL?  Or should it be accepted but treated as anonymous?
+
+    * Resolution/Agreement:  Will try to automate the process
+    * Action: Cam to submit proposal
+ 7.  When a password doesn't match (i.e. a scheme like PSK), should the session be rejected and make the client come back with ECDHE_NULL?  Or should it be accepted but treated as anonymous?
+
+    * Resolution/Agreement:  For Sec 2.0, Rejected.
+ 8.  Is ECDHE_NULL support mandatory or optional?
+
+    * Resolution/Agreement:  Mandatory for Sec 2.0
+ 9.  How does rule matching work?  (Phil to propose updated text)
+
+    * Resolution/Agreement:  Proposal updated in the HLD
+ 10.  Does the list of supported auth mechanisms need to be in the signal?  Why can't the standard negotiation figure it out?
+
+    * Resolution/Agreement:  Dont put capabilities inside the signal
+    * Action: Gerrit (QEO) to propose implementation including interface for core.
+ 11.  [thread: Interface description design] Where do you get descriptions from?  A) Alliance server, B) App/device vendor server, C) App/device itself, D) Security-manager vendor server?
+
+    * Resolution/Agreement:  For Sec 2.0, use A,B, or D.  No impact to core
+    * Action: Rob (MSFT) will own firming on service for Sec 2.0
+ 12.  [thread: Security 2.0 and Onboarding] During onboarding, is claim() called a. Before ConfigureWiFi(), so that the Onboarding interface is subject to security 2.0 policy?  [I think we agreed on this one, can you confirm?] b. In parallel with or after ConfigureWiFi() on the temporary SSID, which results in random failures (so not this option) c. Only on the final SSID, so ConfigureWiFi is never subject to security 2.0 policy?
+
+    * Combine with question :  The reputation attack could be mitigated for “Not claimable” / “Not claimed” signals by ignoring them except on the temporary SSID network during onboarding.   Should that be done?
+    * Resolution/Agreement:  Optimal to combine onboarding and claiming.  
+    * Action: Gerrit (QEO) to update documentation
+    * Action: Ken (QCE) to add JIRA ticket to Onboarding project regarding this item
+ 13.  [thread: guild equivalence] How should security group equivalence be expressed?  ([see Core WG email summary attached](core/core_wg_mail_list_-_security_2.0_guild_equivalence.pdf))
+
+    * Resolution/Agreement:  Agreement reached to allow wildcard type security group
+    * Action: Phill to update HLD and add JIRA ticket for code change
+ 14.  Should the certstore and the existing keystore be the same store (so ClearKeyStore clears both any cached credentials such as cached PSK passwords, as well as your own Identity Cert etc.) or separate?  
+
+    * Resolution/Agreement:  Default is to combine. Specific platform implementation may separate them but reccomendation is to hide this from the developer.
+ 15.  Should a router node do any rate-limiting to mitigate DoS attacks?
+
+    * Resolution/Agreement:  Possible feature for future security implementation
+    * Action: Phil to create JIRA ticket for future release
+ 16.  With a manifest, how should we handle when an app needs new permissions
+
+    * Resolution/Agreement:  New feature for Sec 2.0
+    * Action: Phil to draft proposal given discussion
+
+Please use the discussion tool below regarding the open questions
+
+~~DISCUSSION~~

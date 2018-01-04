@@ -1,0 +1,30 @@
+===== Release 15.09 ======
+This page will be updated as the various projects make their releases.
+
+==== Release ====
+
+SDKs: See the [[https://allseenalliance.org/source-code|Downloads]] page.
+
+Git tag:
+  * Core
+    * alljoyn.git
+      * [[https://git.allseenalliance.org/cgit/core/alljoyn.git/tag/?id=v15.09|v15.09 Tag]]
+      * Commit: [[https://git.allseenalliance.org/cgit/core/alljoyn.git/commit/?id=0d5f459c2961f3172f830045ae48cbd5a6b0c16a | 0d5f459c2961f3172f830045ae48cbd5a6b0c16a]]
+    * ajtcl.git
+      * [[https://git.allseenalliance.org/cgit/core/ajtcl.git/tag/?id=v15.09|v15.09 Tag]]
+      * Commit: [[https://git.allseenalliance.org/cgit/core/ajtcl.git/commit/?id=ecf85bdeb990fefe55744054a2ed49c10c6c1dce | ecf85bdeb990fefe55744054a2ed49c10c6c1dce]]
+    * securitymgr.git
+      * [[https://git.allseenalliance.org/cgit/core/securitymgr.git/tag/?id=v15.09 | v15.09 Tag]]
+      * Commit: [[https://git.allseenalliance.org/cgit/core/securitymgr.git/commit/?id=ce874ce009de81521c21b024b2db6bb33ef04c30 | ce874ce009de81521c21b024b2db6bb33ef04c30]]
+
+
+==== Release Process Documents ====
+
+  * Core
+    * [[:core:Core 15.09 Release Plan]]
+    * [[:core:Core 15.09 Release Review]]
+    * [[Core:Security Manager 15.09 Release Plan]]
+    * [[Core:Security Manager 15.09 Release Review]]
+  * Developer Support
+    * [[devtools:developer_support_15.09_release_plan|Developer Support 15.09 Release Plan]]
+    * [[devtools:developer_tools_15.09_release_review|Developer Support 15.09 Release Review]]

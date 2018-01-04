@@ -1,0 +1,35 @@
+====== Compliance and Certification Working Group Proposal ======
+
+----
+**The TSC voted to create the C&C working group on {{:tsc:allseen_alliance_-_tsc_minutes_03.04.14.pdf|04 March 2014}}**
+----
+
+===== Rationale: =====
+==The C&C Committee's requirement to get the Mark: (to be approved in C&C Committee):==
+  - Must have implemented at least AllJoyn Core + Notifications Service Framework
+  - Must Pass Compliance Tests
+  * Each device describes what services it implements via AllJoyn.
+  * That device will then need to pass the Compliance Tests defined by the C&C WG for each service framework it has implemented to ensure the interfaces have been implemented correctly.
+  - Must Comply with Interoperability Procedures
+  * The C&C Working Group will also define Interoperability procedures associated with the certain AllJoyn Service Frameworks to ensure devices that have those services are interoperable with “Golden Units” before they get the Mark
+Based on those discussions a technical working group under TSC should be formed to identify the implementation processes accomplishing the C&C Committee decisions. 
+===C&C WG Charter===
+The Compliance and Certification Working Group(WG) is the members driven body within the AllSeen Alliance which defines the various processes by which Certification is granted and maintained. C&C TWG is a working group and operates under the guidelines established by the AllSeen Alliance for meeting organization and rules of order. The C&C TWG will meet both by conference call and in face to face session. Meetings will be announced in accordance with the processes and procedures established by the AllSeen Alliance.
+
+===C&C WG responsibilities are defined as (subject to discussion result in C&C Committee):===
+  - Integration of technical solutions following the business and marketing requirements defined by the C&C Comittee
+  - Definition of certification processes and testcases as well the contributed test code. 
+  - Define the interoperability processes and procedures
+  - Operation of the C&C TWG’s Certification Processes
+  - Selection, Development and Oversight of Validation/Conformance Test Tools
+  - Advice and report to Board on Certification Program Issues 
+  - Management of certification database process content
+  - Service Frameworks conformance and interoperability  guidelines (specs)
+  - Definition of the process of selecting Golden Units
+
+===Contribution:===
+
+A Project under C&C WG will be proposed to provide test case specifications and test code for the AllJoyn basic services. The test code can be run against a DUT (Device Under Test) to determine whether the AllJoyn interfaces exposed by applications on the device conform to their interface definitions. 
+
+===Contributors and Committers ===
+Telis Kaleas(QCE), Aaron Pulliam(QCE) Ryan li (tp-link) Zhang Longfei (tp-link) Jun Zhang (Haier) is proposed as  contributors and committers for the C&C WG. Other working groups committers will also have commit privileges.

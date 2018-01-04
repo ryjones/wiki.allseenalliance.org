@@ -1,0 +1,19 @@
+==== Archived Core Release information ====
+   * **v15.09**
+    * [[core:core_15.09_release_plan|15.09 Release Plan]]
+    * [[core:core_15.09_release_review|Release Review 15.09]]
+    * Security Manager
+      * [[security_manager_15.09_release_plan|Security Manager 15.09 Release Plan]]
+      * [[security_manager_15.09_release_review|Security Manager 15.09 Release Review]] 
+   * **v15.04**
+    * [[core:core_15.04_release_plan|15.04 Release Plan]]
+    * [[core:core_15.04_release_review|Release Review 15.04]]
+   * **v14.12**
+    * [[core:core_14.12_release_plan|14.12 Release Plan]]
+    * [[core:core_14.12_release_review|Release Review 14.12]]
+   * **v14.06**
+    * [[core:core_14.06_release_plan|Core 14.06 Release Plan]]
+    * [[core:core_14.06_release_review|Core 14.06 Release Review]]
+   * **v14.02**
+    * [[Core 14.02 Release Plan]]
+    * [[Core 14.02 Release Review]]

@@ -1,0 +1,15 @@
+====== Base Services 14.06 Release Status ======
+
+===== Milestones =====
+
+^ Milestone              ^ Original Date  ^ Estimated/Actual Date ^ Reason for change                       ^
+| API Freeze             | 2014/05/25     | 2014/05/25            |                                         |
+| Feature Freeze         | 2014/05/25     | 2014/05/25            |                                         |
+| Documentation Complete | 2014/06/25     | 2014/06/25            |                                         |
+| QA Complete            | 2014/06/25     | 2014/06/25            |                                         |
+
+  * All services code have reached Dev Complete.
+  * Currently 5 remaining unresolved P1/P2 issues for services
+  * All P1/P2 are planned to be resolved by 6/18 , all services regression testing planned to be completed by 6/18.
+  * Final regression planned for 6/18-25.
+  * On schedule.

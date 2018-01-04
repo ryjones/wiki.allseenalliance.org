@@ -1,0 +1,152 @@
+# Building and Running
+
+Below are very basic instructions for building and running some AllJoyn core and services.  This assumes the source code is in $AJ_ROOT (see [Downloading the Source](develop/downloading_the_source) for more info).
+
+## Linux
+
+	
+	cd $AJ_ROOT/core/alljoyn
+	scons BINDINGS=cpp WS=off BR=off ICE=off SERVICES="about,notification,controlpanel,config,onboarding"
+	
+	pushd build/linux/x86_64/debug/dist/
+	export LD_LIBRARY_PATH=`pwd`/cpp/lib:`pwd`/about/lib:`pwd`/notification/lib:`pwd`/controlpanel/lib:`pwd`/config/lib:`pwd`/services_common/lib:$LD_LIBRARY_PATH
+	pushd notification/bin
+	
+	./ConsumerService # run this in one terminal to receive notifications, press enter once after launching ConsumerService
+	./ProducerBasic   # run this in another terminal to send notifications
+
+
+## SCons Options
+
+*  WS=off - This turns off the whitespace checker. The whitespace checker is for developers to ensure that the code they write conforms to our coding standard is not necessary for customers to use.
+
+*  BR=off - This disables the bundled AllJoynrouter functionality. If you intend to use a stand-alone AllJoynRouter, this should be set to off.Setting it to "on" will include the AllJoynRouter - note that the default is "on".
+
+*  OS=linux - This is for building AllJoyn for desktop Linux (and is the default).
+
+*  CPU=x86_64 - This is for building 64-bit binaries. If you are running on a 32-bit Linux machine then set this to "x86".
+
+*  BINDINGS=cpp - This controls what to build. By specifying just "cpp", only the AllJoynRouter, C++ libraries, and C++ sample/test code is built. Other bindings that can be built are C, Java, and a browser plugin for a JavaScript binding.
+
+*  SERVICES="notification,controlpanel,config,onboarding" - This specifies the Service Frameworks to build. "About" is always built by default and doesn’t need to be specified. The standard service framework options include "notification, controlpanel, config, onboarding".
+
+*  VARIANT=release - This builds AllJoyn in release mode. If there is a need to get verbose debug messages and run AllJoyn code in a debugger, then this can be set to "debug".
+
+## Linux (AC Server Sample)
+
+
+*  Emulates an AC device.
+
+*  Uses the About Feature to advertise the capabilities
+
+*  Has a Control Panel that can be interacted with to change the temp, etc.
+
+*  Produces Notifications
+
+	
+	
+	# Go into the sample_apps dir and build. Note, remove "base" for pre-14.06 source.
+	cd $AJ_ROOT/services/base/sample_apps
+	scons BINDINGS=cpp WS=off ALL=1
+	
+	pushd build/linux/x86_64/debug/dist/
+	export LD_LIBRARY_PATH=`pwd`/cpp/lib:`pwd`/about/lib:`pwd`/notification/lib:`pwd`/controlpanel/lib:`pwd`/config/lib:`pwd`/services_common/lib:$LD_LIBRARY_PATH
+	pushd sample_apps/bin
+	
+	# Run the AC Sample App
+	./ACServerSample
+
+
+## Yun
+
+	
+	export LININO_ROOT=path/to/linino/root 
+	export OPENWRT_BASE=$LININO_ROOT/linino/trunk/;export OPENWRT_TOOLCHAIN_BASE=$OPENWRT_BASE/staging_dir/toolchain-mips_r2_gcc-4.6-linaro_uClibc-0.9.33.2/; export OPENWRT_TARGET_BASE=$OPENWRT_BASE/staging_dir/target-mips_r2_uClibc-0.9.33.2/; export TARGET=mips-openwrt-linux-uclibc
+	
+	cd $AJ_ROOT/core/alljoyn
+	
+	scons V=1 ICE=off BR=on BT=off WS=off CPU=openwrt OS=openwrt BINDINGS="core,cpp" SERVICES="about,notification,controlpanel,config" VARIANT=release "TARGET_CFLAGS=-Os -pipe -mips32r2 -mtune=74kc -fPIC -fno-caller-saves -fhonour-copts -Wno-error=unused-but-set-variable -msoft-float" "TARGET_CC=$TARGET-gcc" "TARGET_CXX=$TARGET-g++" "TARGET_AR=$TARGET-ar" "TARGET_RANLIB=$TARGET-ranlib" "TARGET_LINK=$TARGET-gcc" "TARGET_CPPFLAGS=-I$OPENWRT_TARGET_BASE/usr/include -I$OPENWRT_TARGET_BASE/include -I$OPENWRT_TOOLCHAIN_BASE/usr/include -I$OPENWRT_TOOLCHAIN_BASE/include" "TARGET_PATH=$OPENWRT_TOOLCHAIN_BASE/bin:$OPENWRT_BASE/staging_dir/host/bin:$PATH" "TARGET_LINKFLAGS=-L$OPENWRT_TARGET_BASE/usr/lib -L$OPENWRT_TARGET_BASE/lib -L$OPENWRT_TOOLCHAIN_BASE/usr/lib -L$OPENWRT_TOOLCHAIN_BASE/lib" "STAGING_DIR=$OPENWRT_TARGET_BASE" $@
+
+
+
+## Linux Cross-Compiling
+
+To build for a Linux platform that requires the use of a cross-compiler, set both the OS and CPU scons options to "openwrt". Despite using the name "openwrt", this platform should work for any cross-compiled Linux platform. OpenWrt was just the first platform to be worked on that required generic cross-compilation support. Telling SCons to use the OpenWrt platform will enable several more variables that can be used for specifying the target compiler and any necessary special target compiler flags. Here's the list of added variables that can be set on the SCons command line:
+
+
+*  TARGET_PATH - Paths to toolchain for cross compiling AllJoyn for OpenWRT
+
+*  TARGET_CC - OpenWRT C compiler (make sure this is located in TARGET_PATH)
+
+*  TARGET_CFLAGS - OpenWRT C compiler flags
+
+*  TARGET_CPPFLAGS - OpenWRT C pre-processor compiler flags
+
+*  TARGET_CXX - OpenWRT C++ compiler (make sure this is located in TARGET_PATH)
+
+*  TARGET_LINK - OpenWRTLinker (normally same value as TARGET_CC)
+
+*  TARGET_LINKFLAGS - OpenWRT Linker flags
+
+*  STAGING_DIR - OpenWRT staging dir - should point to the parent directory of the directory that contains all the libraries that AllJoyn will link against. For example, if libssl.so and libcrypto.so for your target system is under /usr/local/FOO/usr/lib/, then STAGING_DIR should be set to /usr/local/FOO. Basically, everything under the directory given to STAGING_DIR should look like a standard Linux file system root directory.
+## Darwin
+
+AllJoyn 14.06 and earlier require Xcode 5.1.1 and OS X 10.9 to build. To obtain Xcode 5.1.1:
+ 1.  You will need an [Apple account](https///appleid.apple.com/account). They are free.
+ 2.  Log in to [Apple's developer site](https///developer.apple.com/downloads/index.action)
+ 3.  Search for "xcode 5.1.1"
+ 4.  Download and install Xcode 5.1.1.
+ 5.  You will need to run Xcode once to download the command line tools.
+
+You can then follow the directions below.
+
+	
+	cd $AJ_ROOT/core/alljoyn
+	export CONFIGURATION=release
+	scons OS=darwin CPU=x86 WS=off VARIANT=release BINDINGS=cpp SERVICES="about,config,controlpanel,notification" SDKROOT=`pwd`
+	
+	pushd build/darwin/x86/release/dist/
+	pushd notification/bin
+	
+	./ConsumerService # run this in one terminal to receive notifications, press enter once after launching ConsumerService
+	./ProducerBasic   # run this in another terminal to send notifications
+
+## Raspberry Pi - AllJoyn-JS
+
+	
+	apt-get install scons
+	
+	export AJ_ROOT=`pwd`/alljoyn
+	
+	git clone https://git.allseenalliance.org/gerrit/core/ajtcl.git         $AJ_ROOT/core/ajtcl
+	git clone https://git.allseenalliance.org/gerrit/services/base_tcl.git  $AJ_ROOT/services/base_tcl
+	git clone https://git.allseenalliance.org/gerrit/core/alljoyn-js.git    $AJ_ROOT/core/alljoyn-js
+	
+	wget http://duktape.org/duktape-1.2.1.tar.xz
+	tar xvfJ duktape-1.2.1.tar.xz
+	
+	export DUKTAPE_DIST=$PWD/duktape-0.11.0
+	
+	pushd $AJ_ROOT/services/base_tcl
+	git fetch
+	git checkout RB15.04
+	popd
+	
+	pushd $AJ_ROOT/core/ajtcl
+	git fetch
+	git checkout RB15.04
+	scons WS=off
+	popd
+	
+	pushd $AJ_ROOT/core/alljoyn-js
+	scons WS=off
+	popd
+
+
+## AllJoyn-JS
+
+See the [alljoyn-js](https///wiki.allseenalliance.org/develop/hackfests/alljoyn-js) page for details on [simple usage on how to run the software](https///wiki.allseenalliance.org/develop/hackfests/alljoyn-js).
+
+
+
+

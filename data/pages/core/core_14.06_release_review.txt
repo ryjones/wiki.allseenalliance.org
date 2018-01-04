@@ -1,0 +1,141 @@
+====== Core 14.06a Release Review ======
+
+The [[https://git.allseenalliance.org/cgit/core/alljoyn.git/plain/alljoyn_core/docs/ReleaseNotes.txt?h=RB14.06|Standard Core release notes]] and [[https://git.allseenalliance.org/cgit/core/ajtcl.git/plain/ReleaseNotes.txt?h=RB14.06|Thin Core Library release notes]] contain more technical detail on the changes that were made.
+
+===== Features =====
+
+New features introduced in the Standard Core (Library and Router):
+  * **Next Generation Name Service** (NGNS): New version of the Name Service protocol that is more efficient and reliable.  It also integrates About functionality on the discovery side allowing applications to search for peers that implement specific interface(s) making About discovery significantly more efficient.
+  * **Security Enhancements**: support for ECC based authentication.
+  * **Policy DB**: rules to manage the flow of messages through the router to and from applications.
+  * **Sessionless Signal (SLS) Improvements**: Allow apps to specify and fetch SLS only when there is a signal they are interested in.
+  * **Events and Actions**: Ability to annotate signals and methods with human readable descriptions. Descriptions are introspectable, and describe semantics of signal or method call.
+  * **UDP Transport** (//experimental//): router to router transport using AllJoyn Reliable Datagram Protocol (ARDP) on top of UDP.  ARDP provides more control over the data flow, and reduction of resources; it is based on RDP over UDP.
+
+Thin Core Library further introduced:
+  * **Tight integration of the About functionality**.
+  * **Security Enhancements**: including the removal of old mechanisms of key exchange and authentication. Support for SHA256.
+  * **Next Generation Name Service support**: "Who Implements" query is supported: this provides the ability to discover peers that implement specific interfaces - similar to About Client functionality.
+  * **WMI SPI Layer (WSL)**: Implementation to allow Arduino Due running with an RTOS (example for FreeRTOS) to work with the Arrow/Netcom GT202 IoE WiFi module.
+
+
+===== Non-Code Aspects =====
+
+  * [[https://allseenalliance.org/developer-resources/alljoyn/docsdownloads|Documents]]
+  * [[develop:building_and_running|Building and Running]]
+  * [[:training|Training]]
+===== Architectural Issues =====
+
+There were no major architectural changes to the AllJoyn Core software; however, the Next Generation Name Service and experimental UDP transport involved some significant updates and/or change to very low-level components in the Core. In particular the way that UDP/ARDP were plumbed into the core is very different than the way the TCP transport is plumbed in. The goal was to greatly simplify how the UDP Transport interacts with the rest the system; and as a consequence reduce resource usage, especially file descriptor consumption when running on POSIX systems. However, that was not feasible to do in a straightforward manner without completely re-architecting the routing node data plane and the transport-related control plane. Therefore, many of the implementations of components required by the routing node are extremely light weight or even stubs.
+===== Security Issues =====
+
+There were no particular security related issues addressed.
+
+//Note:// this is referring to resolving security related vulnerabilities as opposed to the security enhancements that were added to the framework.
+===== Quality Assurance =====
+
+==== Feature Test ====
+
+Feature test plans were completed for all of the major new features cited above.  Additional testing was performed on the NGNS feature.
+
+==== Regression Test ====
+
+AllJoyn Standard Library was tested successfully on the following:
+
+  * Ubuntu 12.04
+  * Android JellyBean
+  * iOS 7.1
+  * OS X Mavericks
+  * Windows 7/8 (x86)
+  * OpenWRT
+
+AllJoyn Thin Library was tested successfully on the following:
+
+  * Ubuntu 12.04
+  * Windows 7
+  * ARM-based embedded platform
+
+We have a layered approach to testing that starts with verifying core functionality, such as messaging and security. Then, we execute platform-specific tests for each of the platforms listed above. This includes testing of transports, bindings, sample applications, as well as stress testing. We also conduct interoperability testing to ensure that, for example, AllJoyn applications running on a Windows laptop can interact with applications running on an Android phone. Finally, we do backward compatibility testing to ensure, for example, that a new routing node will communicate with an older routing node. 
+
+Issues identified during testing are documented in our bug tracking system. A triage process assigns the bugs a priority and a release target. Naturally, the highest priority bugs are targeted for the next release. Once a bug has been resolved-fixed, then the bug fix is verified, and the bug is closed. 
+
+===== Issues Addressed in 14.06a =====
+
+  * [[https://jira.allseenalliance.org/browse/ASACORE-713|ASACORE-713]]	PeerState leak with sessionless signals 
+  * [[https://jira.allseenalliance.org/browse/ASACORE-747|ASACORE-747]]  Occasional Crash caused by RegisterAnnounceHandler in AllJoyn Core when ER_DEBUG_ALL is enabled
+  * [[https://jira.allseenalliance.org/browse/ASACORE-760|ASACORE-760]]  services::AnnouncementRegistrar::RegisterAnnounceHandler results in a seg fault
+  * [[https://jira.allseenalliance.org/browse/ASACORE-779|ASACORE-779]]	Crash in ajn::SessionlessObj::ResponseHandler
+  * [[https://jira.allseenalliance.org/browse/ASACORE-788|ASACORE-788]]  valgrind with massif shows increasing growth while running bbservice.
+  * [[https://jira.allseenalliance.org/browse/ASACORE-800|ASACORE-800]]  Memory leak in auth exchange in case incorrect creds are passed to thin library
+  * [[https://jira.allseenalliance.org/browse/ASACORE-805|ASACORE-805]] WSL: Receive Signal Data Failure
+  * [[https://jira.allseenalliance.org/browse/ASACORE-806|ASACORE-806]] WSL: Memory Allocation Issue
+  * [[https://jira.allseenalliance.org/browse/ASACORE-808|ASACORE-808]]	_Message::UnmarshalArgs leaks memory while trying to parse struct or array types
+  * [[https://jira.allseenalliance.org/browse/ASACORE-814|ASACORE-814]]	Memory Leak detected on AJ Router node at qsdk target
+  * [[https://jira.allseenalliance.org/browse/ASACORE-857|ASACORE-857]] Add test programs stressing transprt
+  * [[https://jira.allseenalliance.org/browse/ASACORE-858|ASACORE-858]] Crash when unregistering and the registering the announce handler
+  * [[https://jira.allseenalliance.org/browse/ASACORE-863|ASACORE-863]] Constant increase in physical memory usage at Alljoyn Router while Lighting Control Service running
+  * [[https://jira.allseenalliance.org/browse/ASACORE-908|ASACORE-908]] Guid Exchange fails between Android Client and Rn node of TCL device After factory reset.
+  * [[https://jira.allseenalliance.org/browse/ASACORE-912|ASACORE-912]] Set the default minimum protocol version in TCL to 10
+  * [[https://jira.allseenalliance.org/browse/ASACORE-924|ASACORE-924]] AJTCL version requires fourth component
+  * [[https://jira.allseenalliance.org/browse/ASACORE-943|ASACORE-943]] AJ_NVRAM_Write declaration should take const void*
+  * [[https://jira.allseenalliance.org/browse/ASACORE-949|ASACORE-949]] Added support for architectures requiring aligned access
+
+===== Known Issues =====
+
+Stability in large, complex environments under load needs improvement;
+performance can be greatly impacted.
+
+  * [[https://jira.allseenalliance.org/browse/ASACORE-49|ASACORE-49]]   Multipoint session lost on joiner side and not binder side prevents joiner from rejoining.
+  * [[https://jira.allseenalliance.org/browse/ASACORE-51|ASACORE-51]]   Implicit PropertiesChanged emit only works for multi-point sessions
+  * [[https://jira.allseenalliance.org/browse/ASACORE-181|ASACORE-181]]  Memory leak on repeated registration/unregistration of the same BusObject: note this is an unusual use case
+  * [[https://jira.allseenalliance.org/browse/ASACORE-189|ASACORE-189]]  BusObject::Unregistered callback is not called for busobjects after the BusAttachment is disconnected and stopped from the bus.
+  * [[https://jira.allseenalliance.org/browse/ASACORE-276|ASACORE-276]]  If a transport is disabled in the routing node and if user tries to use the exact transport for discovery, it should return suitable error.
+  * [[https://jira.allseenalliance.org/browse/ASACORE-367|ASACORE-367]]  Router AJ objects that don't call BusController::ObjectRegister() due to a failure will cause the program to lockup in a fast spinning while/sleep loop
+  * [[https://jira.allseenalliance.org/browse/ASACORE-370|ASACORE-370]]  AllJoyn does not build with Android 4.4 (KitKat) sources
+  * [[https://jira.allseenalliance.org/browse/ASACORE-656|ASACORE-656]]  Notifications related to names appearing and disappearing appear to be out of order
+  * [[https://jira.allseenalliance.org/browse/ASACORE-732|ASACORE-732]]  Duplicate About announcements received while running large number of About based applications 
+  * [[https://jira.allseenalliance.org/browse/ASACORE-748|ASACORE-748]]  Dismiss All Notifications Test Doesn't Acheive Receiving 95% Of DismissAll Signals Under 10 Seconds Time Frame
+  * [[https://jira.allseenalliance.org/browse/ASACORE-785|ASACORE-785]]  Duplicate FoundAdvertisedName being received
+  * [[https://jira.allseenalliance.org/browse/ASACORE-46|ASACORE-46]]   AJ Thin Client applications that use AJ_StartClient() do not know the full bus name of the service that was joined for sending method calls.
+  * [[https://jira.allseenalliance.org/browse/ASACORE-305|ASACORE-305]]  WSL boot delays are a bit too long
+  * [[https://jira.allseenalliance.org/browse/ASACORE-309|ASACORE-309]]  WSL power consumption may be too high while sleeping: The WSL code doesn't tell the WiFi hardware to go into low-power modes when a sleep is requested
+  * [[https://jira.allseenalliance.org/browse/ASACORE-703|ASACORE-703]]  Thin clients occasionally having problems rediscovering routing node 
+  * [[https://jira.allseenalliance.org/browse/ASACORE-730|ASACORE-730]]  Too many NOC messages bog down TCL applications
+
+For a complete list of open issues check this [[https://jira.allseenalliance.org/issues/?jql=project %3D ASACORE AND status in (Open%2C "In Progress"%2C Reopened%2C New) AND (component %3D EMPTY OR component not in ("About TC"%2C "Thin Core Library"%2C "TCL%3A WSL")) AND TYPE %3D Bug ORDER BY priority DESC%2C key ASC|Core Jira query]]
+
+===== Compatibility =====
+  * The format of the router configuration file was changed to enable support for Policy DB.
+  * New function AJ_StartClientByInterface which adds support for new NGNS features.
+  * The Library-Router protocol version changed from 9 to 10 (previously misreported as 8 to 9).
+  * Thin Client accepts connection to the routing node based on protocol version. When connecting to a pre-14.06 (protocol version < 10) routing node you must use the functions AJ_StartClient or AJ_StartService otherwise the thin client will reject the connection. Using the NGNS function AJ_StartClientByInterface will only allow you to connect to a 14.06 routing node (protocol version >= 10).
+  * The removal of PINX Key Exchange in the Thin Core Library means that encrypted traffic can only be exchanged Standard Core applications and 14.06 based Thin Core (TC) applications (i.e. encrypted traffic //cannot// be exchanged between 14.06 TC Applications and 14.02 or earlier based TC Applications).  It also means that 14.06 TC applications will not be able to connect to 14.02 or earlier routers unless they are configured to support untrusted clients. Possible mitigation steps are described in the compatibility section of the [[https://git.allseenalliance.org/cgit/core/ajtcl.git/tree/ReleaseNotes.txt?h=RB14.06|TCL release notes]].
+
+===== End-of-life =====
+
+The PIN Key Exchange is no longer supported in the Thin Client library. In addition, the following APIs are //deprecated//:
+==== Standard Core ====
+
+**About C++**
+  * ''AnnouncementRegistrar.h'':
+    * ''QStatus RegisterAnnounceHandler(ajn::BusAttachment&, AnnounceHandler&)''
+    * ''QStatus UnRegisterAnnounceHandler(ajn::BusAttachment & bus, AnnounceHandler & handler)''
+**About Java**
+  * ''AboutServiceImpl.java'':
+    *  ''void addAnnouncementHandler(AnnouncementHandler)''
+    *  ''void removeAnnouncementHandler(AnnouncementHandler)''
+**About iOS**
+  * ''AJNAnnouncementReceiver.h''
+     * ''(QStatus)registerAnnouncementReceiver''
+     * ''(QStatus)unRegisterAnnouncementReceiver''
+
+==== Thin Core Library ====
+  * The APIs for About in the ''core/about_tcl'' repo
+
+===== Standards Compliance =====
+
+ARDP is based on [[https://tools.ietf.org/html/rfc908|RFC 908]] and [[https://tools.ietf.org/html/rfc1151|RFC 1151]], both of which are experimental RFCs.
+
+===== Schedule Post-Mortem =====
+
+Postmortem was conducted and recommendations were made to the TSC on process changes that will help make future releases more successful.  These were mailed to the TCS mailing list on August 5, 2014.  Feedback from members of the TSC and core working group are welcome.

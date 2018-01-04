@@ -1,0 +1,330 @@
+====== Basics ======
+
+The JavaScript binding is developed as an NPAPI plugin. Any Mozilla or WebKit based browser should be compatible with the plugin (Firefox, Chrome).
+
+===== Getting the source =====
+
+The source code is included in the AllJoyn Core project on git.allseenalliance.org.  Follow the normal instructions to get the AllJoyn source.
+
+===== Building =====
+
+==== Prerequisites ====
+
+  * The Gecko SDK (aka XULRunner SDK) available from https://developer.mozilla.org/en/Gecko_SDK.  The plugin was developed against version 1.9.2 of the SDK, although it may be possible to use an earlier version.  On 64-bit linux, just download the 32-bit version anyway (only the headers in the SDK are used).
+  * libgtk2.0-dev libssl-dev xsltproc (on Ubuntu)
+==== Build recipes ====
+
+  * Windows
+Note that the CPU=IA64 build below is probably not what you want. Current versions of Chrome on Windows are 32-bit binaries (even on 64-bit Windows) and expect a 32-bit plugin (CPU=x86).
+<code>
+scons OS=win7 CPU=x86 GECKO_BASE=C:\xulrunner-sdk
+scons OS=win7 CPU=IA64 GECKO_BASE=C:\xulrunner-sdk
+</code>
+  * Linux
+<code>
+scons GECKO_BASE=~/xulrunner-sdk
+scons GECKO_BASE=~/xulrunner-sdk CPU=x86_64
+</code>
+
+==== Documentation ====
+
+The documentation is built by specifying the path to jsDoc3.  
+
+jsDoc3 can be obtained by cloning the project from it GitHub:
+<code>
+git clone https://github.com/jsdoc3/jsdoc.git
+</code>
+or download a release: https://github.com/jsdoc3/jsdoc/releases.  
+
+For documentation on using jsdoc go to http://usejsdoc.org/.
+
+  * To build the documentation
+<code>
+scons OS=win7 CPU=x86 GECKO_BASE=C:\xulrunner-sdk JSDOC_DIR=C:\jsdoc
+</code>
+  * Linux
+<code>
+scons GECKO_BASE=~/xulrunner-sdk/ JSDOC_DIR=~/jsdoc
+</code>
+
+===== Installation =====
+
+==== Windows ====
+
+Copy build/windows/x86/debug/dist/js/plugin to C:\AllJoyn. Click on C:\AllJoyn\alljoyn.reg (for 32-bit Windows) or C:\AllJoyn\alljoyn64.reg (for 64-bit Windows) to install the plugin. Note that browsers for Windows are typically 32-bits so you will likely need to use the plugin that is built for 32-bit Windows even if you are running 64-bit
+Windows. You still need to use the alljoyn64.reg file though.
+
+==== Linux ====
+
+Copy build/linux/x86/debug/dist/js/lib/libnpalljoyn.so to ~/.mozilla/plugins.
+
+==== Verify installation ====
+
+Enter "about:plugins" in Chrome and Firefox. There should appear an entry for AllJoyn.  Load test/test.html in the browser. If "Plugin FAILED to load" appears then something did not work. If the page is blank then you can run the tests.
+
+===== Samples =====
+
+The samples are located under the alljoyn_js/samples/ directory. To run them, load the URL to the index.html of the
+sample of your choice. Note that if you're serving the samples, they reference a common alljoyn_init.js located at the root of the samples directory, so be sure to preserve the path structure.
+
+===== Testing =====
+
+Unit tests exist under the test directory. The tests use JsTestDriver to execute them. JsTestDriver starts a web
+server that feeds the tests to any attached browsers, collect the results, and displays them to the console or log files.
+
+==== Prerequisites ====
+
+  * java
+  * JsTestDriver available from http://code.google.com/p/js-test-driver
+
+==== Running the tests ====
+
+  - Start up the JsTestDriver web server in the same directory that jsTestDriver.conf is in <code>
+java -jar JsTestDriver.jar --port 4224 --browserTimeout 90000
+</code>
+  - Start any number of browsers. Go to "http://localhost:4224/capture".
+  - Run all the tests in the same directory that jsTestDriver.conf is in <code>
+java -jar JsTestDriver.jar --config jsTestDriver-npapi.conf --tests all
+</code>
+  - Run a specific test <code>
+java -jar JsTestDriver.jar --config jsTestDriver-npapi.conf --tests SimpleTest.testSimple
+</code>
+I have also found using the --verbose flag useful when running the unit tests
+    
+=== Test reporting ===
+
+The exit value of JsTestDriver is 0 (all tests passed) or 1 (at least one test failed).  An XML file for each test suite (~30 currently) can be generated if JsTestDriver is run as <code>
+java -jar JsTestDriver.jar --tests all --testOutput TEST_OUTPUT_DIR
+</code>
+
+=== Running multiple versions of Firefox at the same time ===
+
+This is what worked for me: <code>
+path/to/v3/firefox -P v3 # create profile named v3
+path/to/v6/firefox -P v6 # create profile named v6
+
+path/to/v3/firefox -P v3 -no-remote
+path/to/v6/firefox -P v6 -no-remote
+</code>
+
+==== WebKitGtk ====
+
+WebKitGtk can be used to test the plugin against the JavaScriptCore engine (vs the V8 engine used in Chrome).
+To obtain the source, grab it from either svn or git at the webkitgitk page http://webkitgtk.org/?page=download.  Then to build, run <code>
+./Tools/Scripts/build-webkit --debug --gtk
+</code>
+from the top level WebKit directory. To run, <code>
+./Tools/Scripts/run-launcher --debug --gtk
+</code>
+The test can then be run as described above.
+
+===== Profiling =====
+
+==== Linux ====
+
+oprofile can be used to profile Chrome under Linux. I haven't found this to be particularly useful, but I'm including the recipe here for future reference. <code>
+sudo opcontrol --reset
+sudo opcontrol --event=CPU_CLK_UNHALTED:100000:0x0:0:1 --no-vmlinux
+# run tests for awhile
+sudo opcontrol --shutdown
+
+sudo opreport -g -l libnpalljoyn.so
+sudo opreport -g --details libnpalljoyn.so
+</code>
+
+===== Development resources =====
+
+  * The manual: https://developer.mozilla.org/en/Gecko_Plugin_API_Reference
+  * This blog has some good material: http://colonelpanic.net/category/plugindev/npapi-plugindev/. In particular http://colonelpanic.net/2009/12/memory-management-in-npapi/ and the series ending with http://colonelpanic.net/2009/08/building-a-firefox-plugin-part-three/.
+  * Another project showing a cross-platform plugin is at https://github.com/jskorpan/BoilerplateNp.
+
+==== Debugging recipes ====
+
+=== Log output ===
+
+The debug builds are currently built with ALLJOYN_JS=15 on. Where the logging goes depends on the platform. On
+linux it is stdout, so if you start the browser from the command line you should see a bunch of ALLJOYN_JS logging
+messages in the terminal window. On windows it is OutputDebugString so you'll need some viewer to see the
+messages; I use dbgview from sysinternals.  
+
+If you need finer control over debug output, you can change InitializeDebug() in jni/np.cc and rebuild. Or you can set the debug attribute of the object element that loads the plugin. If you're using alljoyn_init.js in your apps (the recommended way) add bus.setAttribute('debug', 'ALL=3') to alljoyn_init.js around line 36 (after creating the element, but before calling appendChild). Otherwise, use normal markup to add the attribute <object ... debug="ALL=3"/>.
+
+=== Linux ===
+
+valgrind is helpful in finding problems (particularly around the reference counting and plugin destruction and
+shutdown) before they crash the browser and become impossible to debug. Note that running things under valgrind
+is incredibly slow: specific tests will timeout, the runner will timeout, and you'll need to keep an eye out for an
+"unresponsive script" dialog. Regardless of that it's still very useful.
+
+Example valgrind magic for Firefox: <code>
+valgrind --smc-check=all --trace-children=yes --child-silent-after-fork=yes --log-file=%p.valgrind --error-limit=no --leak-check=full --track-origins=yes --malloc-fill=42 --free-fill=41 /usr/bin/firefox http://localhost:4224/capture
+</code>
+
+Midori, a webkit browser, can be run under valgrind using a similar line above.
+
+Chrome requires a bit more massaging since the plugin runs in a separate process: <code>
+google-chrome --plugin-launcher='xterm -e valgrind --smc-check=all --trace-children=yes --child-silent-after-fork=yes --log-file=/home/tmalsbar/tmp/valgrind/%p.valgrind --error-limit=no --leak-check=full --track-origins=yes --malloc-fill=42 --free-fill=41' http://localhost:4224/capture
+</code>
+
+== Chrome ==
+
+<code>
+google-chrome --plugin-launcher='xterm -e gdb --args'
+</code>
+This will launch gdb when the plugin process is loaded. Then set your breakpoints, enter run, etc.
+
+== Firefox ==
+
+After a crash you can load the core file into gdb with
+<code>
+firefox -g
+core core
+</code>
+
+=== Windows ===
+
+AppVerif can be used against chrome. I haven't found it to be useful yet (no errors detected), but I'm leaving usage notes here for future reference. First, mention of the tool is made near the bottom of http://www.chromium.org/developers/how-tos/debugging. Taking the suggestions from the above, run chrome as
+<code>
+devenv /debugexe chrome.exe --no-sandbox --single-process
+</code>
+
+Configure AppVerif to only check Heap and Leaks. Other combinations may lead it to not start (particularly the Handles option).
+
+== Chrome ==
+
+<code>
+chrome.exe --plugin-startup-dialog
+</code>
+This will launch a dialog when chrome loads the plugin process. You can then attach the MS debugger and click OK
+on the dialog to run the plugin.
+
+== Firefox 4 ==
+
+Enter "about:config" in the URL bar. Filter on "ipc". Set (or create and set) "dom.ipc.plugins.enabled" to "false". You can then attach the MS debugger.
+
+==== Firefox-specific ====
+
+On plugin destruction, Firefox will call NPP_Destroy then call NPN_Invalidate and NPN_Deallocate for any other
+objects it knows about. The contract of NPN_Invalidate is that once its called for any object you can't reference that object anymore. So what this means is that //regardless of the reference count//, the object is deallocated.
+
+Similarly, after NPP_Destroy Firefox will deallocate any native (JavaScript) objects //regardless of whether the plugin has a reference to them//.
+
+==== The AllJoyn interactive console ====
+
+Using the Chrome JavaScript console, you have an interactive AllJoyn console available to you. Load up
+test/test.html in the browser, enter Ctrl-Shift-J (or go to Tools -> JavaScript Console) and start coding. <code>
+> var bus = new org.alljoyn.bus.BusAttachment();
+undefined
+> bus.connect();
+0
+</code>
+
+====== Design ======
+
+===== Security =====
+
+AllJoyn authentication/encryption info is stored per-origin. Origin used here means the origin as defined in the
+"same-origin policy" used for other JavaScript resources used on a page. What this means practically is that the
+protocol://hostname:port triple is used as the application name when creating BusAttachments. Currently no special
+processing is done for "special" protocols like file://, so all local pages share the same authentication info.
+
+===== Resource management =====
+
+The problem driving the design here is the mismatch between garbage-collected JavaScript objects and heap or
+stack-allocated C++ objects. The implementation makes extensive use of ManagedObjs to solve this problem.
+
+==== Native objects ====
+
+Native objects are JavaScript-created objects. This is in contrast to plugin-created objects (aka host objects)
+described below. A NativeObject instance is created to wrap the reference to the underlying NPObject*.
+
+Marshalling between NPObject* and NativeObjects is done with the ToNativeObject functions of TypeMapping.h.
+
+The instance is also recorded inside the plugin instance data, and the underlying NPObject* is cleared when
+NPP_Destroy is called. This is necessary to ensure that the plugin does not reference any native objects after
+NPP_Destroy is called. In Firefox it is not safe to access the underlying NPObject* after NPP_Destroy as Firefox
+may have already deleted the object. 
+
+Method calls on a NativeObject proceed from the plugin to the underlying JavaScript object. This is in contrast to host objects which go the other direction: the browser makes a method call from JavaScript to the underlying host object.
+
+==== Host objects ====
+
+Host objects are plugin-created objects. All host objects inherit from ScriptableObject. ScriptableObject provides the hooks for the browser to interact with the host object (get properties, invoke methods, etc.). 
+
+Each host object should be a standalone object. This means it should have no dependencies on other objects. This is where ManagedObj comes into play. Each host object contains a ManagedObj<T> member for dependencies it has, and the underlying AllJoyn C++ objects are wrapped in ManagedObjs. For example the AllJoyn ProxyBusObject has a dependency on an AllJoyn BusAttachment. Therefore, ProxyBusObjectHost has a busAttachment member which is a ManagedObj wrapper of the AllJoyn BusAttachment. This way, the browser can remove it's reference to BusAttachment (a BusAttachment host object containing a ManagedObj reference to the same AllJoyn BusAttachment) and the ProxyBusObjectHost will remain alive. 
+
+Additionally each host object should be a ManagedObj itself. This results from the the further complication that while the browser maintains a reference count of plugin-created objects, once NPP_Destroy is called all bets are off whether that reference count is valid or not. The browser will happily delete a plugin-created object with a reference count of 2 if the plugin owns one of those reference counts. What this means is that using the browser reference count (NPN_RetainObject, NPN_ReleaseObject) to manage lifetimes of plugin-created objects will not work.
+
+
+The solution is to separate the browser reference counts from the plugin's own reference counts. ManagedObj as described above, together with ToHostObject<T> is used to create the separation. When a plugin-created object is
+returned or passed to the browser, ToHostObject<T> is called on the ScriptableObject. This creates an NPObject for
+the browser with a reference count of 1, and increments the reference count of the managed ScriptableObject by
+holding it as a member in HostObject. The browser can then happily release the object and it will not affect the
+operation of the plugin, and vice versa: the managed ScriptableObject will remain alive as long as someone has it as a dependency.
+
+==== Callback contexts ====
+
+All calls into the browser must occur on the "plugin" thread, aka the one thread executing JavaScript for a given plugin instance. NPAPI gives us the means to dispatch a call from an external thread on the "plugin" thread with NPN_PluginThreadAsyncCall. The difficulties here are that the only NPAPI function that may be called from the
+external thread is NPN_PluginThreadAsyncCall, and there is no guarantee that the async call will actually be issued
+(the async call may be discarded if the plugin instance is being destroyed).
+
+The solution is to capture all the state needed on the "plugin" thread before the asynchronous function is called in an Env class. Then bundle an instance of that Env class, together with any parameters to the external thread callback into a CallbackContext instance. NPN_PluginThreadAsyncCall is then called from the external thread, with the CallbackContext instance as its userData pointer. When the async call is called by the browser, the context is used to make the JavaScript callback. 
+
+The CallbackContexts are also registered with the per-instance plugin data. This solves the problem of the async call not being called by allowing the plugin to delete the CallbackContext on NPP_Destroy. In the case the context is deleted and the async call runs, the async call will ask the plugin for its context and get NULL and return immediately from the async call.
+
+===== How to add a new method =====
+
+The walkthrough below assumes we're adding method echo to the BusAttachment interface.
+  - Add method documentation to alljoyn_doc.js.<code>
+/**
+ * Returns it's input parameter.
+ *
+ * @param {String} inStr the string value to echo
+ * @param {echoCallback} callback function to run after echo method has completed
+ */
+var this.echo = function(inStr, callback) {};
+
+/**
+ * Callback function containing echo string
+ *
+ * @param {Status} status AllJoyn status code
+ * @param {String} outStr return string from echo call
+ */
+var echoCallback = function(status, outStr) {}
+</code>
+  - Add the prototype to jni/BusAttachmentHost.h.<code>
+bool echo(const NPVariant* args, uint32_t argCount, NPVariant* result);
+</code>
+  - Add echo to the list of BusAttachment operations in _BusAttachmentHost::_BusAttachmentHost (jni/BusAttachmentHost.cc). <code>
+OPERATION("echo", &_BusAttachment::echo);
+</code>
+  - Add the implementation in jni/BusAttachmentHost.cc.<code>
+bool _BusAttachmentHost::echo(const NPVariant* args, uint32_t argCount, NPVariant* result)
+{
+    QCC_DbgTrace(("%s", __FUNCTION__));
+    bool typeError = false; /* true if we fail to coerce the argument into a string. */
+    qcc::String inStr;
+    
+    /* Check the argument count, it could be any number. */
+    if (argCount < 1) {
+        typeError = true;
+        plugin->RaiseTypeError("not enough arguments");
+        goto exit;
+    }
+    
+    /* Coerce the argument into a DOMString. */
+    inStr = ToDOMString(plugin, args[0], typeError);
+    if (typeError) {
+        plugin->RaiseTypeError("argument 0 is not a string");
+        goto exit;
+    }
+    
+  exit:
+    if (!typeError) {
+        ToDOMString(plugin, inStr, *result); /* Set the result to inStr. */
+        return true;
+    } else {
+        return false; /* Always return false if an error was raised. */
+    }
+}
+</code>

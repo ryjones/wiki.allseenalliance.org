@@ -1,0 +1,27 @@
+====== Repo Manifest Proposal ======
+
+
+----
+**The TSC voted to create this repository on {{:tsc:allseen_alliance_-_tsc_minutes_02.03.14.pdf|03 Feb 2014 }}**
+----
+
+
+We would like to publish xml manifests for use by the [[https://code.google.com/p/git-repo/ | repo]] tool, to make it easier to check out a complete AllSeen Alliance workspace.
+
+This project does not involve any code.
+
+===== Requirements =====
+
+  * Publish a manifest that allows developers to quickly check out all master branches
+  * Publish manifests that allow developers to quickly check out a specific release branch across all git repositories
+  * Publish and tag a versioned manifest for each AllSeen Alliance release.
+
+===== Resources =====
+
+These manifests are maintained along with the current git version control system. They are fairly simple to create and fit in well with current processes to manage the git repositories.
+
+New projects will be added to the manifests as they are created.
+
+===== Committers =====
+
+Existing developer tools committers will be responsible for this project. Mathew Martineau will be the maintainer.

@@ -1,0 +1,698 @@
+# Getting Started
+
+So you'd like to get started using the Gateway Agent? You have come to the right place!   Be ready to get your hands dirty (well, metaphorically speaking) because we're going to build it from the source.
+
+Right now the Gateway Agent is officially supported on Ubuntu Linux and OpenWrt. We recommend starting with an Ubuntu 12.04 or 14.04 x86 system.
+
+
+## Building on Ubuntu
+
+First, let's set up your Ubuntu system to build and run the Gateway Agent.
+
+
+### Pre-requisites
+
+#### Build tools and libs
+
+Open a terminal window and run the following command:
+
+	
+	$ sudo apt-get install build-essential libgtk2.0-dev libssl-dev xsltproc libxml2-dev libcap-dev gcc g++
+
+    
+To create a 32-bit build of the AllJoyn® framework on a 64-bit operating system, install these required development libraries:
+
+	
+	$ sudo apt-get install gcc-4.8-multilib g++-4.8-multilib libc6-i386 libc6-dev-i386 libssl-dev:i386 libxml2-dev:i386
+
+
+You'll also need the ia32 library, which is not available on newer Ubuntu systems (13 and up). Use this workaround to install it:
+
+	
+	sudo -i
+	cd /etc/apt/sources.list.d
+	echo "deb http://archive.ubuntu.com/ubuntu/ precise main restricted universe multiverse" >ia32-libs-raring.list
+	apt-get update
+	apt-get install ia32-libs
+	rm /etc/apt/sources.list.d/ia32-libs-raring.list
+	apt-get update
+	exit
+
+
+#### Python
+
+Python should already be installed on Ubuntu. Check to make sure:
+
+	
+	python --version
+
+
+If you get a version number, ensure that it's 2.6/2.7. Python v3.0 is not compatible and will cause errors.
+If you get an error, you need to install Python:
+
+	
+	$ sudo apt-get install python
+
+
+
+#### SCons
+
+[SCons](http://www.scons.org) is a software construction tool used to build the AllJoyn framework. SCons is a default package on most Linux distributions.
+
+Run the following command:
+
+	
+	$ sudo apt-get install scons
+
+
+
+#### Git
+
+[Git](http://git-scm.com) is a source code repository access tool. The AllJoyn source code is stored in a set of git projects.
+
+Run the following command:
+
+	
+	$ sudo apt-get install git-core
+
+
+
+You should now be ready to proceed with building AllJoyn.
+    
+### alljoyn-daemon
+
+You'll need to build the alljoyn-daemon from source first.
+
+
+##### Pulling the Source
+
+If you installed all of the pre-requisites above, you can pull the source code:
+
+	
+	cd $HOME
+	export AJ_ROOT=`pwd`/alljoyn
+	mkdir -p $AJ_ROOT/core
+	cd $AJ_ROOT/core
+	git clone https://git.allseenalliance.org/gerrit/core/alljoyn.git
+	cd alljoyn
+	git checkout RB14.12
+
+
+##### Building the Daemon
+
+The next step is to build the daemon:
+
+	
+	cd $AJ_ROOT/core/alljoyn
+	scons BINDINGS=cpp OS=linux CPU=x86 VARIANT=debug BUILD_SERVICES_SAMPLES=off POLICYDB=on WS=off
+
+
+**NOTE:** In the scons line above change the CPU and VARIANT values based on your needs. For a 64-bit system, use
+
+	
+	scons BINDINGS=cpp OS=linux CPU=x86_64 VARIANT=debug BUILD_SERVICES_SAMPLES=off POLICYDB=on WS=off
+
+
+In all subsequent steps, replace "x86" with "x86_64" if your OS is 64-bit.
+
+Assuming you've followed the instructions this should have worked without errors.
+
+##### Installing the Daemon
+
+Create the directory structure:
+
+	
+	sudo mkdir -p /opt/alljoyn/alljoyn-daemon.d
+
+
+Copy the daemon to /usr/bin:
+
+	
+	sudo cp $AJ_ROOT/core/alljoyn/build/linux/x86/debug/dist/cpp/bin/alljoyn-daemon /usr/bin/
+
+(Remember to replace x86 with x86_64, if necessary)
+
+Copy the alljoyn library files to /usr/lib:
+
+	
+	sudo find $AJ_ROOT/core/alljoyn/build -name "*\.so" -exec cp {} /usr/lib/ \;
+
+
+Create a configuration file:
+
+	
+	cat `<<'EOF' >` ~/config.xml
+	`<busconfig>`
+	
+	    `<!--  Our well-known bus type, do not change this  -->`
+	    `<type>`alljoyn`</type>`
+	
+	    `<property name="router_advertisement_prefix">`org.alljoyn.BusNode`</property>`
+	
+	    <!-- Only listen on a local socket. (abstract=/path/to/socket
+	       means use abstract namespace, don't really create filesystem
+	       file; only Linux supports this. Use path=/whatever on other
+	       systems.)  -->
+	    `<listen>`unix:abstract=alljoyn`</listen>`
+	    `<listen>`tcp:r4addr=0.0.0.0,r4port=0`</listen>`
+	
+	    `<limit name="auth_timeout">`5000`</limit>`
+	    `<limit name="max_incomplete_connections">`16`</limit>`
+	    `<limit name="max_completed_connections">`100`</limit>`
+	    `<limit name="max_untrusted_clients">`100`</limit>`
+	    `<flag name="restrict_untrusted_clients">`false`</flag>`
+	
+	    `<ip_name_service>`
+	        `<property interfaces="*"/>`
+	        `<property disable_directed_broadcast="false"/>`
+	        `<property enable_ipv4="true"/>`
+	        `<property enable_ipv6="true"/>`
+	    `</ip_name_service>`
+	`</busconfig>`
+	EOF
+	
+
+
+	
+	sudo cp ~/config.xml /opt/alljoyn/alljoyn-daemon.d/config.xml
+
+
+Create an init.d script:
+
+	
+	cat `<<'EOF' >` ~/alljoyn.init
+	#!/bin/sh
+	### BEGIN INIT INFO
+	# Provides: alljoyn-daemon
+	# Required-Start: $local_fs $network $named $time $syslog
+	# Required-Stop: $local_fs $network $named $time $syslog
+	# Default-Start: 2 3 4 5
+	# Default-Stop: 0 1 6
+	# Description: Provides the standalone AllJoyn bus.
+	### END INIT INFO
+	
+	SCRIPT=alljoyn-daemon
+	RUNAS=root
+	NAME=alljoyn
+	PIDFILE=/var/run/$NAME.pid
+	LOGFILE=/var/log/$NAME.log
+	
+	start() {
+	  if [ -f $PIDFILE ] && kill -0 $(cat $PIDFILE); then
+	    echo 'Service already running' >&2
+	    return 1
+	  fi
+	  echo 'Starting service…' >&2
+	  local CMD="$SCRIPT --config-file=/opt/alljoyn/alljoyn-daemon.d/config.xml &> \"$LOGFILE\" & echo \$!"
+	  su -c "$CMD" $RUNAS > "$PIDFILE"
+	  echo 'Service started' >&2
+	}
+	
+	stop() {
+	  if [ ! -f "$PIDFILE" ] || ! kill -0 $(cat "$PIDFILE"); then
+	    echo 'Service not running' >&2
+	    return 1
+	  fi
+	  echo 'Stopping service…' >&2
+	  kill -15 $(cat "$PIDFILE") && rm -f "$PIDFILE"
+	  echo 'Service stopped' >&2
+	}
+	
+	uninstall() {
+	  echo -n "Are you really sure you want to uninstall this service? That cannot be undone. [yes|No] "
+	  local SURE
+	  read SURE
+	  if [ "$SURE" = "yes" ]; then
+	    stop
+	    rm -f "$PIDFILE"
+	    echo "Notice: log file was not removed: '$LOGFILE'" >&2
+	    update-rc.d -f `<NAME>` remove
+	    rm -fv "$0"
+	  fi
+	}
+	
+	status() {
+	  printf "%-50s" "Checking $NAME..."
+	  if [ -f $PIDFILE ]; then
+	    PID=$(cat $PIDFILE)
+	    if [ -z "$(ps axf | grep ${PID} | grep -v grep)" ]; then
+	      printf "%s\n" "The process appears to be dead but pidfile still exists"
+	    else
+	      echo "Running, the PID is $PID"
+	    fi
+	  else
+	    printf "%s\n" "Service not running"
+	  fi
+	}
+	
+	case "$1" in
+	  start)
+	    start
+	    ;;
+	  stop)
+	    stop
+	    ;;
+	  status)
+	    status
+	    ;;
+	  uninstall)
+	    uninstall
+	    ;;
+	  restart)
+	    stop
+	    start
+	    ;;
+
+	  *)
+	    echo "Usage: $0 {start|stop|status|restart|uninstall}"
+	esac
+	EOF
+
+
+	
+	chmod a+x ~/alljoyn.init
+	sudo cp ~/alljoyn.init /etc/init.d/alljoyn
+
+
+##### Running the daemon
+
+Now you should be able to successfully start and stop the daemon.
+
+To start the daemon:
+
+	
+	sudo service alljoyn start
+
+
+To check that the daemon is running:
+
+	
+	sudo service alljoyn status
+
+
+To stop the daemon:
+
+	
+	sudo service alljoyn stop
+
+
+### Building the Gateway Agent
+
+Now we can start building the Gateway Agent itself.
+
+First pull the remaining pieces of code:
+
+	
+	mkdir $AJ_ROOT/services
+	mkdir $AJ_ROOT/gateway
+	cd $AJ_ROOT/services
+	git clone https://git.allseenalliance.org/gerrit/services/base.git
+	cd base
+	git checkout RB14.12
+	cd $AJ_ROOT/gateway
+	git clone https://git.allseenalliance.org/gerrit/gateway/gwagent.git
+	cd gwagent
+	git checkout RB14.12
+
+
+Next build from the gateway/gwagent folder:
+
+	
+	cd $AJ_ROOT/gateway/gwagent
+	scons BINDINGS=cpp OS=linux CPU=x86 VARIANT=debug BUILD_SERVICES_SAMPLES=on POLICYDB=on ALLJOYN_DISTDIR=$AJ_ROOT/core/alljoyn/build/linux/x86/debug/dist WS=off BR=off
+
+(Remember, you should substitute CPU=x86_64 above if building a 64-bit system)
+
+Copy the shared library files to /usr/lib:
+
+	
+	sudo service alljoyn stop
+	sudo find build -name "*\.so" -exec cp {} /usr/lib \;
+	sudo service alljoyn start
+
+
+Copy the Gateway Management App to /usr/bin:
+
+	
+	sudo find build -name "alljoyn-gwagent" -type f -exec cp {} /usr/bin/alljoyn-gwagent \;
+
+
+Add the manifest.xsd file to the /opt/alljoyn/gw-mgmt folder:
+
+	
+	sudo mkdir /opt/alljoyn/gwagent
+	sudo cp $AJ_ROOT/gateway/gwagent/cpp/GatewayMgmtApp/manifest.xsd /opt/alljoyn/gwagent/
+
+
+Create an init.d script for the Gateway Management App:
+
+	
+	cat `<<'EOF' >` ~/alljoyn-gwagent.init
+	#!/bin/sh
+	### BEGIN INIT INFO
+	# Provides: alljoyn-gwagent
+	# Required-Start: $local_fs $network $named $time $syslog
+	# Required-Stop: $local_fs $network $named $time $syslog
+	# Default-Start: 2 3 4 5
+	# Default-Stop: 0 1 6
+	# Description: Provides the AllJoyn Gateway Agent service.
+	### END INIT INFO
+	
+	SCRIPT=alljoyn-gwagent
+	RUNAS=root
+	NAME=alljoyn-gwagent
+	PIDFILE=/var/run/$NAME.pid
+	LOGFILE=/var/log/$NAME.log
+	
+	start() {
+	  if [ -f $PIDFILE ] && kill -0 $(cat $PIDFILE); then
+	    echo 'Service already running' >&2
+	    return 1
+	  fi
+	  echo 'Starting service…' >&2
+	  local CMD="$SCRIPT &> \"$LOGFILE\" & echo \$!"
+	  su -c "$CMD" $RUNAS > "$PIDFILE"
+	  echo 'Service started' >&2
+	}
+	
+	stop() {
+	  if [ ! -f "$PIDFILE" ] || ! kill -0 $(cat "$PIDFILE"); then
+	    echo 'Service not running' >&2
+	    return 1
+	  fi
+	  echo 'Stopping service…' >&2
+	  kill -15 $(cat "$PIDFILE") && rm -f "$PIDFILE"
+	  echo 'Service stopped' >&2
+	}
+	
+	uninstall() {
+	  echo -n "Are you really sure you want to uninstall this service? That cannot be undone. [yes|No] "
+	  local SURE
+	  read SURE
+	  if [ "$SURE" = "yes" ]; then
+	    stop
+	    rm -f "$PIDFILE"
+	    echo "Notice: log file was not removed: '$LOGFILE'" >&2
+	    update-rc.d -f `<NAME>` remove
+	    rm -fv "$0"
+	  fi
+	}
+	
+	status() {
+	  printf "%-50s" "Checking $NAME..."
+	  if [ -f $PIDFILE ]; then
+	    PID=$(cat $PIDFILE)
+	    if [ -z "$(ps axf | grep ${PID} | grep -v grep)" ]; then
+	      printf "%s\n" "The process appears to be dead but pidfile still exists"
+	    else
+	      echo "Running, the PID is $PID"
+	    fi
+	  else
+	    printf "%s\n" "Service not running"
+	  fi
+	}
+	
+	case "$1" in
+	  start)
+	    start
+	    ;;
+	  stop)
+	    stop
+	    ;;
+	  status)
+	    status
+	    ;;
+	  uninstall)
+	    uninstall
+	    ;;
+	  restart)
+	    stop
+	    start
+	    ;;
+
+	  *)
+	    echo "Usage: $0 {start|stop|status|restart|uninstall}"
+	esac
+	EOF
+
+
+	
+	chmod a+x ~/alljoyn-gwagent.init
+	sudo cp ~/alljoyn-gwagent.init /etc/init.d/alljoyn-gwagent
+
+
+
+### Installing a Connector
+
+Now it's time to install the Connector sample. The installPackage.sh script can be used to install any Connector app as long as it is set up as a tarball (.tar.gz file) in the proper format.
+
+	
+	mkdir $AJ_ROOT/staging
+	cd $AJ_ROOT/staging
+	cp $AJ_ROOT/gateway/gwagent/cpp/GatewayMgmtApp/installPackage.sh .
+
+
+The installPackage.sh script has minor bugs at this point. Run this command to fix them:
+
+	
+	sed -i -e 's/mkdir "$tmpDir" || exit 7/mkdir -p "$tmpDir" || exit 7/' -e 's/id -u "$connectorId" &> \/dev\/null/id -u "$connectorId" 2> \/dev\/null/' -e 's/if \[ $? == 0 \]/if \[ $? -eq 0 \]/' -e 's/if \[ $? != 0 \]/if \[ $? -ne 0 \]/' installPackage.sh
+
+
+Now, execute the install script:
+
+	
+	chmod +x installPackage.sh
+	tar czf dummyApp1.tar.gz -C $AJ_ROOT/gateway/gwagent/build/linux/x86/debug/dist/gatewayConnector/tar .
+	sudo ./installPackage.sh dummyApp1.tar.gz
+
+
+#### Details
+
+Notice the contents of the tar folder:
+
+	
+	$ ls -la $AJ_ROOT/gateway/gwagent/build/linux/x86/debug/dist/gatewayConnector/tar
+	total 20
+	drwxrwxr-x 4 foo foo 4096 Feb 11 10:20 .
+	drwxrwxr-x 6 foo foo 4096 Feb 11 10:20 ..
+	drwxrwxr-x 2 foo foo 4096 Feb 11 10:20 bin
+	drwxrwxr-x 2 foo foo 4096 Feb 11 10:20 lib
+	-rw-rw-r-- 1 foo foo 2615 Feb  3 04:21 Manifest.xml
+
+
+The tar folder has laid out a root filesystem that is used by the application. If you look in the bin and lib folders you will see the files that are necessary for running the sample application. These are installed under the /opt/alljoyn/apps/`<appname>` folder (in this case /opt/alljoyn/apps/dummyapp1).
+
+Also notice the **Manifest.xml** file. This file is used by the Gateway Manager service to provide an interface to the ACLs that can be created for the app. It describes the interfaces that can be allowed through the AllJoyn bus to the Connector application. This can be seen later when we use the Gateway Controller sample.
+
+#### Copy the apps directory
+
+Copy the apps directory into the daemon directory:
+
+	
+	sudo cp -r /opt/alljoyn/apps /opt/alljoyn/alljoyn-daemon.d
+
+
+
+#### Starting the Connector
+
+Now we can start the Gateway Agent. It's the Gateway Agent's responsibility to start and stop Connector apps.
+
+	
+	sudo service alljoyn-gwagent start
+
+
+To make sure that it's running:
+
+	
+	sudo service alljoyn-gwagent status
+
+
+You should now be able to properly see both the Gateway Agent and the dummyApp1 Connector app in the Gateway Controller Sample Android app. If you don't currently have it just keep going and we'll get to it below.
+
+##### Creating an ACL
+
+Let's look at the process list:
+
+	
+	$ sudo ps -ef | grep "alljoyn-"
+	root     10674  1139  0 08:42 ?        00:00:04 alljoyn-gwagent
+	root     10641  1139  0 08:42 ?        00:00:03 alljoyn-daemon --config-file=/opt/alljoyn/alljoyn-daemon.d/config.xml
+	alljoyn  15578  2061  0 11:07 pts/0    00:00:00 grep --color=auto alljoyn-gwagent
+	
+	$ sudo ps -ef | grep gwconn
+	alljoyn  15413  2061  0 11:01 pts/0    00:00:00 grep --color=auto gwconn
+
+
+The first command checked for alljoyn processes. Both the alljoyn-daemon and the alljoyn-gwagent are running. The second command checked for Gateway Connector (the name is shortened to "alljoyn-gwconne"), which is part of the name of the dummyapp1 sample connector. It should be running if the Gateway Agent has started it. But it clearly hasn't been started.
+
+Right now the Connector won't be started by the Gateway Agent because there are no ACLs. ACL stands for Access Control List. For the AllJoyn Gateway Agent, an ACL exists in the form of an XML file that describes the devices and interfaces that are allowed to communicate through the AllJoyn bus to the Connector app.
+
+The easy way to create an ACL file is to use the Gateway Controller Sample App, which in turn uses the CreateAcl method of the ACL Management interface **org.alljoyn.gwagent.ctrl.AclMgmt**
+
+The hard way is to hand-craft an ACL file and place it in the **/opt/alljoyn/apps/dummyapp1/acls/** folder. We're going to do it the hard way because it's actually easier for us right now. Once you have the Gateway Controller Sample App or some other way to call the CreateAcl method from your own code that will be the easiest and recommended way to create ACLs.
+
+And right now the hard way is even easier for you because the following commands create the *exact* ACL needed for the dummyapp1 sample connector:
+
+	
+	cat `<<'EOF' >` ~/all.acl
+	`<?xml version="1.0"?>`
+	<!--Copyright (c) 2014, AllSeen Alliance. All rights reserved.
+	
+	   Permission to use, copy, modify, and/or distribute this software for any
+	   purpose with or without fee is hereby granted, provided that the above
+	   copyright notice and this permission notice appear in all copies.
+	   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+	   WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+	   MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+	   ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+	   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+	   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+	   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.-->
+	`<Acl xmlns="http://www.alljoyn.org/gateway/acl/sample">`
+	  `<name>`all`</name>`
+	  `<status>`1`</status>`
+	  `<exposedServices>`
+	    `<object>`
+	      `<path>`/emergency`</path>`
+	      `<isPrefix>`false`</isPrefix>`
+	      `<interfaces>`
+	        `<interface>`org.alljoyn.Notification`</interface>`
+	      `</interfaces>`
+	    `</object>`
+	    `<object>`
+	      `<path>`/warning`</path>`
+	      `<isPrefix>`false`</isPrefix>`
+	      `<interfaces>`
+	        `<interface>`org.alljoyn.Notification`</interface>`
+	      `</interfaces>`
+	    `</object>`
+	  `</exposedServices>`
+	  `<remotedApps/>`
+	  `<customMetadata/>`
+	`</Acl>`
+	EOF
+
+
+	
+	sudo cp ~/all.acl /opt/alljoyn/apps/dummyapp1/acls/all
+
+
+Now that the ACL is in place you should be able to start the Connector just by restarting the Gateway Agent:
+
+	
+	sudo service alljoyn-gwagent restart
+
+
+Check for the Connector process:
+
+	
+	$ sudo ps -ef | grep alljoyn-gwagent
+	root     10674  1139  0 08:42 ?        00:00:04 alljoyn-gwagent
+	alljoyn  15578  2061  0 11:07 pts/0    00:00:00 grep --color=auto alljoyn-gwagent
+	
+	$ sudo ps -ef | grep gwconn
+	dummyap+ 10698 10674  0 08:42 ?        00:00:00 [alljoyn-gwconne]
+	foo       8484  3522  0 11:30 pts/0    00:00:00 grep --color=auto GatewayConnect
+
+
+Notice that in this example the parent process of Gateway Connector ("alljoyn-gwconne") is 10674, which is the process ID of alljoyn-gwagent. The name "alljoyn-gwconne" is a truncated form of alljoyn-gwconnectorsample, which is the name of the actual binary that is being run.
+
+If you see [alljoyn-gwconne] running then you have successfully started the Connector app. Congratulations!
+
+It is also handy to use the Gateway Connector Sample Android App to interact with Connector apps. This sample is explained in a later section.
+
+###  Updating OAuth Information on the postTweet Script 
+
+The postTweet.sh script requires OAuth information to be provided so that it can successfully send a tweet.
+First you need to obtain an OAuth token for the Twitter API. Once you obtain your token, you also need to provide the oauth secret, a consumer key, and a consumer secret. You can go to https://dev.twitter.com/oauth/overview for more information on the Twitter API.
+
+This [article](https///themepacific.com/how-to-generate-api-key-consumer-token-access-key-for-twitter-oauth/994/) explains step by step how to obtain the required fields in the postTweet.sh script (scroll below their ad to get to the article).  
+
+In the postTweet.sh script you need to fill the following fields:
+
+	
+	oauth_consumer_key='TO_BE_FILLED'
+	oauth_consumer_secret='TO_BE_FILLED'
+	oauth_token='TO_BE_FILLED'
+	oauth_secret='TO_BE_FILLED'
+
+
+Once you have these fields filled out with your OAuth info, you can test the script by running:
+
+	
+	./postTweet.sh "Hello, World!"
+
+
+If the script returns with an "Invalid or expired token" error, please make sure that your OAuth credentials are correct.
+
+### Installing the Gateway Controller Sample Android App
+
+A handy tool for developing Connector applications is to use the Android Controller Sample app. On your Android device download the following file:
+
+*  {{:gateway:gatewaycontroller.apk|Android Gateway Controller 14.12}}
+
+*  {{:gateway:gatewaycontroller1504.apk|Android Gateway Controller 15.04}}
+
+
+ 1.  Install the above tool and run it. It's an app called *Gateway Controller*.
+ 2.  Connect the Android device to the network. This must be the same network to which the system that is running the Gateway Agent is connected. It should show *AllJoyn Gateway Configuration Manager*. If it shows *NO GATEWAYS FOUND ON THE NETWORK* then it means one of two things:
+
+      * The Gateway Agent is not running, or
+      * The Android device is not connected to the same network as the Gateway Agent device
+ 3.  Click on *AllJoyn Gateway Configuration Manager*
+ 4.  The *dummyAppOne* connector app should show up on this screen. It looks like a button that says "dum..."
+ 5.  Click on that button
+
+    * If you followed the instructions before you should see that it says "Connectivity: Not initialized Operation: Running Installation: Installed"
+    * There should also be an ACL listed called "all", and it should be "Active" (**NOTE:** There must be at least one active ACL for a Connector app to run)
+ 6.  To add another ACL click on the menu button (it looks like three vertical dots in the top right of the screen) and choose *Create ACL*
+
+    * To add a remote app, tap on the drawer icon on the top-left corner. If there is any available remote app it will be listed after Exposed Services.
+    * {{:gateway:screenshot_2016-02-22-16-23-00.png?200|}} {{:gateway:screenshot_2016-01-27-16-27-44.png?200|}}
+ 7.  Give the ACL a name and choose the services to expose.
+
+    * By expanding the *NotificationInterface* list item it is possible to allow only Warnings or Emergency notifications
+    * {{:gateway:screenshot_2016-01-27-16-27-43.png?200|}}
+
+This tool can be used to create and manipulate ACLs, control the operation, and display the status of Connector apps. It is helpful during the development and testing of Connector apps, and is also helpful as an example of the role that Controllers play in the Gateway Agent architecture. The code for the Gateway Controller Sample can be referenced to understand how to perform these functions that allow a Controller to fulfill its role in a product.
+
+### Testing the dummyapp
+
+To test the gateway agent and the dummyapp, we need to build the base services samples so that we can produce and consume notifications. You can learn more about the notification interface from base services [here](https///allseenalliance.org/framework/documentation/learn/base-services/notification). You can learn more about all of the interfaces from base services [here](https///allseenalliance.org/framework/documentation/learn/base-services/).
+
+Earlier, you ran scons in the gwagent directory with BUILD_SERVICES_SAMPLES=on. This parameter indicates whether or not to build the notification service samples. These samples can be found in /gateway/gwagent/build/linux/x86/debug/dist/notification/bin/. We will use these samples to send notifications. The dummy app will receive these notifications and send tweets to twitter.
+
+If the BUILD_SERVICES_SAMPLES parameter wasn't on, run scons again from gwagent directory with the parameter on:
+
+	
+	cd $AJ_ROOT/gateway/gwagent
+	scons BINDINGS=cpp OS=linux CPU=x86 VARIANT=debug BUILD_SERVICES_SAMPLES=on POLICYDB=on ALLJOYN_DISTDIR=$AJ_ROOT/core/alljoyn/build/linux/x86/debug/dist WS=off
+
+(Remember, you should substitute CPU=x86_64 above if building a 64-bit system)
+
+Before the next steps ensure that the gateway agent is running and that the Acl that we created before is activated in the Gateway Controller App. (See the above section)
+
+We would like to see the output of both the consumer and the producer, so open two terminals.
+
+On the first terminal, change to the directory holding the notification samples binaries and run the ConsumerService sample:
+
+	
+	cd $AJ_ROOT/gateway/gwagent/build/linux/x86/debug/dist/notification/bin/
+	./ConsumerService
+
+
+When the sample runs it will ask you the name of the app to read notifications from. Press enter to read notifications from all apps.
+
+On the second terminal, change to the same directory and run the ProducerBasic sample:
+
+	
+	cd $AJ_ROOT/gateway/gwagent/build/linux/x86/debug/dist/notification/bin/
+	./ProducerBasic
+
+
+A notification will be sent once you run the ProducerBasic sample which will be caught by the dummyapp. The dummyapp will then send a tweet composed of the message of the notification from ProducerBasic. You will also be able to see the notification in the output of ConsumerService. Check your twitter feed for a message and if the dummyapp was successful you should see a tweet that reads "testappName sent: Hello World"
+
+
+## Building for OpenWrt
+
+TODO

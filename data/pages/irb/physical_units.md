@@ -1,0 +1,56 @@
+# Deprecated
+
+The document you are viewing is the draft 1.0 version of the Interface Design Guidelines. It is no longer maintained, and slowly getting out of date. It is preserved on the wiki for historical purposes, the discussion at the bottom of the individual subpages may still be of some relevance.
+
+The officially approved current version of the Interface Design Guidelines is at all times linked from the [IRB home page](/interfacereviewboard).
+
+### Units
+
+This section explains how to deal with units in AllJoyn Interfaces.
+
+#### Units are Non-negotiable
+
+> **For every type of quantity (temperature, humidity, length, mass, ...) that is represented in your data model, you must define the intended unit up front. All implementations of the Interface must present values in the unit you defined.**
+
+#### Preferred Units
+
+> **As a rule of thumb, use [SI units](http://www.bipm.org/en/measurement-units/)[SI] where possible.**
+
+> **Whenever this makes sense, reuse the units chosen for the same quantity in existing standardized Interfaces.**
+
+This guideline aims to promote consistency across different Interfaces. Deviate from this guideline only where it really makes sense for the problem domain at hand.
+
+The table below summarizes the most common units:
+
+ | Quantity                    | Unit                                                    | 
+ | --------                    | ----                                                    | 
+ | Absolute time (date & time) | Seconds since UNIX Epoch (00:00:00 on January 1, 1970). | 
+ | Time of day                 | Seconds since midnight                                  | 
+ | Time interval               | Seconds                                                 | 
+ | Bandwidth                   | Bits per second                                         | 
+ | Data size                   | Bytes                                                   | 
+ |                             |                                                         | 
+
+
+#### Precision
+
+> **Prefer fixed-point representation over floating point representations. **
+
+In other words: use 32-bit or 64-bit integers to represent the measurements. Microcontroller-based sensors often do not include floating-point hardware, which makes it inconvenient for such devices to produce or process floating point values.
+
+> **The precision of the measurements in the Interface must be clearly defined. If the precision is fixed for all implementations, it must be clearly stated in the Interface definition. If the precision is variable, it must be stated in an auxiliary property/argument (called fooExponent for a measurement argument called foo) as a power of 10 versus the base unit.**
+
+For example:
+
+	
+	interface: org.allseen.HotTub
+	  RO-property: temperature
+	  description: Water temperature in °C
+	  RO-property: temperatureExponent
+	  description: Power of 10 multiplier to temperature
+
+
+When ''temperature = 303'' and ''temperatureExponent = -1'', the actual temperature of the hot tub water is 303*10e-1 = 30.3°C.
+
+
+~~DISCUSSION~~

@@ -1,0 +1,134 @@
+# Contributing Source Code
+
+## Introduction
+
+All code contributions to AllSeen Alliance repositories are handled through our Gerrit server at [https://git.allseenalliance.org](https///git.allseenalliance.org). As a registered Alliance user you can contribute code, provided you agree to the terms and conditions for [registration](https///allseenalliance.org/user/register), the [IP Policy](https///allseenalliance.org/alliance/ip-policy), and [commit signoff rules](https///git.allseenalliance.org/gerrit/static/signoffrules.txt). Please carefully review the rules, policies, terms, and conditions before submitting code.
+
+## Requisites and recommendations
+
+To contribute with code, the following prerequisites must be met:
+ 1.  If you have not already, [register](https///identity.allseenalliance.org/user/register) as an AllSeen Alliance user.
+    - You may register the email addresses you plan to use to commit, as the gerrit server will deny all commits with 'author' email addresses that you have not registered. Configure them in your profile, in the [Contact Information](https///git.allseenalliance.org/gerrit/#/settings/contact) section. To configure it in the git repository, do `<code>`
+$ git config user.email "your-address@example.com"
+$ git config user.name "Your Name"
+`</code>`
+    - Access to git is available with https or ssh.
+      - To use HTTPS, use your Gerrit HTTP password from https://git.allseenalliance.org/gerrit/#/settings/http-password and an HTTPS URL like ''%%https://git.allseenalliance.org/gerrit/core/alljoyn.git%%''
+      - To use SSH, configure your public SSH keys in your profile, in [SSH Public Keys](https///git.allseenalliance.org/gerrit/#/settings/ssh-keys) section and use an SSH URL like ''%%ssh://git.allseenalliance.org:29418/core/alljoyn.git%%''
+ 1.  Clone the repository you are interested contributing to. Having all the AllJoyn tree cloned and arranged with "repo" is convenient on Linux and Mac platforms.
+    - To use "repo" refer to the [#Configuring a development tree with repo](#Configuring a development tree with repo) section.
+    - If you are not using "repo", find the repository you are interested in contributing to at https://git.allseenalliance.org/cgit/ . If you click on a repository name or summary link, there is a **Clone** section at the bottom of the summary page with an https URL to use with git.
+ 2.  All commits should have a Signed-off-by line that can be automatically added to your commits by adding "-s" option to the commits. An example of this use is: `<code>`
+$ git commit -s
+`</code>`
+ 1.  All commits should have a Change-Id line, which must be added automatically by a Commit hook. Installation steps for the hook can be found in the Gerrit documentation at [cmd-hook-commit-msg documentation](https///git.allseenalliance.org/gerrit/Documentation/cmd-hook-commit-msg.html#_obtaining). One way to install it: `<code>`
+$ wget http://git.allseenalliance.org/gerrit/tools/hooks/commit-msg -O .git/hooks/commit-msg
+$ chmod +x .git/hooks/commit-msg
+`</code>` If wget is not available, download http://git.allseenalliance.org/gerrit/tools/hooks/commit-msg using your browser and copy the downloaded ''commit-msg'' script to the .git/hooks directory in your git workspaces.
+
+## Configuring a development tree with repo
+
+To have the working tree fully configured with relative path requirements met and the AllJoyn project arranged as expected, use the following steps:
+ 1.  Install repo in your PATH. To install repo, refer to the [installation instructions](http://source.android.com/source/downloading.html#installing-repo).
+    - To install in your HOME directory, in a nutshell: `<code>`
+$ mkdir -p ~/bin; PATH=~/bin:$PATH
+$ wget http://commondatastorage.googleapis.com/git-repo-downloads/repo -O ~/bin/repo
+$ chmod +x ~/bin/repo
+`</code>`
+ 1.  Create a folder where you want to have all the workspace. `<code>`
+$ mkdir alljoyn-tree
+$ cd alljoyn-tree
+`</code>`
+ 1.  Execute the following lines inside it: `<code>`
+$ repo init -u https://git.allseenalliance.org/gerrit/devtools/manifest.git # To clone the tree description
+$ repo sync # To download and place all the repositories
+`</code>`
+ 1.  Cloned repositories will have no branch checked out, you may execute the following to have master branch configured to track origins: `<code>`
+$ git checkout -b master origin/master
+`</code>`
+ 1.  Remember to configure the commit hook in all the repositories you plan to contribute, as previously stated in requirements.
+
+Other recommendations that ease working with gerrit:
+ 1.  Have all your features rebased to master and in separate feature branches.
+
+## Contributing
+
+To contribute a change, please follow these steps:
+ 1.  Make your changes and commit them. 
+
+    * A prototypical commit message looks like this: `<code>`ASACORE-xyz Summary of commit
+
+Description text goes in to more depth about the 
+commit. It may be quite lengthy.
+
+Change-Id: I0123456789abcdef0123456789abcdef
+Signed-off-by: Your Name `<you@example.com>``</code>`
+
+    * The first line is the "summary". It should be 50 characters or less, followed by an empty line. Jira issue names (beginning with names like ASACORE or ASABASE) are often included to cross-reference with Jira tickets.
+    * The next section is the description. This can be as detailed as it needs to. It's best to wrap the text at around 70 characters per line.
+    * Gerrit enforces a "Change-Id" line. This maps a change to a gerrit review, since the git commit ID will change any time a commit is edited. This should be the last line before the signoffs.
+    * Your commit message needs to include one or more "Signed-off-by:" lines at the end, in this format:`Signed-off-by: Your Name `<your-address@example.com>`
+      * This is most easily added using the "-s" command line argument for git commit`$ git commit -a -s`
+    * Run 'git log' and look at previous commits for examples
+ 1.  Submit your change for code review `$ git push origin HEAD:refs/for/master`
+
+    * Use your Gerrit HTTP password from https://git.allseenalliance.org/gerrit/#/settings/http-password
+    * Note that you must push to ***refs/for/branchname*** in order to create a gerrit review. Direct pushes do not work.
+ 2.  An AllSeen committer will review your change and merge it when the change is ready. Monitor your change for feedback in case further modifications are required. You will receive notification email from gerrit@allseenalliance.org
+
+## Correcting a Patch
+
+Sometimes, after a review, you will be asked to update the patch with some fixes, such as getting copyrights updated, or refactoring the code to comply with coding standards. 
+
+Gerrit review 823 will be used as an example. Supposing you no longer have the submitted patch in local, the following steps could be done.
+ 1.  Navigate to the gerrit ticket: https://git.allseenalliance.org/gerrit/#/c/823/
+ 2.  Go down the page to **Patch Set *X***, where X is the patch number you are interested to update. This is usually the most recent patch, which has the highest number.
+ 3.  Here you will see a list of things: Author, Committer, Parent(s), and Download
+ 4.  The download option is the one we are interested in.  There are a few links here (checkout, pull, cherry-pick, patch) as well as how to download (Anonymous HTTP,SSH,HTTP). Anonymous HTTP will work fine for fetching changes
+    - Select ‘checkout’; gerrit will give you the git command to checkout the change in a headless state `<code>`
+git fetch https://git.allseenalliance.org/gerrit/core/alljoyn refs/changes/23/823/2 && git checkout FETCH_HEAD
+`</code>`
+ 1.  On the computer where you have AllJoyn source checked out go to core/alljoyn and paste the git command from the gerrit website
+ 2.  In case you prefer working in a named HEAD, lets say, a branch with name c-binding-samples, execute the following line after the given command `<code>`
+git checkout -b c-binding-samples
+`</code>`
+ 1.  Make the modifications you need to
+ 2.  Use git add to add the modified files
+ 3.  Then run `git commit --amend`
+ 4.  Make sure you don’t modify the Change-Id. It is what gerrit uses to map the amended commit to your original commit.
+ 5.  Push the change to gerrit to refs/for/`<branchname>`.
+    - In case you used a branch with name c-binding-samples `git push origin c-binding-samples:refs/for/master`
+    - Else run the following git command `git push origin HEAD:refs/for/master`
+ 6.  Once that is done gerrit should automatically inform your reviewers that a change has been uploaded via email. If you return to the gerrit ticket you should see a **Patch Set *X***, where X is the previous highes number + 1, with the updated changes.
+
+# Additional Resources
+
+## Gerrit
+
+*  [Gerrit Documentation](https///git.allseenalliance.org/gerrit/Documentation/index.html)
+
+## Git
+
+### Guides and tutorials
+
+
+*  [Everyday Git](https///www.kernel.org/pub/software/scm/git/docs/everyday.html)
+
+*  http://git-scm.com/book/
+
+*  http://gitimmersion.com/
+
+*  http://learn-git.com/
+
+### Tips for new git users
+
+The learning curve for git can be steep. There are a lot of concepts and techniques in distributed version control that don’t map well to the centralized tools that many people know well. If you have previous experience with centralized version control systems:
+
+*  Think of your local workspace as a complete centralized version control environment. It contains your checked out files and a full copy of the version control database. So long as you don’t access anything outside your workspace (by using "git fetch", "git push", "git pull", "git remote") it’s like the version control you’re used to. One quirk is that you do have to use "git add" to select the files that "git commit" will pay attention to, but you can also use "git commit –a" to skip the "add" and pick up all modified files.
+
+*  Once you have the commits in your workspace that you want to share, you can copy those commits to other places (like a gerrit server) using "git push". If the destination doesn’t have the full history for your new commits, that history is sent.
+
+*  If there are commits outside your workspace that you want to be in your local database, you can bring them in using "git fetch". Similar to "push", any necessary history is transferred.
+
+*  Git commit ids are like GUIDs. The commit ID will be the same in your local workspace, on any server, and in anyone else’s workspace. The commit ID represents the complete content of that commit, including code content, commit message, commit metadata, and history. If any of those change, the commit id will also change.
+

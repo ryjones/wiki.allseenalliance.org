@@ -1,0 +1,80 @@
+====== (Data_driven API) 14.12 Release Review ======
+
+The Data-driven API (DDAPI) for AllJoyn is an alternative API for the AllJoyn framework that is specifically tailored to use cases for the Internet of Things.
+
+For more information on the DDAPI, consult the DDAPI User Documentation on the AllSeen Alliance Website: https://allseenalliance.org/developers
+===== Features =====
+
+This is an initial release. Read the documentation for a description of all features.
+
+===== Non-Code Aspects =====
+
+The DDAPI documentation is included in the source repository
+    * use doxygen (''tools/Doxyfile'') to generate the API reference manual
+    * ''README.md'', included in the source tarball and repository provides information on how to build the DDAPI. 
+
+For information on how to use the DDAPI in your own applications, read the documentation on the AllSeen Alliance website: https://allseenalliance.org/developers/develop.
+
+DDAPI Release 14.12 is dependent on Code Generator Release 14.12.
+
+
+
+
+===== Quality Assurance =====
+
+**Test Coverage**
+
+A range of automated unit tests has been performed with a coverage of 90.3%. 
+
+**Scalability and Stress Tests**
+
+Scalability/stress tests were performed with the following results:
+
+|**C**|**P**|**O**|**T**|
+|10|2|100|3.8|
+|20|2|100|11.5|
+|30|2|100|22.5|
+|40|2|100|40.0|
+|2|10|100|3.8|
+|2|20|100|8.0|
+|2|30|100|12.0|
+|2|40|100|18.0|
+|20|3|100|16.0|
+|20|4|100|19.0|
+
+C = number of consumers, P = number of providers, O = number of objects per provider, T = number of seconds to complete the test.
+
+Total number of method invocations and signals is the product of C, P and O.  For the table above it ranges from 2000 to 8000.
+
+Unit tests were validated on Linux Ubuntu 12.04 VVC version 4.6.3 (64 bit). Basic building  and running tests were also performed on //OpenWRT Attitude Adjustment// and //OpenWRT Barrier Breaker//.
+===== Known Issues =====
+
+__**ASACORE-1238: Autopinger includes private headers**__
+
+When building the DDAPI on top of AllSeen Core 14.12, the following error will occur:
+
+''(...)/alljoyn-14.12.00-src/build/linux/x86_64/debug/dist/cpp/inc/alljoyn/AutoPinger.h:31:23: fatal error: qcc/Timer.h: No such file or directory
+compilation terminated.''
+
+**Workaround:**
+The DDAPI delivery contains a directory //patches//. From the root directory, run the patch:
+''patch -Np1 -i ../alljoyn-ddapi-0.0.1-src/data/datadriven_api/patches/alljoyn_core_14.12_autopinger.patch''
+
+This will patch the necessary files:
+
+  * alljoyn_core/inc/alljoyn/AutoPinger.h
+  * alljoyn_core/src/AutoPinger.cc
+  * alljoyn_core/src/AutoPingerInternal.cc
+  * alljoyn_core/src/AutoPingerInternal.h
+  * alljoyn_core/unit_test/AutoPingerTest.cc
+
+This issue is solved in Allseen Core Version 14.12a
+
+__**ASADATA-1 Multi-Peer Stress testing Issue**__
+
+Under extreme load some method calls & signals may be lost. This issue is under investigation.
+
+
+
+
+

@@ -1,0 +1,32 @@
+====== Base Services Release Plan ======
+
+===== Introduction =====
+
+  * Dev Leads: Adina Geffen, Tsahi Asher, Josh Hershberg
+  * QA Lead: Gally Gabbay
+
+===== Themes and Priorities =====
+
+  * Notification dismiss – Ability to propagate a notification dismiss to all devices on the proximal network
+  * iOS Bindings for Control Panel, Config, and Notification services
+  * Refactoring/reorganization of thin client service code and samples
+
+===== Deliverables =====
+
+config, notifications, controlpanel, sample_apps, services_common
+
+===== Milestones =====
+
+^ Milestone              ^ Date              ^ Details                              ^
+| API Freeze             | 2013/01/15        |                                      |
+| Feature Freeze         | 2013/01/26        |                                      |
+| Documentation Complete | 2013/03/14        |                                      |
+| QA Complete            | 2013/02/27        |                                      |
+
+===== Expected Work Group Dependencies =====
+
+No projects currently depend on the base services
+
+===== Compatibility with Previous Releases =====
+
+This is the initial Allseen release.

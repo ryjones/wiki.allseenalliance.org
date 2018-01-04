@@ -1,0 +1,140 @@
+ ====== The Data-driven API for AllJoyn ======
+The Data-driven API Project develops the Data-driven API for AllJoyn (DDAPI) which will be used to create a simplified AllJoyn API that operates at a higher conceptual level than the current API.  Reducing the overall number of distinct API concepts a developer has to understand when programming for AllJoyn will reduce the steepness of the learning curve and attract more developers to the AllSeen ecosystem.
+
+> **Deprecation Notice** The DDAPI project is no longer active, and will be closed soon. See the [Termination Review page](datadriven/termination_review) for more details.
+
+Dominique Chanet is the Project lead.
+
+The committers are:
+
+*  Dominique Chanet
+
+*  Meggan Ehret
+
+The contributors are:
+
+*  As'ad Salkham
+
+*  Joris Bleys
+
+*  Gerrit Ruelens
+
+## Resources
+
+
+*  Mailing List: `<allseen-datadriven@lists.allseenalliance.org>` ([Subscribe](https///lists.allseenalliance.org/mailman/listinfo/allseen-datadriven))
+
+*  Issue Tracker: [ASACORE Jira, search for the DDAPI component](https///jira.allseenalliance.org/browse/ASACORE-1938?jql=project%3DASACORE%20AND%20component%3DDDAPI)
+
+*  Repository links
+    * Clone: `<nowiki>`https://git.allseenalliance.org/gerrit/data/datadriven_api`</nowiki>`
+    * Browse: https://git.allseenalliance.org/cgit/data/datadriven_api.git/
+
+## Documents
+
+
+*  [Project Proposal](tsc/technical_steering_committee/proposals/simplifiedapi)
+
+*  {{:datadriven:data-driven_api_project_proposal.pptx|Project Proposal Slides for Technical Steering Committee}}
+
+*  {{:datadriven:data-driven_api_wg_progress_report_june_2014.pptx|TSC Progress Report June 2014}}
+
+*  {{:datadriven:data-driven_api_breakout_session_revised.pptx|AllSeen Alliance Summit 2014 Data-driven API breakout session slides}}
+
+*  The DDAPI documentation is included in the [AllSeen Alliance webdocs|https://allseenalliance.org/developers]
+    * use doxygen (''tools/Doxyfile'') to generate the API reference manual.
+    * ''README.md'', included in the source, provides details on how to build the DDAPI.
+
+## Philosophy
+
+The Data-driven API (DDAPI) for AllJoyn is an alternative API for the AllJoyn
+framework that is specifically tailored to use cases for the Internet of Things.
+
+The DDAPI distinguishes itself from the standard AllJoyn API in the
+following ways:
+
+
+*  The data-centric, publish-subscribe paradigm as a first-class citizen. We believe this paradigm is more suitable for the Internet of Things than the closely coupled, service-oriented, RPC-based approach advocated by standard AllJoyn. However, the DDAPI also fully supports the service-oriented paradigm if you need it.
+
+*  A unified approach to discovery and session setup. The DDAPI enforces a single mechanism for discovery and session setup. This increases interoperability between devices and applications made by different vendors. The main driver behind the unified discovery and session setup is the desire to avoid situations where you need two different light control applications for your smart light bulbs just because vendor A decided to use a different session port or discovery string than vendor B.  - build the DDAPI and all of its dependencies
+
+*  A radically simplified API compared to standard AllJoyn. The unified discovery and session setup system requires virtually no API (there is only one way to do things, and the DDAPI library does most of the hard  work for you). On top of this, the DDAPI leverages the AllJoyn Code Generator to turn interface specifications (in XML format) into code that deals with type registration and message marshaling and unmarshaling. The end result is an API that lets the application developer deal with the business logic of the application instead of the communication logic.
+    
+
+
+## Release Planning
+
+*  14.12
+    * [DDAPI 14.12 Release Plan](datadriven/DDAPI_14.12_release_plan)
+    * [DDAPI 14.12 Release Review](datadriven/DDAPI_14.12_release_review)
+
+*  15.04
+    * [DDAPI 15.04 Release Plan](datadriven/DDAPI_15.04_release_plan)
+    * [DDAPI 15.04 Release Review](datadriven/ddapi_15.04_release_review)
+
+
+## Biweekly Status Meetings
+
+The biweekly status meetings for the DDAPI project have been cancelled until further notice. The DDAPI project contributors are focusing their activities on Core contributions (contribution of DDAPI functionality to Core, and introduction of Security 2.0) for the foreseeable future.
+
+#### Meeting Agendas
+
+The agenda for each meeting is decided prior to the meeting. Any additions to the agenda must be requested prior to the meeting by emailing the `<allseen-datadriven@lists.allseenalliance.org>`
+ 
+#### Meeting Minutes
+
+
+*  January 16, 2015 {{:datadriven:datadrivenddapi-wg-release_review-150116.pdf|Meeting Slides}} [WebEx Recording](https///intercalleurope.webex.com/intercalleurope/lsr.php?RCID=aac85d7c9c7b4f86ae9beb9e271cff0e)
+
+*  December 12, 2014 {{:datadriven:ddapi-wg-iteration_review-141212.pdf|Meeting Slides}} [WebEx Recording](https///intercalleurope.webex.com/intercalleurope/lsr.php?RCID=b0ab5c30d3e74e3ea5eea6125cdb79b7)
+
+*  November 28, 2014 {{:datadriven:ddapi-wg-iteration_review-151128.pdf|Meeting Slides}} [WebEx Recording](https///intercalleurope.webex.com/intercalleurope/lsr.php?RCID=5bcd4675e1804b9a89cd18cf2c528e6d)
+## Build Instructions
+
+##### Download the sources
+
+Download the source code repositories as explained in [Downloading the Source](develop/downloading_the_source)
+
+##### Build and install the code generator
+
+Build and install the code generator.
+
+	
+	$ cd devtools/codegen
+	$ python setup.py install #might require super user privileges (use sudo)
+	$ ajcodegen-compile.py #might require super user privileges (use sudo)
+
+
+##### Build DDAPI and its dependencies
+
+	
+	$ cd data/datadriven_api
+	$ scons -j4 BR=off
+
+
+The DDAPI library, header files and samples, and all dependencies, are assembled in ''build/linux/`<CPU>`/dist''.
+
+##### Install everything in a convenient location
+
+The current build artifact layout of AllJoyn is rather inconvenient: every individual component is built in a separate subdirectory, with its ''bin'', ''lib'' and ''inc'' directories. For your convenience, we suggest you copy all build artifacts in a flat installation tree.
+
+	
+	cd data/datadriven_api
+	export INSTALL=$HOME/alljoyn_install
+	mkdir -p ${INSTALL}/bin
+	mkdir -p ${INSTALL}/lib
+	mkdir -p ${INSTALL}/include
+	export DISTDIR=`find build -name dist -type d`
+	for d in `find $DISTDIR -name bin -type d` ; do cp -R $d/* ${INSTALL}/bin ; done
+	for d in `find $DISTDIR -name lib -type d` ; do cp -R $d/* ${INSTALL}/lib ; done
+	for d in `find $DISTDIR -name inc -type d` ; do cp -R $d/* ${INSTALL}/include ; done
+
+
+In order to run the DDAPI samples (''${INSTALL}/bin/samples/ddchat'', ''${INSTALL}/bin/samples/door_{provider|consumer}''), you must set your ''LD_LIBRARY_PATH'' environment variable appropriately:
+
+	
+	cd ${INSTALL}/bin/samples
+	LD_LIBRARY_PATH=${INSTALL}/lib ./ddchat
+
+
+

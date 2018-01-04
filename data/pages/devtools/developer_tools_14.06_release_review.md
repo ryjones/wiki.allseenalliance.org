@@ -1,0 +1,66 @@
+# Developer Tools 14.06 Release Review
+
+## Features
+
+This version of the code generator contains bug fixes and an experimental Android feature.
+
+## Non-Code Aspects
+
+
+*  [Wiki Documentation](devtools/code_generator)
+
+*  [2014-03-13 Video Presentation and Training Slides](/Training)
+
+## Architectural Issues
+
+N/A
+
+## Security Issues
+
+N/A
+
+## Quality Assurance
+
+The code generator code base contains extensive unit tests.
+
+In addition, manual tests were conducted across Linux and Windows platforms to validate generated programs and execution of the code generator itself.
+
+## Known Issues
+
+There are some unsuppored AllJoyn data types:
+
+
+*  Structures containing structures
+
+*  Structures containing arrays
+
+*  Structures containing dictionaries
+
+*  Structures containing variants
+
+*  Arrays of variants
+
+*  Multi-dimensional arrays
+
+The Android code generator has additional unsupported data types:
+
+
+*  Arrays
+
+*  Dictionaries
+
+*  Structures containing structures
+
+*  Return values of structures
+
+## End-of-life
+
+N/A
+
+## Standards Compliance
+
+N/A
+
+## Schedule Post-Mortem
+
+The 14.06 code generator release was originally expected to be about a month after the core (standard and thin) release in June 2014. The core release was delayed until early August 2014, and completion of the Android feature also delayed the release of this project. By October, the working group decided to make the Android feature experimental due to the additional unsupported data types relative to the thin library feature. The release was tagged as v14.06 on 03-November-2014.

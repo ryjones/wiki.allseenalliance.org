@@ -1,0 +1,4 @@
+# Update Service Project Proposal
+
+{{:tsc:technical_steering_committee:software_management_project_proposal.pdf|Project Proposal}}
+{{:tsc:technical_steering_committee:red_bend_tc_presentation_.pdf|Presentation}}

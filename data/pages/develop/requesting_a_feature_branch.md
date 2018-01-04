@@ -1,0 +1,21 @@
+For the Core working group, please send email to the appropriate mailing list using the following template. It will make approving and creating the branch much easier. Examples of each item are provided below.
+
+ | Header                                        | Contents                                                                                                                                                | 
+ | ------                                        | --------                                                                                                                                                | 
+ | Project                                       | core/alljoyn                                                                                                                                            | 
+ | Requested name                                | feature/asacore123                                                                                                                                      | 
+ | Commit ID or tag for start of branch          | Will be assumed to be the head of master if omitted. For example a tag is "v14.12" or a commit ID looks like "9d096987205609053a9a656ebd72972ea92eff17" | 
+ | Description                                   | Short description of the work to be undertaken                                                                                                          | 
+ | Draft code                                    | Please provide Gerrit URLs here, if any                                                                                                                 | 
+ | JIRA reference                                | https://jira.allseenalliance.org/browse/ASACORE-123                                                                                                     | 
+ | Committers, please reply or create the branch |                                                                                                                                                         | 
+
+**Note that any single committer on the specific project can approve (or simply create) a feature branch.**
+
+Please put this information in JIRA:
+ | Planned completion | What is the targeted release?               | 
+ | ------------------ | -----------------------------               | 
+ | Roadmap            | Plan of how you will get there, if required | 
+
+When a feature branch is ready to merge, create a merge commit and upload it to gerrit for review.
+
